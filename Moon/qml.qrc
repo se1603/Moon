@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>MiddleArea/MiddleArea.qml</file>
+        <file>TopArea/TopArea.qml</file>
+        <file>main.qml</file>
+        <file>MainItem.qml</file>
+    </qresource>
+</RCC>
