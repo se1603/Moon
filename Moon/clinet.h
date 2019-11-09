@@ -15,9 +15,10 @@ public:
 
     void connectServer();
 
-    socket_ptr sendMessage();
+    socket_ptr sendMessage(json jmessage);
 
     //界面显示
+    Q_INVOKABLE QString showCategory(int type);  //显示分类
 };
 
 #endif // CLINET_H

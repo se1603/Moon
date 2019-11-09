@@ -35,9 +35,12 @@ void Server::processMessage(std::string message, endpoint ep)
     std::string request = j["request"];
     std::string replay;
 
-    if(request == "connect")
+    if(request == "category")
     {
-        replay = "connect success";
+        json js;
+        js["menu"] = {"精选","电影","剧集","动漫","综艺"};
+        std::string s = js.dump();
+        replay = s;
         sendMessage(replay,ep);
     }
 

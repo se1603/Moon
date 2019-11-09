@@ -6,4 +6,8 @@ Rectangle {
     height: 17/18 * parent.height
     anchors.bottom: parent.bottom
     color: "green"
+
+    MiddleInterface{
+
+    }
 }
