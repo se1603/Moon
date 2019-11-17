@@ -28,9 +28,10 @@ public:
     NetWork(socket_ptr sock);
 
     int sendto(std::string message, endpoint receive_ep);
-    std::string receive(boost::asio::ip::udp::endpoint &sender_ep);
+    std::string receive();
 
     long int sendFile(FILE *fp, endpoint ep);
+    void receiveFile(FILE *fp);
 
 private:
     socket_ptr m_sock;

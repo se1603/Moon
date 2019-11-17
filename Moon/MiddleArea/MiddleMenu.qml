@@ -1,105 +1,130 @@
-//侧边栏
-//11.6
-
 import QtQuick 2.0
-import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.2
 
 Rectangle {
-    id:middleMenu
-
-    width: 1/14*parent.width
+    id: middleMenu
+    width: 75 //1 / 14 * parent.width
     height: parent.height
 
     border.color: "grey"
 
-    ListModel{
-        id:s
-        ListElement{
-            name:"爱情"
+    Rectangle{
+        id: topMenu
+        width: parent.width
+        height: parent.height * 1 / 2
+        anchors.top: parent.top
+        //        color: "red"
+
+        ListView{
+            id: categoryView
+            anchors.top: parent.top
+            anchors.topMargin: 20
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20
+            model: JSON.parse(client.showCategory("HomePage"))
+            delegate: categoryDelegate
         }
-        ListElement{
-            name:"动漫"
-        }
-        ListElement{
-            name:"剧集"
-        }
-        ListElement{
-            name:"精选"
-        }
-        ListElement{
-            name:"综艺"
-        }
-        ListElement{
-            name:"电影"
+
+        Component{
+            id: categoryDelegate
+            Rectangle{
+                width: middleMenu.width - 10
+                height : 67
+                //            color: "red"
+                anchors.left: parent.left
+                Text {
+                    text:modelData.category
+                    opacity: 0.5
+                    font.pixelSize: 16
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.RightButton | Qt.LeftButton
+                        hoverEnabled: true
+                        enabled: true
+
+                        onEntered: {
+                            parent.opacity = 1
+                        }
+                        onExited: {
+                            parent.opacity = 0.5
+                        }
+                        onClicked: {
+                            loadPage(parent.text)
+                        }
+                    }
+                }
+            }
         }
     }
+    Rectangle{
+        id: upMenu
+        width: parent.width
+        height: parent.height * 1 / 2
+        anchors.top: topMenu.bottom
 
-    ListView{
-        id:category
-        anchors.top:parent.top
-        anchors.topMargin: 20
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
-        model: s
-//        model: JSON.parse(client.showCategory(0))
-        delegate: mainDelegate
-    }
+        ListModel{
+            id: functionCategory
+            ListElement{
+                name:"上传"
+            }
+            ListElement{
+                name:"下载"
+            }
+        }
 
-    Component{
-        id:mainDelegate
-        Rectangle {
-            width: middleMenu.width - 10
-            height : 1 / 10 * middleMenu.height
-            anchors.left: parent.left
-//            anchors.leftMargin: 5
-            Text {
-                text:name
-                opacity: 0.5
-                font.pixelSize: 15
-                anchors.horizontalCenter: parent.horizontalCenter
-                MouseArea {
-                    anchors.fill: parent
-                    acceptedButtons: Qt.RightButton | Qt.LeftButton
-                    hoverEnabled: true
-                    enabled: true
+        ListView{
+            id: functionCategoryView
+            anchors.top: parent.top
+            anchors.topMargin: middleMenu.height / 3.5
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            model: functionCategory
+            delegate: functionDelegate
+        }
 
-                    onEntered: {
-                        parent.opacity = 1
-                    }
-                    onExited: {
-                        parent.opacity = 0.5
-                    }
-                    onClicked: {
-                        load_page(parent.text)
-                        console.log(parent.text)
+        Component{
+            id: functionDelegate
+            Rectangle{
+                width: middleMenu.width - 10
+                height : 67
+                anchors.left: parent.left
+                Text {
+                    text: name
+                    opacity: 0.5
+                    font.pixelSize: 16
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.RightButton | Qt.LeftButton
+                        hoverEnabled: true
+                        enabled: true
+
+                        onEntered: {
+                            parent.opacity = 1
+                        }
+                        onExited: {
+                            parent.opacity = 0.5
+                        }
+                        onClicked: {
+                            //                            loadpage(parent.text)
+                        }
                     }
                 }
             }
         }
     }
 
-    function load_page(page){
-        switch(page){
-        case '动漫':
-            middle_stack.push(comic_page,StackView.Immediate)
-            break;
-        case '电影':
-            middle_stack.push(movie_page,StackView.Immediate)
-            break;
-//        case '剧集':
-//            middle_stack.push(drama_page,StackView.Immediate)
-//            break
-//        case '综艺':
-//            middle_stack.push(variety_page,StackView.Immediate)
-//            break
-//        case '精选':
-//            middle_stack.push(select_page,StackView.Immediate)
-//            break;
-//        default:
-//            middle_stack.push(search_page, StackView.Immediate)
-//            break;
-
+    function loadPage(page)
+    {
+        if(page !== "精选")
+        {
+            recommendInterface.typeModel = JSON.parse(client.showCategory(page))
+            recommendInterface.showTypeMenu = true
+            recommendInterface.recommendResource = JSON.parse(client.showRecommend(page))
+            console.log("asdsadadfasf")
         }
+        else
+            recommendInterface.showTypeMenu = false
     }
+
 }

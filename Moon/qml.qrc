@@ -5,14 +5,7 @@
         <file>main.qml</file>
         <file>MainItem.qml</file>
         <file>MiddleArea/MiddleMenu.qml</file>
-        <file>MiddleArea/MiddleInterface.qml</file>
-        <file>MiddleArea/Comic.qml</file>
-        <file>MiddleArea/MovieModel.qml</file>
-        <file>MiddleArea/ComicStack.qml</file>
-        <file>MiddleArea/ComicRecommd.qml</file>
-        <file>MiddleArea/Movie.qml</file>
-        <file>MiddleArea/MovieStack.qml</file>
-        <file>MiddleArea/MovieRecommd.qml</file>
-        <file>MiddleArea/RecommdModel.qml</file>
+        <file>MiddleArea/RecommendPage.qml</file>
+        <file>MiddleArea/BrowsePage.qml</file>
     </qresource>
 </RCC>
