@@ -10,7 +10,7 @@ Rectangle {
     property alias showTypeMenu: typeMenu.visible
     property alias typeModel: typeMenuRepeater.model
 
-    property var recommendResource
+    property var recommendResource/*: JSON.parse(client.showRecommend("精选"))*/
 
     ScrollView{
         anchors.fill: parent

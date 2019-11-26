@@ -1,4 +1,6 @@
 import QtQuick 2.0
+import QtQuick.Controls 2.2
+//import "./RecommendPage.qml"
 
 Rectangle {
     id: middleMenu
@@ -118,13 +120,19 @@ Rectangle {
     {
         if(page !== "精选")
         {
-            recommendInterface.typeModel = JSON.parse(client.showCategory(page))
-            recommendInterface.showTypeMenu = true
-            recommendInterface.recommendResource = JSON.parse(client.showRecommend(page))
+            browseInterface.typeModel = JSON.parse(client.showCategory(page))
+            browseInterface.showTypeMenu = true
+            browseInterface.recommendResource = JSON.parse(client.showRecommend(page))
+//            loader.update()
+//            browseStack.pop()
+//            browseStack.push(recommendInterface,StackView.Immediate)
             console.log("asdsadadfasf")
         }
         else
-            recommendInterface.showTypeMenu = false
+        {
+            browseInterface.showTypeMenu = false
+            browseInterface.recommendResource = JSON.parse(client.showRecommend(page))
+        }
     }
 
 }
