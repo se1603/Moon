@@ -703,3 +703,99 @@ std::vector<Comic> MovieAndTelevisionBroker::getRecommendComics(int type)
     }
     return result;
 }
+
+//识别用户收藏
+void MovieAndTelevisionBroker::processAudienceCollection(std::vector<std::string> tmp, MovieAndTelevision *m)
+{
+    std::cout << "~~~~~~~~" << std::endl;
+    auto n = atoi(tmp[2].c_str());
+    std::cout << n << std::endl;
+    switch(n) {
+    case 1:{
+        for(auto item = m_films.begin();item != m_films.end();item++){
+            if(item->first == tmp[0]){
+                *m = item->second;
+            }
+        }
+    }
+        break;
+    case 2:{
+        for(auto item = m_dramas.begin();item != m_dramas.end();item++){
+            if(item->first == tmp[0]){
+                *m = item->second;
+            }
+        }
+    }
+        break;
+    case 3:{
+        for(auto item = m_comics.begin();item != m_comics.end();item++){
+            if(item->first == tmp[0]){
+                *m = item->second;
+            }
+        }
+    }
+        break;
+    case 4:{
+        for(auto item = m_varieties.begin();item != m_varieties.end();item++){
+            if(item->first == tmp[0]){
+                *m = item->second;
+            }
+        }
+    }
+        break;
+    }
+    std::cout << "shenmegui" << std::endl;
+}
+
+//识别用户记录
+void MovieAndTelevisionBroker::processAudienceRecord(std::vector<std::string> tmp, MovieAndTelevision* m)
+{
+    std::cout << "shenmegui99999999" << std::endl;
+    auto n = atoi(tmp[3].c_str());
+    switch(n) {
+    case 1:{
+        for(auto item = m_films.begin();item != m_films.end();item++){
+            if(item->first == tmp[0]){
+                *m = item->second;
+            }
+        }
+    }
+        break;
+    case 2:{
+        for(auto item = m_dramas.begin();item != m_dramas.end();item++){
+            if(item->first == tmp[0]){
+                *m = item->second;
+            }
+        }
+    }
+        break;
+    case 3:{
+        for(auto item = m_comics.begin();item != m_comics.end();item++){
+            if(item->first == tmp[0]){
+                *m = item->second;
+            }
+        }
+    }
+        break;
+    case 4:{
+        for(auto item = m_varieties.begin();item != m_varieties.end();item++){
+            if(item->first == tmp[0]){
+                *m = item->second;
+            }
+        }
+    }
+        break;
+    }
+}
+
+//展示收藏
+void MovieAndTelevisionBroker::showCollection(MovieAndTelevision *m, std::vector<std::string> &collections)
+{
+    m->showInfo(collections);
+}
+
+//展示记录
+void MovieAndTelevisionBroker::showRecord(MovieAndTelevision *m, std::vector<std::string> &records)
+{
+    m->showInfo(records);
+}

@@ -3,6 +3,7 @@ import QtQuick.Window 2.13
 import Moon 1.0
 
 Window {
+    id: mainWindow
     visible: true
     color: "#F5F5F5"
     minimumHeight: 716

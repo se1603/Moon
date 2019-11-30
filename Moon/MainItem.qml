@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import "TopArea"
 import "MiddleArea"
+import "Audience"
 
 Item {
     width: parent.width
@@ -14,4 +15,7 @@ Item {
         id: middleArea
     }
 
+    AudiencePoupItem {
+        id:audienceItem
+    }
 }

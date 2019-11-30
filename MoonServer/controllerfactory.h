@@ -2,6 +2,7 @@
 #define CONTROLLERFACTORY_H
 
 #include "browseandwatchcontroller.h"
+#include "audiencecontroller.h"
 
 class ControllerFactory
 {
@@ -13,7 +14,7 @@ public:
     ~ControllerFactory();
 
     BrowseAndWatchController *createBrowseAndWatchController();
-
+    AudienceController *createAudienceController();//用户
 private:
     ControllerFactory();
     static ControllerFactory* m_instance;

@@ -16,3 +16,9 @@ BrowseAndWatchController *ControllerFactory::createBrowseAndWatchController()
 {
     return BrowseAndWatchController::getInstance();
 }
+
+//用户
+AudienceController* ControllerFactory::createAudienceController()
+{
+    return AudienceController::getInstance();
+}

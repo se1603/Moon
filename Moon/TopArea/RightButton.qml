@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
-
+import "../Audience"
+import "../MiddleArea"
 
 Item {
     id:rightButton
@@ -117,8 +118,8 @@ Item {
         }
     }
 
-
-    Rectangle{    //登录图标
+    //登录
+    Rectangle{
         id: login
         height: 7/8 * parent.height
         width: 1/10 * parent.width
@@ -140,13 +141,13 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 onClicked: {
-//                    if(loginstatus === false){
-//                        audienceItem.open()
-//                    }else if(loginstatus === true){
-//                        audienceItem.close()
-//                        middleArea.audienceInterface.visible =
-//                                !middleArea.audienceInterface.visible
-//                    }
+                    if(loginstatus === false){
+                        audienceItem.open()
+                    }else if(loginstatus === true){
+                        audienceItem.close()
+                        middleArea.audienceInterface.visible =
+                                !middleArea.audienceInterface.visible
+                    }
                 }
             }
         }

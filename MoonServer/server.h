@@ -34,6 +34,7 @@ private:
     ThreadPool threadpool;
     ControllerFactory *m_controllerFactory;
     BrowseAndWatchController *m_BrowseAndWatchController;
+    AudienceController* m_AudienceController;//用户
 };
 
 #endif // SERVER_H

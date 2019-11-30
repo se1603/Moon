@@ -8,6 +8,7 @@ Server::Server()
 {
     m_controllerFactory = ControllerFactory::getInstance();
     m_BrowseAndWatchController = m_controllerFactory->createBrowseAndWatchController();
+    m_AudienceController = m_controllerFactory->createAudienceController();
 }
 
 void Server::acceptMreeage()
@@ -29,7 +30,6 @@ void Server::acceptMreeage()
 
 void Server::processMessage(std::string message, endpoint ep)
 {
-//    std::cout << std::this_thread::get_id() << std::endl;
     std::cout << ep.address().to_string() + " send: " << message << std::endl;
 
     json j = json::parse(message);
@@ -52,12 +52,114 @@ void Server::processMessage(std::string message, endpoint ep)
         replay = m_BrowseAndWatchController->recommendInterface(j["interface"]);
         sendMessage(replay,ep);
     }
-
+    else if(request == "VERIFYINFO")
+    {
+        if(m_AudienceController->checkoutAudience(j["name"]) == true){
+            std::cout << "!!!!----" << std::endl;
+            if(m_AudienceController->verifyAudience(j["name"],j["password"]) == true)
+            {
+                std::cout << "wojinlaile----" << std::endl;
+                replay = "LOGINSUCCEED";
+                sendMessage(replay,ep);
+            }
+            else
+            {
+                replay = "VERIFYFAILED";
+                sendMessage(replay,ep);
+            }
+        }
+        else
+        {
+            replay = "HASLOGINED";
+            sendMessage(replay,ep);
+        }
+    }
+    else if(request == "REGISTEACCOUNT")
+    {
+        if(m_AudienceController->registeAudience(j["name"],j["password"]) == true)
+        {
+            replay = "REGISTESUCCEED";
+            sendMessage(replay,ep);
+        }
+        else
+        {
+            replay = "REGISTEFAILED";
+            sendMessage(replay,ep);
+        }
+    }
+    else if(request == "LOGOUT")
+    {
+        if(m_AudienceController->logoutAudience(j["name"]) == true)
+        {
+            replay = "LOGOUTSUCCEED";
+            sendMessage(replay,ep);
+        }
+        else
+        {
+            replay = "LOGOUTFAILED";
+            sendMessage(replay,ep);
+        }
+    }
+    else if(request == "UPDATEAVATAR")
+    {
+        if(m_AudienceController->updateAudienceAvatar(j["audience"],j["avatar"]) == true){
+            replay = "HASCHANGED";
+            sendMessage(replay,ep);
+        }
+        else
+        {
+            replay = "FAILED";
+            sendMessage(replay,ep);
+        }
+    }
+    else if(request == "GETAUDIENCEINFO")
+    {
+        replay = m_AudienceController->audienceInfo(j["name"]);
+        sendMessage(replay,ep);
+    }
+    else if(request == "GETCOLLECTION")
+    {
+        std::vector<std::string> collectlist;
+        m_AudienceController->audienceCollection(j["name"],collectlist);
+        replay = m_AudienceController->pakageCollection(collectlist);
+        sendMessage(replay,ep);
+    }
+    else if(request == "GETRECORD")
+    {
+        std::vector<std::string> recordlist;
+        m_AudienceController->audienceRecord(j["name"],recordlist);
+        replay = m_AudienceController->pakageRecord(recordlist);
+        sendMessage(replay,ep);
+    }
+    else if(request == "ADDCOLLECTION")
+    {
+        if(m_AudienceController->addAudienceCollection(j["audiencename"],j["collectname"],
+                                                       j["collecttime"],j["collecttype"]) == true)
+        {
+            replay = "COLLECTSUCCEED";
+            sendMessage(replay,ep);
+        }else{
+            replay = "COLLECTFAILED";
+            sendMessage(replay,ep);
+        }
+    }
+    else if(request == "UPDATERECORD")
+    {
+        if(m_AudienceController->updateAudienceRecord(j["audiencename"],j["recordname"],
+                                                      j["startPlayTime"],j["duration"],
+                                                      j["type"]) == true)
+        {
+            replay = "SUCCEED";
+            sendMessage(replay,ep);
+        }else{
+            replay = "FAILED";
+            sendMessage(replay,ep);
+        }
+    }
 }
 
 void Server::sendMessage(std::string message, endpoint ep)
 {
-//        std::cout << "Send message:"  << message << std::endl;
     //创建一个新的套接字指向客户端。
     socket_ptr udpsock(new boost::asio::ip::udp::socket(service,boost::asio::ip::udp::endpoint()));
     boost::asio::ip::udp::endpoint sender_ep;

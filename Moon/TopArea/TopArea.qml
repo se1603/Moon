@@ -6,6 +6,8 @@ Rectangle {
     height: 38 //1 / 18 * parent.height
 //    color: "blue"
 
+    property alias rightButton:rightButton
+
     Rectangle{
         id:icon
         width: 1/11 * parent.width
@@ -93,8 +95,7 @@ Rectangle {
 
     }
 
-    RightButton{
-
+    RightButton {  //右边按钮组件
+        id:rightButton
     }
-
 }

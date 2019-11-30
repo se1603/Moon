@@ -48,6 +48,14 @@ public:
     std::vector<Comic> getComics(ComicType type);
     std::vector<Comic> getRecommendComics(int type);
 
+    //用户操作
+    //处理用户信息
+    void processAudienceCollection(std::vector<std::string> tmp,MovieAndTelevision *m);
+    void processAudienceRecord(std::vector<std::string> tmp,MovieAndTelevision *m);
+    //获取用户具体信息
+    void showCollection(MovieAndTelevision* m, std::vector<std::string> &collections);
+    void showRecord(MovieAndTelevision* m, std::vector<std::string> &records);
+
 private:
     MovieAndTelevisionBroker();
     static MovieAndTelevisionBroker *m_instance;
