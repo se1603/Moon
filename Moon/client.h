@@ -27,12 +27,13 @@ public:
 
     void connectServer();
     void splictString(std::string &s, std::vector<std::string> &v, const std::string &c);
-
     socket_ptr sendMessage(std::string);
 
     //界面显示
     Q_INVOKABLE QString showCategory(QString interface);  //显示分类
     Q_INVOKABLE QString showRecommend(QString interface);  //显示各个页面的推荐影视
+    Q_INVOKABLE QString showType(QString interface,QString type);  //显示各个类型的影视
+
 
     //获取文件
     void getFile();
@@ -59,7 +60,7 @@ public:
     Q_INVOKABLE void addCollection(QString name, QString collecttime, QString videoname, QString type);
     //添加用户记录
     Q_INVOKABLE void addRecord(QString name, QString recordname, QString startPlaytime,
-                                    QString duration, QString type);
+                               QString duration, QString type);
     //本地历史记录
     //初始化
     void initBrowseRecord();
@@ -67,7 +68,7 @@ public:
     void addRecordToFile(std::string recordName, std::string startTime, std::string duration, std::string post);
     //添加
     Q_INVOKABLE void addBrowseRecord(QString recordName, QString startTime, QString duration,
-                               QString post);
+                                     QString post);
     //读取
     Q_INVOKABLE QString browseRecord();
 signals:
@@ -90,6 +91,8 @@ private:
     File_info file_info;
     std::map<std::string,std::string> categoryBuffer;
     std::map<std::string,std::string> recommendInterfaceBuffer;
+    std::map<std::string,std::map<std::string,std::string>> typeInterfaceBuffer;
+
     //用户标识
     Audience* _audience;
     //本地历史记录缓存

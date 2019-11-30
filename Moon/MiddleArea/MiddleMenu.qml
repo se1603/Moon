@@ -8,6 +8,7 @@ Rectangle {
     height: parent.height
 
     border.color: "grey"
+    property var pageString
 
     Rectangle{
         id: topMenu
@@ -34,6 +35,7 @@ Rectangle {
                 //            color: "red"
                 anchors.left: parent.left
                 Text {
+                    id: menuText
                     text:modelData.category
                     opacity: 0.5
                     font.pixelSize: 16
@@ -118,20 +120,27 @@ Rectangle {
 
     function loadPage(page)
     {
-        if(page !== "精选")
+        typeString = JSON.parse(client.showCategory(page))
+        pageString = page
+        if(page === "精选")
         {
-            browseInterface.typeModel = JSON.parse(client.showCategory(page))
-            browseInterface.showTypeMenu = true
-            browseInterface.recommendResource = JSON.parse(client.showRecommend(page))
-//            loader.update()
-//            browseStack.pop()
-//            browseStack.push(recommendInterface,StackView.Immediate)
-            console.log("asdsadadfasf")
+            browseLoader.sourceComponent = mainRecommend
         }
-        else
+        else if(page === "电影")
         {
-            browseInterface.showTypeMenu = false
-            browseInterface.recommendResource = JSON.parse(client.showRecommend(page))
+            browseLoader.sourceComponent = filmComponent
+        }
+        else if(page === "动漫")
+        {
+            browseLoader.sourceComponent = comicComponent
+        }
+        else if(page === "剧集")
+        {
+            browseLoader.sourceComponent = dramaComponent
+        }
+        else if(page === "综艺")
+        {
+            browseLoader.sourceComponent = varietyshowComponent
         }
     }
 

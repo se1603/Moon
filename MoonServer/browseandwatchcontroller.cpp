@@ -19,14 +19,14 @@ BrowseAndWatchController::~BrowseAndWatchController()
 std::string BrowseAndWatchController::InterfaceCategory(std::string interface)
 {
     std::vector<std::string> categorys;
-
+    
     categorys = m_movieAndTelevisionBroker->InterfaceCategory(interface);
-
+    
     json result;
     result["request"] = "CATEGORY";
     result["interface"] = interface;
     json arry;
-
+    
     for(int i = 0; i < categorys.size(); i++)
     {
         json item;
@@ -42,11 +42,11 @@ std::string BrowseAndWatchController::InterfaceCategory(std::string interface)
 std::string BrowseAndWatchController::recommendInterface(std::string interface)
 {
     std::string result;
-
+    
     json value;
     value["request"] = "RECOMMENDINTERFACE";
     value["interface"] = interface;
-
+    
     if(interface == "精选")
     {
         std::vector<std::string> title =
@@ -61,21 +61,19 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
             film["name"] = resource[0];
             film["post"] = resource[1];
             std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
-
+            
             film["rtspURL"] = url;
             array.push_back(film);
         }
-
+        
         std::vector<Drama> dramas = m_movieAndTelevisionBroker->getRecommendDramas(7);
         for(int i = 0;i != dramas.size();i++){
             std::vector<std::string> resource;
             json drama;
             resource = dramas[i].show(true);
             drama["name"] = resource[0];
-            drama["post"] = resource[1];
-
+            drama["post"] = resource[1];          
             std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
-
             drama["rtspURL"] = url;
             array.push_back(drama);
         }
@@ -89,7 +87,7 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
             comic["post"] = resource[1];
 
             std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
-
+            
             comic["rtspURL"] = url;
             array.push_back(comic);
         }
@@ -101,15 +99,15 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
             resource = varieties[i].show(true);
             varietie["name"] = resource[0];
             varietie["post"] = resource[1];
-
+            
             std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
-
+            
             varietie["rtspURL"] = url;
             array.push_back(varietie);
         }
-
+        
         value["firstRecommends"] = array;  //大图`
-
+        
         std::vector<Film> film1s = m_movieAndTelevisionBroker->getRecommendFilms(99);
         json arryf;
         json item;
@@ -120,9 +118,9 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
             resource = film1s[a].show(false);
             film["name"] = resource[0];
             film["post"] = resource[1];
-
+            
             std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
-
+            
             film["rtspURL"] = url;
             arryf.push_back(film); //存小图电影
             //            a++;
@@ -130,7 +128,6 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
         item["title"] = title[0];
         item["films"] = arryf;
         common["resource"].push_back(item);
-
         std::vector<Drama> drama1 = m_movieAndTelevisionBroker->getRecommendDramas(5);
         json arryd;
         for(int a = 0;a != 5;a++){
@@ -140,14 +137,12 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
             drama["name"] = resource[0];
             drama["post"] = resource[1];
             std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
-
             drama["rtspURL"] = url;
             arryd.push_back(drama);
         }
         item["title"] = title[1];
         item["films"] = arryd;
         common["resource"].push_back(item);
-
         std::vector<Comic> comic2s = m_movieAndTelevisionBroker->getRecommendComics(99);
         json arryc;
         for(int a = 0; a != 5;a++)
@@ -267,7 +262,7 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
                 if(i != 0)
                 {
                     item["title"] = title[i - 1];
-                    item["dramas"] = arry;
+                    item["films"] = arry;
                 }
             }
             if(i != 0)
@@ -345,14 +340,13 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
                     variety["name"] = resource[0];
                     variety["post"] = resource[1];
                     std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
-
                     variety["rtspURL"] = url;
                     arry.push_back(variety);
                 }
-
+                
                 if(i!=0){
                     item["title"] = title[i-1];
-                    item["varieties"] = arry;
+                    item["films"] = arry;
                 }
             }
             if(i!=0)
@@ -366,5 +360,289 @@ std::string BrowseAndWatchController::recommendInterface(std::string interface)
     return result;
 }
 
+std::string BrowseAndWatchController::showTypeInterface(std::string interface, std::string type)
+{
+    std::string reply;
+    
+    if(interface == "电影")
+    {
+        reply = filmInterface(type);
+    }
+    else if(interface == "剧集")
+    {
+        reply = dramaInterface(type);
+    }
+    else if(interface == "动漫")
+    {
+        reply = comicInterface(type);
+    }
+    else if(interface == "综艺")
+    {
+        reply = varietyInterface(type);
+    }
+    
+    return reply;
+}
 
+std::string BrowseAndWatchController::filmInterface(std::string type)
+{
+    FilmType filmtype;
+    if(type == "推荐")
+    {
+        filmtype = FilmType::Recommend;
+    }
+    else if(type == "喜剧")
+    {
+        filmtype = FilmType::Comedy;
+    }
+    else if(type == "动作")
+    {
+        filmtype = FilmType::Action;
+    }
+    else if(type == "动画")
+    {
+        filmtype = FilmType::Cartoon;
+    }
+    else if(type == "武侠")
+    {
+        filmtype = FilmType::MartialArts;
+    }
+    else if(type == "爱情")
+    {
+        filmtype = FilmType::Love;
+    }
+    else if(type == "科幻")
+    {
+        filmtype = FilmType::ScienceFiction;
+    }
+    else if(type == "悬疑")
+    {
+        filmtype = FilmType::Suspense;
+    }
+    else if(type == "惊悚")
+    {
+        filmtype = FilmType::Terror;
+    }
+    std::vector<Film> films;
+    films = m_movieAndTelevisionBroker->getFilms(filmtype);
+    
+    json root;
+    json arryObj;
+    root["request"] = "TYPEINTERFACE";
+    root["interface"] = "电影";
+    root["type"] = type;
+    for(int i = 0; i != films.size();i++)
+    {
+        std::vector<std::string> resource;
+        resource = films[i].show(false);
+        json item;
+        item["name"] = resource[0];
+        item["post"] = resource[1];
+        std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
+        
+        item["rtspURL"] = url;
+        arryObj.push_back(item);
+    }
+    root["movieAndTelevision"] = arryObj;
+    std::string out = root.dump();
+    
+    return out;
+}
+
+std::string BrowseAndWatchController::dramaInterface(std::string type)
+{
+    
+    DramaType Dramatype;
+    
+    if(type == "推荐")
+    {
+        Dramatype = DramaType::Recommend;
+    }
+    else if(type == "古装")
+    {
+        Dramatype = DramaType::AncientCostume;
+    }
+    else if(type == "悬疑")
+    {
+        Dramatype = DramaType::Suspense;
+    }
+    else if(type == "武侠")
+    {
+        Dramatype = DramaType::MartialArts;
+    }
+    else if(type == "都市")
+    {
+        Dramatype = DramaType::Metropolis;
+    }
+    else if (type == "历史") {
+        Dramatype = DramaType::History;
+    }
+    else if(type == "偶像")
+    {
+        Dramatype = DramaType::Idol;
+    }
+    else if(type == "家庭")
+    {
+        Dramatype = DramaType::Family;
+    }
+    else if(type == "科幻")
+    {
+        Dramatype = DramaType::ScienceFiction;
+    }
+    
+    std::vector<Drama> Dramas; color: "lightblue";
+    Dramas = m_movieAndTelevisionBroker->getDramas(Dramatype);
+    
+    json root;
+    json arryObj;
+    root["request"] = "TYPEINTERFACE";
+    root["interface"] = "剧集";
+    root["type"] = type;
+    for(int i=0;i != Dramas.size();i++){
+        std::vector<std::string> resource;
+        resource = Dramas[i].show(false);
+        json item;
+        item["name"] = resource[0];
+        item["post"] = resource[1];
+        std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
+        item["rtspURL"] = url;
+        arryObj.push_back(item);
+    }
+    root["movieAndTelevision"] = arryObj;
+    std::string out = root.dump();
+    
+    return out;
+}
+
+std::string BrowseAndWatchController::varietyInterface(std::string type)
+{
+    VarietyType varietytype;
+    
+    if(type == "推荐")
+    {
+        varietytype = VarietyType::Recommend;
+    }
+    else if(type == "真人秀")
+    {
+        varietytype = VarietyType::RealityShow;
+    }
+    else if(type == "选秀")
+    {
+
+        varietytype = VarietyType::TalentShow;
+    }
+    else if(type == "美食")
+    {
+        varietytype = VarietyType::Food;
+    }
+    else if(type == "旅游")
+    {
+        varietytype = VarietyType::Travel;
+    }
+    else if(type == "纪实")
+    {
+
+        varietytype = VarietyType::ActualRecord;
+    }
+    else if(type == "搞笑")
+    {
+        varietytype = VarietyType::Funny;
+    }
+    else if(type == "访谈")
+    {
+
+        varietytype = VarietyType::Interview;
+    }
+    
+    std::vector<Variety> varieties;
+    varieties = m_movieAndTelevisionBroker->getVarieties(varietytype);
+    
+    json root;
+    json arryObj;
+    root["request"] = "TYPEINTERFACE";
+    root["interface"] = "综艺";
+    root["type"] = type;
+    for(int i=0;i != varieties.size();i++){
+        std::vector<std::string> resource;
+        resource = varieties[i].show(false);
+        json item;
+        item["name"] = resource[0];
+        item["post"] = resource[1];
+        std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
+        item["rtspURL"] = url;
+        arryObj.push_back(item);
+    }
+    root["movieAndTelevision"] = arryObj;
+    std::string out = root.dump();
+    
+    return out;
+}
+
+std::string BrowseAndWatchController::comicInterface(std::string type)
+{
+    ComicType comictype;
+    
+    if(type == "推荐")
+    {
+        comictype = ComicType::Recommend;
+    }
+    else if(type == "机战")
+    {
+        comictype =ComicType::RobotWars;
+    }
+    else if(type == "青春")
+    {
+
+        comictype = ComicType::Youth;
+    }
+    else if(type == "格斗")
+    {
+        comictype = ComicType::Combat;
+    }
+    else if(type == "恋爱")
+    {
+        comictype = ComicType::Love;
+    }
+    else if(type == "美少女")
+    {
+
+        comictype = ComicType::Kayoing;
+    }
+    else if(type == "热血")
+    {
+        comictype = ComicType::WarmBlood;
+    }
+    else if(type == "校园")
+    {
+
+        comictype = ComicType::Campus;
+    }
+
+    std::vector<Comic> comics;
+    comics = m_movieAndTelevisionBroker->getComics(comictype);
+    
+    json root;
+    json arryObj;
+    root["request"] = "INTERFACE";
+    root["interface"] = 3;
+    root["type"] = type;
+    
+    for(int i = 0; i != comics.size();i++)
+    {
+        std::vector<std::string> resource;
+        resource = comics[i].show(false);
+        json item;
+        item["name"] = resource[0];
+        item["post"] = resource[1];
+        
+        std::string url = "rtsp://" + m_rtspAddress + "/movies/" + resource[0] ;
+        
+        item["rtspURL"] = url;
+        arryObj.push_back(item);
+    }
+    root["movieAndTelevision"] = arryObj;
+    std::string out = root.dump();
+    
+    return out;
+}
 

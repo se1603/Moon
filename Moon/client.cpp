@@ -4,7 +4,7 @@
 #include <dirent.h>
 
 boost::asio::io_service service;
-boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.43.76"),8001);
+boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.1.11"),8001);
 boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7789));
 
 Client::Client(QObject *p) :
@@ -77,7 +77,8 @@ QString Client::showCategory(QString interface)
     }
 
     QString qmlValue = QString::fromStdString(result);
-    qDebug() << qmlValue;
+
+//    qDebug() << qmlValue;
     return qmlValue;
 }
 
@@ -112,11 +113,72 @@ QString Client::showRecommend(QString interface)
 
         result = qmlValue.dump();
 
-        categoryBuffer[interface.toStdString()] = result;
+        recommendInterfaceBuffer[interface.toStdString()] = result;
     }
 
     QString qmlValue = QString::fromStdString(result);
-    qDebug() << qmlValue;
+//    qDebug() << qmlValue;
+    return qmlValue;
+}
+
+QString Client::showType(QString interface, QString type)
+{
+    std::string result;
+
+    bool sendRequest = true;
+    if(typeInterfaceBuffer.find(interface.toStdString()) !=
+            typeInterfaceBuffer.end())
+    {
+        std::map<std::string,std::string> tmp =
+                typeInterfaceBuffer[interface.toStdString()];
+        if(tmp.find(type.toStdString()) != tmp.end())
+        {
+            result = tmp[type.toStdString()];
+            sendRequest = false;
+        }
+    }
+
+    if(sendRequest)
+    {
+        json request;
+        request["request"] = "TYPEINTERFACE";
+        request["interface"] = interface.toStdString();
+        request["type"] = type.toStdString();
+
+        std::string message = request.dump();
+
+        socket_ptr udpsock;
+        udpsock = sendMessage(message);
+        NetWork sock(udpsock);
+        std::string res = sock.receive();
+
+        json replay = json::parse(res);
+        json qmlValue;
+
+        qmlValue = replay["movieAndTelevision"];
+
+        result = qmlValue.dump();
+
+        if(typeInterfaceBuffer.find(interface.toStdString()) ==
+                typeInterfaceBuffer.end())
+        {
+            std::map<std::string,std::string> showresouce;
+            showresouce[type.toStdString()] = result;
+            typeInterfaceBuffer[interface.toStdString()] = showresouce;
+        }
+        else
+        {
+            std::map<std::string,std::string> showresouce;
+            showresouce = typeInterfaceBuffer[interface.toStdString()];
+            if(showresouce.find(type.toStdString()) == showresouce.end())
+            {
+                showresouce[type.toStdString()] = result;
+            }
+        }
+    }
+
+    QString qmlValue = QString::fromStdString(result);
+//    qDebug() << qmlValue;
     return qmlValue;
 }
 
@@ -544,3 +606,4 @@ QString Client::browseRecord()
     }
     return message;
 }
+

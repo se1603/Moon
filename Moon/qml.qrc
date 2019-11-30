@@ -1,12 +1,16 @@
 <RCC>
     <qresource prefix="/">
-        <file>MiddleArea/MiddleArea.qml</file>
-        <file>TopArea/TopArea.qml</file>
-        <file>main.qml</file>
-        <file>MainItem.qml</file>
-        <file>MiddleArea/MiddleMenu.qml</file>
-        <file>MiddleArea/RecommendPage.qml</file>
-        <file>MiddleArea/BrowsePage.qml</file>
+        <file>Audience/AudienceCollection.qml</file>
+        <file>Audience/AudienceInterface.qml</file>
+        <file>Audience/AudienceMenu.qml</file>
+        <file>Audience/AudienceMessage.qml</file>
+        <file>Audience/AudiencePoupItem.qml</file>
+        <file>Audience/AudienceRecord.qml</file>
+        <file>Audience/Dir.qml</file>
+        <file>Audience/LoginItem.qml</file>
+        <file>Audience/MessageReceiveView.qml</file>
+        <file>Audience/MessageSendView.qml</file>
+        <file>Audience/RegisterItem.qml</file>
         <file>image/audience/popup_background.jpg</file>
         <file>image/audience/popup_background2.jpg</file>
         <file>image/audience/头像.jpg</file>
@@ -44,20 +48,17 @@
         <file>image/videoController/stop.png</file>
         <file>image/videoController/volumeOff.png</file>
         <file>image/videoController/volumeUp.png</file>
-        <file>TopArea/Search.qml</file>
-        <file>TopArea/RightButton.qml</file>
+        <file>MiddleArea/BrowsePage.qml</file>
+        <file>MiddleArea/MiddleArea.qml</file>
+        <file>MiddleArea/MiddleMenu.qml</file>
+        <file>MiddleArea/RecommendPage.qml</file>
+        <file>MiddleArea/TypePage.qml</file>
         <file>TopArea/About.qml</file>
         <file>TopArea/Help.qml</file>
-        <file>Audience/AudienceCollection.qml</file>
-        <file>Audience/AudienceInterface.qml</file>
-        <file>Audience/AudienceMenu.qml</file>
-        <file>Audience/AudienceMessage.qml</file>
-        <file>Audience/AudiencePoupItem.qml</file>
-        <file>Audience/AudienceRecord.qml</file>
-        <file>Audience/Dir.qml</file>
-        <file>Audience/LoginItem.qml</file>
-        <file>Audience/MessageReceiveView.qml</file>
-        <file>Audience/MessageSendView.qml</file>
-        <file>Audience/RegisterItem.qml</file>
+        <file>TopArea/RightButton.qml</file>
+        <file>TopArea/Search.qml</file>
+        <file>TopArea/TopArea.qml</file>
+        <file>main.qml</file>
+        <file>MainItem.qml</file>
     </qresource>
 </RCC>

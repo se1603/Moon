@@ -22,3 +22,4 @@ AudienceController* ControllerFactory::createAudienceController()
 {
     return AudienceController::getInstance();
 }
+

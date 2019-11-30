@@ -94,7 +94,6 @@ Rectangle {
     Search{
 
     }
-
     RightButton {  //右边按钮组件
         id:rightButton
     }

@@ -17,4 +17,5 @@ Rectangle {
         id: audienceInterface
         visible: false
     }
+
 }

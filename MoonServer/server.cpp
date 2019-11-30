@@ -156,6 +156,12 @@ void Server::processMessage(std::string message, endpoint ep)
             sendMessage(replay,ep);
         }
     }
+    else if(request == "TYPEINTERFACE")
+    {
+        replay = m_BrowseAndWatchController->showTypeInterface(j["interface"],j["type"]);
+        sendMessage(replay,ep);
+    }
+
 }
 
 void Server::sendMessage(std::string message, endpoint ep)

@@ -6,8 +6,8 @@ Rectangle {
     width: parent.width
     height: parent.height
 
-    property alias browseInterface: recommendPage
-    //    property alias loader: browseLoader
+    property var showTypeResource
+    property var typeString
 
     MiddleMenu{
         id: middleCatgegory
@@ -23,38 +23,57 @@ Rectangle {
         Loader{
             id: browseLoader
             anchors.fill: parent
-            source: recommendPage
+            sourceComponent: mainRecommend
         }
+    }
 
-//        QtObject{
-//            id: internalSettings
-////            property  recommendResource: JSON.parse(client.showRecommend("精选"))
-//            property  name: value
-//        }
+    Component{
+        id: mainRecommend
+        RecommendPage{
+            recommendResource: JSON.parse(client.showRecommend("精选"))
+            showTypeMenu: false
+        }
+    }
 
+    Component{
+        id: filmComponent
+        RecommendPage{
+            recommendResource: JSON.parse(client.showRecommend("电影"))
+            typeModel: typeString
+            showTypeMenu: true
+        }
+    }
 
-//        Component{
-//            id: recommendComponent
-            RecommendPage{
-                id: recommendPage
-                recommendResource: /*internalSettings*/JSON.parse(client.showRecommend("精选"))
-            }
-//        }
+    Component{
+        id: comicComponent
+        RecommendPage{
+            recommendResource: JSON.parse(client.showRecommend("动漫"))
+            typeModel: typeString
+            showTypeMenu: true
+        }
+    }
 
-        //        Component{
-        //            id: recommendComponent
-        //            RecommendPage{
-        //                id: recommendPage
-        //                recommendResource: JSON.parse(client.showRecommend("精选"))
-        //            }
-        //        }
+    Component{
+        id: dramaComponent
+        RecommendPage{
+            recommendResource: JSON.parse(client.showRecommend("剧集"))
+            typeModel: typeString
+            showTypeMenu: true
+        }
+    }
 
-        //        StackView{
-        //            id: browseStack
-        //            anchors.fill: parent
-        //            initialItem: recommendPage
-        //        }
-
-
+    Component{
+        id: varietyshowComponent
+        RecommendPage{
+            recommendResource: JSON.parse(client.showRecommend("综艺"))
+            typeModel: typeString
+            showTypeMenu: true
+        }
+    }
+    Component{
+        id: typeComponent
+        TypePage{
+            typeModel: typeString
+        }
     }
 }

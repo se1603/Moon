@@ -6,11 +6,10 @@ Rectangle {
     id:recommendPage
     width: parent.width
     height: parent.height
-
-    property alias showTypeMenu: typeMenu.visible
+    property alias showTypeMenu: topMenu.visible
     property alias typeModel: typeMenuRepeater.model
 
-    property var recommendResource/*: JSON.parse(client.showRecommend("精选"))*/
+    property var recommendResource
 
     ScrollView{
         anchors.fill: parent
@@ -19,18 +18,18 @@ Rectangle {
         ColumnLayout{
             width: parent.width
             height: parent.height
-
-            Row{
-                id: typeMenu
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.topMargin: 10
-                spacing: 50
-                visible: false
-                Repeater{
-                    id: typeMenuRepeater
-                    model: 5
-                    delegate: typeMenuDelegate
+            Rectangle{
+                id: topMenu
+                height: 30
+                width: 1000
+                Row{
+                    id: typeMenu
+                    spacing: 50
+                    Repeater{
+                        id: typeMenuRepeater
+                        model: 5
+                        delegate: typeMenuDelegate
+                    }
                 }
             }
 
@@ -177,6 +176,7 @@ Rectangle {
         Rectangle{
             width: 50
             height : 40
+            //            color: "red"
             Text {
                 id:category
                 text: modelData.category
@@ -197,7 +197,9 @@ Rectangle {
                         parent.color = "#808080"
                     }
                     onClicked: {
-
+                        browsePage.showTypeResource =
+                                JSON.parse(client.showType(middleCatgegory.pageString,parent.text))
+                        browseLoader.sourceComponent = typeComponent
                     }
                 }
             }
