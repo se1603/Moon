@@ -1,0 +1,18 @@
+#include "controllerfactory.h"
+
+ControllerFactory* ControllerFactory::m_instance = new ControllerFactory();
+
+ControllerFactory::ControllerFactory()
+{
+
+}
+
+ControllerFactory::~ControllerFactory()
+{
+    delete m_instance;
+}
+
+BrowseAndWatchController *ControllerFactory::createBrowseAndWatchController()
+{
+    return BrowseAndWatchController::getInstance();
+}
