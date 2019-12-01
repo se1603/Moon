@@ -646,3 +646,62 @@ std::string BrowseAndWatchController::comicInterface(std::string type)
     return out;
 }
 
+
+std::string BrowseAndWatchController::getMovieInfomation(std::string name)
+{
+    json root;
+    std::string out;
+    root["request"] = "Infomation";
+    root["name"] = name;
+    auto f = m_movieAndTelevisionBroker->getVideoInfo(name);
+    json value;
+    json types;
+    root["videotype"] = 1;
+    for(int i = 0;i != f.size();i++){
+        json type;
+        if(i == 0){
+            value["esipode"] = f[0];
+        }else if(i == 1){
+            value["introduction"] = f[1];
+        }else if(i == 2){
+            value["category"] = f[2];
+        }else if(i==3){
+            value["region"] = f[3];
+        }
+        else{
+            type["type"] = f[i];
+            types.push_back(type);
+//            types.append(type);w
+        }
+    }
+    value["videotype"] = types;
+    root["resource"] = value;
+    out = root.dump();
+
+    return out;
+}
+
+std::string BrowseAndWatchController::getActorInfomation(std::string name)
+{
+    json root;
+    std::string out;
+
+    root["request"] = "ACTORINFOMATION";
+    root["name"] = name;
+
+    auto info = m_movieAndTelevisionBroker->getActorInfo(name);
+    json values;
+
+    //    std::cout << "information"<<info.size() << std::endl;
+    for(int i = 0;i != info.size();i+=3){
+        json value;
+        value["name"] = info[i];
+        value["type"] = info[i+1];
+        value["post"] = info[i+2];
+        values.push_back(value);
+    }
+    root["resource"] = values;
+    out = root.dump();
+
+    return out;
+}

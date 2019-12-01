@@ -35,6 +35,7 @@ private:
     ControllerFactory *m_controllerFactory;
     BrowseAndWatchController *m_BrowseAndWatchController;
     AudienceController* m_AudienceController;//用户
+    CommentController *m_commentController;
 };
 
 #endif // SERVER_H

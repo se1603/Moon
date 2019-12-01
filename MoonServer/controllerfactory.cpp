@@ -23,3 +23,7 @@ AudienceController* ControllerFactory::createAudienceController()
     return AudienceController::getInstance();
 }
 
+CommentController *ControllerFactory::createCommentController()
+{
+    return CommentController::getInstance();
+}

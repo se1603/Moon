@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import "../Audience"
-
+import "../PlayArea"
 Rectangle {
     width: parent.width
     height: parent.height - 38//17/18 * parent.height
@@ -18,4 +18,8 @@ Rectangle {
         visible: false
     }
 
+    Play{
+        id:play
+        visible: false
+    }
 }

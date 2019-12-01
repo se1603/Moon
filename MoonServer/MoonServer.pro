@@ -7,10 +7,9 @@ SOURCES += \
         actor.cpp \
         actorbroker.cpp \
         audience.cpp \
-        audiencebroker.cpp \
-        audiencecontroller.cpp \
         collection.cpp \
         comic.cpp \
+        comment.cpp \
         director.cpp \
         directorbroker.cpp \
         drama.cpp \
@@ -24,7 +23,11 @@ SOURCES += \
         record.cpp \
         server.cpp \
         threadpool.cpp \
-        variety.cpp
+        variety.cpp\
+        audiencebroker.cpp \
+        audiencecontroller.cpp \
+        commentbroker.cpp \
+        commentcontroller.cpp \
 
 LIBS += -lboost_system -lpthread -lboost_thread -lmysqlclient
 
@@ -32,10 +35,9 @@ HEADERS += \
     actor.h \
     actorbroker.h \
     audience.h \
-    audiencebroker.h \
-    audiencecontroller.h \
     collection.h \
     comic.h \
+    comment.h \
     director.h \
     directorbroker.h \
     drama.h \
@@ -51,4 +53,8 @@ HEADERS += \
     relationalbroker.h \
     server.h \
     threadpool.h \
+    audiencebroker.h \
+    audiencecontroller.h \
+    commentbroker.h \
+    commentcontroller.h \
     variety.h

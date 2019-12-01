@@ -56,6 +56,10 @@ public:
     void showCollection(MovieAndTelevision* m, std::vector<std::string> &collections);
     void showRecord(MovieAndTelevision* m, std::vector<std::string> &records);
 
+    std::vector<std::string> getVideoInfo(std::string name);//获取影视内容
+    std::vector<std::string> getActorInfo(std::string name);//获去演员内容
+    void findMovieandTelevision(std::string name, MovieAndTelevision *m);//获取影视指针
+//    MovieAndTelevision *findMoviePoint(std::string name);
 private:
     MovieAndTelevisionBroker();
     static MovieAndTelevisionBroker *m_instance;

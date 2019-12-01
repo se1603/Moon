@@ -130,12 +130,14 @@ Rectangle {
                                             height: parent.height - 30
                                             anchors.top: parent.top
                                             Image {
+                                                id:postimage
                                                 anchors.fill: parent
                                                 source: "file:" + modelData.post
                                             }
                                         }
 
                                         Text {
+                                            id:postName
                                             text: modelData.name//名字
                                             font.pixelSize: 15
                                             wrapMode: Text.Wrap
@@ -146,6 +148,10 @@ Rectangle {
                                         MouseArea{
                                             anchors.fill: parent
                                             onClicked: {
+                                                play.image = postimage.source
+                                                play.name = postName.text
+                                                console.log(play.name+"ddd"+play.image)
+                                                play.visible = true
                                                 console.log("width" + parent.width)
                                                 console.log("height" + parent.height)
                                             }

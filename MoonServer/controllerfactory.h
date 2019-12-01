@@ -3,7 +3,7 @@
 
 #include "browseandwatchcontroller.h"
 #include "audiencecontroller.h"
-
+#include "commentcontroller.h"
 class ControllerFactory
 {
 public:
@@ -15,6 +15,7 @@ public:
 
     BrowseAndWatchController *createBrowseAndWatchController();
     AudienceController *createAudienceController();//用户
+    CommentController *createCommentController();
 private:
     ControllerFactory();
     static ControllerFactory* m_instance;

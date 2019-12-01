@@ -23,6 +23,10 @@ public:
     std::string varietyInterface(std::string type);//综艺界面显示信息
     std::string comicInterface(std::string type);//动漫界面显示信息
 
+
+    std::string getMovieInfomation(std::string name);//获取视频的基本信息
+    std::string getActorInfomation(std::string name);//获取演员的基本信息
+
 private:
     BrowseAndWatchController();
     static BrowseAndWatchController* m_instance;

@@ -71,6 +71,16 @@ public:
                                      QString post);
     //读取
     Q_INVOKABLE QString browseRecord();
+
+    Q_INVOKABLE QString showInfomation(QString name);//显示影视信息
+    Q_INVOKABLE QString getActorInfo(QString name);//显示演员信息
+    //获取评论信息
+    Q_INVOKABLE QString showCommentInfo(QString name);
+    //获取精华评论
+    Q_INVOKABLE QString showGoodComment(QString name);
+    //添加评论
+    Q_INVOKABLE void addComment(QString aName, QString videoname, QString t, QString c);
+
 signals:
     //用户信号
     void loginsucceed(QString name,QString avatar);
@@ -85,6 +95,9 @@ signals:
     void collectfailed();
     void recordupdatesucceed();
     void recordupdatefailed();
+    //评论信号
+    void insertSuccessed();
+    void insertFailed();
 private:
     //文件
     FILE *fp;

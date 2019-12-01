@@ -800,3 +800,99 @@ void MovieAndTelevisionBroker::showRecord(MovieAndTelevision *m, std::vector<std
     m->showInfo(records);
 }
 
+std::vector<std::string> MovieAndTelevisionBroker::getVideoInfo(std::string name)
+{
+    std::vector<std::string> resource;
+    auto tem = m_films.find(name);
+    if(tem != m_films.end()){
+        tem->second.recodeInfo(name,resource);
+    }
+
+    if(resource.size()==0){
+        auto c = m_comics.find(name);
+        if(c!=m_comics.end()){
+            c->second.recodeInfo(name,resource);
+        }
+    }
+    if(resource.size()==0){
+        auto d = m_dramas.find(name);
+        if(d != m_dramas.end()){
+            d->second.recodeInfo(name,resource);
+        }
+    }
+
+    if(resource.size()==0){
+        auto v =m_varieties.find(name);
+        if(v != m_varieties.end()){
+            v->second.recodeInfo(name,resource);
+        }
+    }
+
+    return resource;
+}
+
+std::vector<std::string> MovieAndTelevisionBroker::getActorInfo(std::string name)
+{
+    std::vector<std::string> resource;
+    auto n = m_films.find(name);
+    if(n != m_films.end()){
+        auto tem = n->second;
+        tem.getActorInfo(name,resource);
+    }
+
+    if(resource.size() != 0){
+        return resource;
+    }
+    auto d = m_dramas.find(name);
+    if(d != m_dramas.end()){
+        auto tem = d->second;
+        tem.getActorInfo(name,resource);
+    }
+
+    if(resource.size() != 0){
+        return resource;
+    }
+
+    auto c = m_comics.find(name);
+    if(c != m_comics.end()){
+        auto tem = c->second;
+        tem.getActorInfo(name,resource);
+    }
+
+    if(resource.size() != 0){
+        return resource;
+    }
+
+    auto v = m_varieties.find(name);
+    if(v != m_varieties.end()){
+        auto tem = v->second;
+        tem.getActorInfo(name,resource);
+    }
+
+    return resource;
+}
+void MovieAndTelevisionBroker::findMovieandTelevision(std::string name, MovieAndTelevision *m)
+{
+    cout << "jjj" << endl;
+    auto f = m_films.find(name);
+    cout << "ddd" << endl;
+    if(f != m_films.end()){
+        *m = f->second;
+        return;
+    }
+    auto c = m_comics.find(name);
+    if(c != m_comics.end()){
+        *m = c->second;
+        return;
+    }
+    auto d = m_dramas.find(name);
+    if(d != m_dramas.end()){
+        *m = d->second;
+        return;
+    }
+    auto v = m_varieties.find(name);
+    if(v != m_varieties.end()){
+        *m = v->second;
+        return;
+    }
+}

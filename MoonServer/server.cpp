@@ -9,6 +9,7 @@ Server::Server()
     m_controllerFactory = ControllerFactory::getInstance();
     m_BrowseAndWatchController = m_controllerFactory->createBrowseAndWatchController();
     m_AudienceController = m_controllerFactory->createAudienceController();
+    m_commentController = m_controllerFactory->createCommentController();
 }
 
 void Server::acceptMreeage()
@@ -22,7 +23,7 @@ void Server::acceptMreeage()
     while (1) {
 
         message = sock.receive(sender_ep);
-//        std::cout << "Client:" << message << std::endl;
+        //        std::cout << "Client:" << message << std::endl;
 
         threadpool.append(std::bind(&Server::processMessage, this,message,sender_ep));
     }
@@ -161,7 +162,35 @@ void Server::processMessage(std::string message, endpoint ep)
         replay = m_BrowseAndWatchController->showTypeInterface(j["interface"],j["type"]);
         sendMessage(replay,ep);
     }
+    else if(request == "INFOMATION")
+    {
+        replay = m_BrowseAndWatchController->getMovieInfomation(j["name"]);
+        sendMessage(replay,ep);
+    }
+    else if(request == "ACTORINFOMATION")
+    {
+        replay = m_BrowseAndWatchController->getActorInfomation(j["name"]);
+        sendMessage(replay,ep);
+    } else if(request == "SHOWCOMMENT"){
+        replay = m_commentController->getCommentInfo(j["name"]);
+        sendMessage(replay,ep);
+    }
+    else if(request == "SHOWGOODCOMMENT"){
+        replay = m_commentController->goodCommentInfo(j["name"]);
+        sendMessage(replay,ep);
+        //        return reply;
+    }
+    else if(request == "INSERTCOMMENT"){
+        if((m_commentController->insertComment(j["audiencename"],j["name"],j["time"],
+                                              j["comment"]))==true){
+            replay = "SUCESSED!";
+            sendMessage(replay,ep);
+        }else{
+            replay = "FAILED";
+            sendMessage(replay,ep);
+        }
 
+    }
 }
 
 void Server::sendMessage(std::string message, endpoint ep)
