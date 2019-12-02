@@ -49,6 +49,7 @@ Rectangle {
                         height: 330
                         //                            border.color: "red"
                         Image {
+                            id: postImage
                             anchors.fill: parent
                             anchors.top: parent.top
                             source:"file:" + modelData.post
@@ -61,7 +62,7 @@ Rectangle {
                             //                                border.color : "green"
                         }
                         Text {
-                            id: collection_text
+                            id: postName
                             width: parent.width
                             text: modelData.name
                             font.pixelSize: 15
@@ -72,7 +73,10 @@ Rectangle {
                         MouseArea{
                             anchors.fill: parent
                             onClicked: {
-
+                                playName = postName.text
+                                playPost = postImage.source
+                                middleArea.middleLoader.sourceComponent =
+                                        playComponent
                             }
                         }
                     }
@@ -108,10 +112,16 @@ Rectangle {
                         parent.color = "#808080"
                     }
                     onClicked: {
-
-                        browsePage.showTypeResource =
-                                JSON.parse(client.showType(middleCatgegory.pageString,parent.text))
-                        browseLoader.sourceComponent = typeComponent
+                        if(parent.text == "推荐")
+                        {
+                            middleCatgegory.loadPage(middleCatgegory.pageString)
+                        }
+                        else
+                        {
+                            browsePage.showTypeResource =
+                                    JSON.parse(client.showType(middleCatgegory.pageString,parent.text))
+                            browseLoader.sourceComponent = typeComponent
+                        }
                     }
                 }
             }

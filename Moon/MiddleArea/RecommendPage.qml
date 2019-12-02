@@ -148,12 +148,10 @@ Rectangle {
                                         MouseArea{
                                             anchors.fill: parent
                                             onClicked: {
-                                                play.image = postimage.source
-                                                play.name = postName.text
-                                                console.log(play.name+"ddd"+play.image)
-                                                play.visible = true
-                                                console.log("width" + parent.width)
-                                                console.log("height" + parent.height)
+                                                playName = postName.text
+                                                playPost = postimage.source
+                                                middleArea.middleLoader.sourceComponent =
+                                                        playComponent
                                             }
                                         }
                                     }
@@ -203,9 +201,16 @@ Rectangle {
                         parent.color = "#808080"
                     }
                     onClicked: {
-                        browsePage.showTypeResource =
-                                JSON.parse(client.showType(middleCatgegory.pageString,parent.text))
-                        browseLoader.sourceComponent = typeComponent
+                        if(parent.text == "推荐")
+                        {
+                            middleCatgegory.loadPage(middleCatgegory.pageString)
+                        }
+                        else
+                        {
+                            browsePage.showTypeResource =
+                                    JSON.parse(client.showType(middleCatgegory.pageString,parent.text))
+                            browseLoader.sourceComponent = typeComponent
+                        }
                     }
                 }
             }

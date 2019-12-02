@@ -25,10 +25,10 @@ Rectangle {
     height: middleArea.height
 
     property var datas: JSON.parse(client.showInfomation(play.name))
-    property string name:""
+    property string name: middleArea.playName
     property string type: ""
     property string infoma:""
-    property string image:""
+    property string image: middleArea.playPost
     property bool xRflag: false
     property bool xLflag: true
 

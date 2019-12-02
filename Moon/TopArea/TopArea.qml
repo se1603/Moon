@@ -49,11 +49,7 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             onClicked: {
-                middleArea.play = false
-                middleArea.middle = true
-                if(middleArea.audienceInterface.visible === true){
-                    middleArea.audienceInterface.visible = false
-                }
+               middleArea.middleLoader.sourceComponent = middleArea.browsePage
             }
         }
     }
@@ -82,11 +78,7 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             onClicked: {
-//                middleArea.middle = false
-//                middleArea.play = true
-//                if(middleArea.audienceInterface.visible === true){
-//                    middleArea.audienceInterface.visible = false
-//                }
+                middleArea.middleLoader.sourceComponent = middleArea.playPage
             }
         }
     }
