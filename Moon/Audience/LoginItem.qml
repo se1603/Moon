@@ -11,6 +11,9 @@ Page {
     Connections {
         target: client
         onLoginsucceed : {
+            if (avatar === ""){
+                avatar = "qrc:/image/TopArea/person.png"
+            }
             topArea.rightButton.loginPic.loginIcon.source = avatar
             topArea.rightButton.loginstatus = true
             middleArea.audienceInterface.audienceName = name

@@ -7,6 +7,8 @@ Item {
     width: parent.width
     height: parent.height
 
+    property alias middleArea:middleArea
+
     TopArea{
         id: topArea
     }

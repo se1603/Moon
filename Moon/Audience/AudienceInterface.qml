@@ -3,8 +3,8 @@ import QtQuick.Controls 2.2
 
 Rectangle {
     id: audience
-    width: 59 / 60 * parent.width
-    height: 59 / 60 * parent.height
+    width:parent.width
+    height:parent.height
     anchors.centerIn: parent
 
     property string audienceName:""

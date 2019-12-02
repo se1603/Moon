@@ -149,4 +149,21 @@ Rectangle {
     DetailPop{
           id:pop
       }
+
+    function search(cName,collecttime){
+        var flag = 0
+        collections = JSON.parse(client.audienceCollection(audienceInterface.audienceName))
+        for(var i=0;i<collections.length;i++){
+            if(cName === collections[i].name){
+                notice.text = "已经收藏过了"
+                flag = 1
+            }
+        }
+
+        if(flag === 0){
+            notice.text = "正在收藏..."
+            client.addCollection(audienceInterface.audienceName,
+                                 collecttime,play.name,play.datas.resource.category)
+        }
+    }
 }

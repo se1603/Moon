@@ -21,4 +21,13 @@ Window {
     MainItem{
         id:mainItem
     }
+
+    Connections{
+        target: mainWindow
+        onClosing: {
+            if(mainItem.middleArea.audienceInterface.audienceName !== ""){
+                client.loginOut(mainItem.middleArea.audienceInterface.audienceName)
+            }
+        }
+    }
 }
