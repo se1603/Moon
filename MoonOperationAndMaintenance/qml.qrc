@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>LoginPage.qml</file>
+        <file>MainItem.qml</file>
+        <file>ManageUserPage.qml</file>
+        <file>ManageAdvertPage.qml</file>
+        <file>ManageMTVPage.qml</file>
+    </qresource>
+</RCC>
