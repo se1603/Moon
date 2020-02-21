@@ -1,5 +1,6 @@
 #include "datasource.h"
 #include <string.h>
+#include <sys/time.h>
 
 DataSource::DataSource()
 {
@@ -14,6 +15,7 @@ DataSource::DataSource()
     m_start_pcr = -1;
     m_start_ms = -1;
     m_last_pcr = -1;
+    threadpool = new ThreadPool(1);
 }
 
 int DataSource::init(const char *fileName)
@@ -52,6 +54,85 @@ int DataSource::getMediaNum()
     return m_mediaNum;
 }
 
+void DataSource::rtpSendFrame()
+{
+    int ret = 0;
+
+    while(1)
+    {
+        int sleep_ms = 5;
+        if(m_sock != NULL)
+        {
+            char buf[TSPKTLEN * 7 + sizeof (RtpTcpHeader) + sizeof (RtpHeader)] = "";
+            int len = 0;
+            RtpTcpHeader* tcpHeader = NULL;
+            if(m_rtp_ch >= 0)
+            {
+                tcpHeader = (RtpTcpHeader*)(buf+len);
+                tcpHeader->dollar = 0x24;
+                tcpHeader->channel = m_rtp_ch;
+                len += sizeof (RtpTcpHeader);
+            }
+            RtpHeader* rtpHeader = (RtpHeader*)(buf + len);
+            len += sizeof (RtpHeader);
+
+            rtpHeader->version = 2;
+            rtpHeader->padding = 0;
+            rtpHeader->extension = 0;
+            rtpHeader->csrcLen = 0;
+            rtpHeader->marker = 1;
+            rtpHeader->payloadType = 33;
+            rtpHeader->seq = htons(m_media_info[0].seq++);
+            rtpHeader->ssrc = htonl(m_media_info[0].ssrc);
+
+            uint64_t pcr = 0;
+            int read_ret = m_reader.getTsPKT(buf+len, TSPKTLEN*7,pcr);
+            if(read_ret < 0)
+            {
+                ret = -1;
+                break;
+            }
+
+            len += read_ret;
+            if(read_ret > 0)
+            {
+                if(tcpHeader != NULL)
+                {
+                    tcpHeader->len = htons(sizeof (RtpHeader) + read_ret);
+                }
+                if(m_last_pcr != (uint64_t) - 1 && pcr > m_last_pcr)
+                {
+                    m_media_info[0].rtp_time += (uint32_t)(pcr - m_last_pcr);
+                }
+                rtpHeader->timestamp = htonl(m_media_info[0].rtp_time);
+                if(m_sock->send(buf,len) < 0)
+                {
+                    ret = -1;
+                    break;
+                }
+            }
+            m_last_pcr = pcr;
+            if(m_start_pcr == (uint64_t) - 1)
+            {
+                m_start_pcr = pcr;
+                m_start_ms = getCurrentMs();
+                Sleep(5);
+                continue;
+            }
+            int64_t diff_ms = (pcr - m_start_pcr)/90;
+            sleep_ms = int(m_start_ms + diff_ms - getCurrentMs());
+            if( sleep_ms > 1000 || sleep_ms < -1000 ){
+                m_start_ms = -1;
+                m_start_pcr = -1;
+                m_last_pcr = -1;
+                sleep_ms = sleep_ms > 0 ? 1000 : 5;
+            }
+            sleep_ms = sleep_ms < 5 ? 5 : sleep_ms;
+        }
+        Sleep( sleep_ms );
+    }
+}
+
 int DataSource::getMediaInfo(int mediaIndex, DataSource::MediaInfo &mediaInfo)
 {
     if(mediaIndex >= m_mediaNum)
@@ -64,6 +145,7 @@ int DataSource::play(Socket *sock, int rtp_ch)
 {
     m_sock = sock;
     m_rtp_ch = rtp_ch;
+    threadpool->append(std::bind(&DataSource::rtpSendFrame,this));
     return 0;
 }
 
@@ -83,4 +165,16 @@ int DataSource::pause()
 {
     m_sock = NULL;
     return 0;
+}
+
+uint64_t DataSource::getCurrentUs()
+{
+    struct timeval cur_time;
+    gettimeofday( &cur_time, NULL );
+    return cur_time.tv_sec*1000000+cur_time.tv_usec;
+}
+
+uint64_t DataSource::getCurrentMs()
+{
+    return getCurrentUs() / 1000;
 }

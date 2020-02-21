@@ -39,7 +39,7 @@ RtspSession::RtspSession()
     memset(m_recvBuff, 0, sizeof(m_recvBuff));
     m_recv_len = 0;
     m_cseq = 0;
-    m_rtspChannel = 0;
+    m_rtpChannel = 0;
     memset(m_url, 0, sizeof (m_url));
 }
 
@@ -52,6 +52,7 @@ void RtspSession::processSession(int fd)
         if(reciveData() < 0)
         {
             printf("ReciveData failed.\n");
+            break;
         }
     }
 }
@@ -71,9 +72,8 @@ int RtspSession::reciveData()
         return -1;
     }
     m_recv_len += ret;
-    handleData();
 
-    return 0;
+    return handleData();
 }
 
 int RtspSession::handleData()
@@ -87,7 +87,15 @@ int RtspSession::handleData()
         ret = 0;
         if(*reciveBuf == '$')
         {
+            if(m_recv_len <= sizeof (struct RtpTcpHeader))
+                break;
+            struct RtpTcpHeader* rtpHeader = (struct RtpTcpHeader*)reciveBuf;
+            uint32_t rtpLen = ntohs(rtpHeader->len);
+            if(m_recv_len < rtpLen + 4)
+                break;
 
+            m_recv_len -= rtpLen + 4;
+            reciveBuf += rtpLen + 4;
         }
         else
         {
@@ -213,9 +221,9 @@ int RtspSession::handleCmd_SETUP(const char *data, int len)
         return sendMessage(sendBuf,strlen(sendBuf));
     }
 
-    m_rtspChannel = atoi(interleaved + strlen("interleaved="));
+    m_rtpChannel = atoi(interleaved + strlen("interleaved="));
 
-    if(m_rtspChannel < 0)
+    if(m_rtpChannel < 0)
     {
         codeMessage(sendBuf,400);
         return sendMessage(sendBuf,strlen(sendBuf));
@@ -227,7 +235,7 @@ int RtspSession::handleCmd_SETUP(const char *data, int len)
     snprintf(result, sizeof(result),
              "%s"
              "Transport: RTP/AVP/TCP;unicast;interleaved=%d-%d\r\n\r\n",
-              m_session, m_rtspChannel, m_rtspChannel + 1);
+             m_session, m_rtpChannel, m_rtpChannel + 1);
     strcat(sendBuf,result);
     return sendMessage(sendBuf,strlen(sendBuf));
 }
@@ -292,7 +300,37 @@ int RtspSession::handleCmd_PLAY(const char *data, int len)
              "RTP-Info: url=%s/%s;seq=%d;rtptime=%u\r\n\r\n",
              startSec,endSec,m_url,mediaInfo.track_id,mediaInfo.seq,mediaInfo.rtp_time);
     strcat(sendBuf,result);
-    return sendMessage(sendBuf,strlen(sendBuf));
+    if(sendMessage(sendBuf,strlen(sendBuf)) < 0)
+    {
+        return -1;
+    }
+
+    return m_dataSource.play(&m_sock,m_rtpChannel);
+}
+
+int RtspSession::handleCmd_PAUSE()
+{
+    m_dataSource.pause();
+    char sendBuf[512];
+    codeMessage(sendBuf,200);
+    char result[512];
+    sprintf(result,
+            "\r\n");
+    strcat(sendBuf,result);
+    sendMessage(sendBuf,strlen(sendBuf));
+    return 0;
+}
+
+int RtspSession::handleCmd_TEARDOWN()
+{
+    char sendBuf[512];
+    codeMessage(sendBuf,200);
+    char result[512];
+    sprintf(result,
+            "\r\n");
+    strcat(sendBuf,result);
+    sendMessage(sendBuf,strlen(sendBuf));
+    return -1;
 }
 
 int RtspSession::handleCommand(const char *data, int len)
@@ -315,6 +353,10 @@ int RtspSession::handleCommand(const char *data, int len)
         return handleCmd_DESCRIBE(data,len);
     case RTSP_PLAY:
         return handleCmd_PLAY(data,len);
+    case RTSP_TEARDOWN:
+        return  handleCmd_TEARDOWN();
+    case RTSP_PAUSE:
+        return handleCmd_PAUSE();
     }
     return 0;
 }
@@ -368,7 +410,7 @@ int RtspSession::sendMessage(const char *data, int len)
 {
     printf("---------------S->C--------------\n");
     printf("%s", data);
-    m_sock.send(data,len);
+    return m_sock.send(data,len);
 }
 
 uint64_t RtspSession::getCurrentUs()

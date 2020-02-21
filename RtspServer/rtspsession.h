@@ -3,6 +3,7 @@
 
 #include "tcpsocket.h"
 #include "datasource.h"
+#include "threadpool.h"
 
 #define MAX_BUFFER_LEN 1024 * 4
 
@@ -56,6 +57,8 @@ private:
     int handleCmd_SETUP(const char* data, int len);
     int handleCmd_DESCRIBE(const char* data, int len);
     int handleCmd_PLAY(const char* data, int len);
+    int handleCmd_PAUSE();
+    int handleCmd_TEARDOWN();
     void codeMessage(char* result, int code);
 
     TcpSocket m_sock;
@@ -64,9 +67,11 @@ private:
     uint32_t m_recv_len;
 
     int m_cseq;  //序列号
-    int m_rtspChannel;  //RTP OVER TCP时的通道
+    int m_rtpChannel;  //RTP OVER TCP时的通道
     char m_url[256];   //Rtsp地址
     char m_session[128];
+
+    ThreadPool threadpool;
 };
 
 #endif // RTSPSESSION_H
