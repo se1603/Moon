@@ -1,4 +1,0 @@
-#ifndef TSFILEREADER_H
-#define TSFILEREADER_H
-
-#endif // TSFILEREADER_H

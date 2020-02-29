@@ -1,10 +1,9 @@
 #include "socket.h"
 #include <unistd.h>
 #include <fcntl.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
-#include <netdb.h>
 
 Socket::Socket()
 {
@@ -36,15 +35,6 @@ int Socket::attachFd(int fd)
         return -1;
     else
         m_fd = fd;
-
-//    if(m_fd > 0)
-//    {
-//        if(setBlock(false) < 0)
-//        {
-//            m_fd = INVALID_SOCKET_FD;
-//            return -1;
-//        }
-//    }
     return 0;
 }
 
@@ -55,28 +45,22 @@ int Socket::detachFd()
     return tmp;
 }
 
-int Socket::openSocket(int socketType)
+int Socket::createSocket(int socketType)
 {
     closeSocket();
-    m_fd = socket(AF_INET, socketType,0);
+    m_fd = socket(AF_INET, socketType, 0);
     if(m_fd == -1)
     {
         printf("Create socket failed. Errorn info: %d %s\n",errno,strerror(errno));
         return -1;
     }
-
-//    if(setBlock(false) < 0)
-//    {
-//        closeSocket();
-//        return -1;
-//    }
     return m_fd;
 }
 
 int Socket::bindSocket(const char *ip, int port)
 {
     struct sockaddr_in localAddr;
-    if(getAddr(ip,port,localAddr) < 0)
+    if(setAddr(ip,port,localAddr) < 0)
         return -1;
     if(bind(m_fd,(struct sockaddr *)&localAddr,sizeof(localAddr)) == -1)
     {
@@ -86,7 +70,7 @@ int Socket::bindSocket(const char *ip, int port)
     return 0;
 }
 
-int Socket::getAddr(const char *ip, int port, sockaddr_in &addr)
+int Socket::setAddr(const char *ip, int port, sockaddr_in &addr)
 {
     int ipNumber = 0;
     if(ip == NULL || ip[0] == '\0')
@@ -112,6 +96,17 @@ int Socket::getAddr(const char *ip, int port, sockaddr_in &addr)
     return 0;
 }
 
+int Socket::setAddrReuse()
+{
+    int opt = 1;
+    if(setsockopt(m_fd,SOL_SOCKET,SO_REUSEADDR,(char*)&opt,sizeof (opt)) < 0)
+    {
+        printf("Set reuseaddr failed. Errorn info: %d %s\n",errno,strerror(errno));
+        return -1;
+    }
+    return 0;
+}
+
 int Socket::setBlock(bool isBlock)
 {
     if(m_fd == INVALID_SOCKET_FD)
@@ -131,17 +126,6 @@ int Socket::setBlock(bool isBlock)
     if(returnVal < 0)
     {
         printf("Set socket block failed! %s\n",strerror(errno));
-        return -1;
-    }
-    return 0;
-}
-
-int Socket::setAddrReuse()
-{
-    int opt = 1;
-    if(setsockopt(m_fd,SOL_SOCKET,SO_REUSEADDR,(char*)&opt,sizeof (opt)) < 0)
-    {
-        printf("Set reuseaddr failed. Errorn info: %d %s\n",errno,strerror(errno));
         return -1;
     }
     return 0;

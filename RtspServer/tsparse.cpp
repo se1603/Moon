@@ -1,12 +1,17 @@
 #include "tsparse.h"
 #include <netinet/in.h>
 
-TsParser::TsParser()
+TsParse::TsParse()
 {
 
 }
 
-int TsParser::getPcr(const uint8_t *data, uint64_t &pcr)
+TsParse::~TsParse()
+{
+
+}
+
+int TsParse::getPcr(const uint8_t *data, uint64_t &pcr)
 {
     TSHeader *tsh = (TSHeader*)data;
     if(tsh->sync != 0x47 || tsh->field_control < 2 || tsh->field_len < 1 || tsh->pcr == 0)
@@ -19,7 +24,7 @@ int TsParser::getPcr(const uint8_t *data, uint64_t &pcr)
     return 0;
 }
 
-bool TsParser::isUnitStart(const uint8_t *data)
+bool TsParse::isUnitStart(const uint8_t *data)
 {
     TSHeader* tsh = (TSHeader *)data;
     return tsh->sync == 0x47 && tsh->unit_start == 1 ? true : false;

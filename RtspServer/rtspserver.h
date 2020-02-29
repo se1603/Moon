@@ -1,23 +1,22 @@
 #ifndef RTSPSERVER_H
 #define RTSPSERVER_H
 
-#include "tcpsocket.h"
-#include "threadpool.h"
 #include <map>
-#include "rtspsession.h"
+#include <rtspsession.h>
 
 class RtspServer : public Socket
 {
 public:
     RtspServer();
+    ~RtspServer();
 
     int start(const char *ip, int port);
     int acceptClient(int sockfd, char *ip, int *port);
-    void processClient(int fd);
+    int processClient(int fd, ThreadPool *tp);
 
 private:
     ThreadPool threadPool;
-    std::map<long, RtspSession*> m_sessionMap;
+    std::map<int, RtspSession*> m_sessionMap;
 };
 
 #endif // RTSPSERVER_H

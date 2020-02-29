@@ -1,6 +1,7 @@
 #include "datasource.h"
 #include <string.h>
 #include <sys/time.h>
+#include  <unistd.h>
 
 DataSource::DataSource()
 {
@@ -57,7 +58,6 @@ int DataSource::getMediaNum()
 void DataSource::rtpSendFrame()
 {
     int ret = 0;
-
     while(1)
     {
         int sleep_ms = 5;
@@ -116,7 +116,7 @@ void DataSource::rtpSendFrame()
             {
                 m_start_pcr = pcr;
                 m_start_ms = getCurrentMs();
-                Sleep(5);
+                usleep(1000 * 5);
                 continue;
             }
             int64_t diff_ms = (pcr - m_start_pcr)/90;
@@ -129,7 +129,7 @@ void DataSource::rtpSendFrame()
             }
             sleep_ms = sleep_ms < 5 ? 5 : sleep_ms;
         }
-        Sleep( sleep_ms );
+        usleep(1000 * sleep_ms);
     }
 }
 
@@ -141,18 +141,19 @@ int DataSource::getMediaInfo(int mediaIndex, DataSource::MediaInfo &mediaInfo)
     return 0;
 }
 
-int DataSource::play(Socket *sock, int rtp_ch)
+int DataSource::play(Socket *sock, int rtp_ch ,ThreadPool *tp)
 {
     m_sock = sock;
     m_rtp_ch = rtp_ch;
+
     threadpool->append(std::bind(&DataSource::rtpSendFrame,this));
     return 0;
 }
 
-int DataSource::preparePlay(int startSec, int endSec)
+int DataSource::playScope(int startSec, int endSec)
 {
     if(endSec != -1 && endSec <= m_range)
-        m_end_sec = startSec;
+        m_end_sec = endSec;
     if(startSec != -1 && startSec < m_end_sec)
     {
         m_start_sec = startSec;
@@ -178,3 +179,121 @@ uint64_t DataSource::getCurrentMs()
 {
     return getCurrentUs() / 1000;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#include "datasource.h"
+
+//DataSource::DataSource()
+//{
+//    memset(m_sdp, 0, sizeof (m_sdp));
+//    m_range = 0;
+//    m_mediaNum = MAX_MEDIA_NUM;
+//    memset(m_mediaInfo, 0, sizeof (m_mediaInfo));
+//    m_startSecond = 0;
+//    m_endSecond = 0;
+//}
+
+//int DataSource::init(const char *fileName)
+//{
+//    if(m_reader.openFile(fileName) < 0)
+//        return -1;
+//    m_range = m_reader.getFileRange();
+//    m_endSecond = m_range;
+//    strncpy(m_mediaInfo[0].track_id, "track1", sizeof (m_mediaInfo[0].track_id));
+//    snprintf(m_sdp,sizeof (m_sdp),
+//             "v=0\r\n"
+//             "o=- 0 1 IN IP4 0.0.0.0\r\n"
+//             "s=RTSP Server\r\n"
+//             "i=%s\r\n"
+//             "t=0 0\r\n"
+//             "a=control:*\r\n"
+//             "a=range:npt=0-%d\r\n"
+//             "m=video 0 RTP/AVP 33\r\n"
+//             "a=control:%s\r\n",
+//             fileName,m_range,m_mediaInfo[0].track_id);
+//    return 0;
+//}
+
+//int DataSource::getSdp(char result[])
+//{
+//    if(m_sdp[0] == 0)
+//    {
+//        return -1;
+//    }
+//    memcpy(result,m_sdp,strlen(m_sdp));
+//    return 0;
+//}
+
+//int DataSource::getRange(int &result)
+//{
+//    if(m_range == 0)
+//        return -1;
+//    result = m_range;
+//    return 0;
+//}
+
+//int DataSource::getMediaNum(int &result)
+//{
+//    result = m_mediaNum;
+//}
+
+//int DataSource::getMediaInfo(int mediaIndex, DataSource::MediaInfo &mediaInfo)
+//{
+//    if(mediaIndex >= m_mediaNum)
+//        return -1;
+//    mediaInfo = m_mediaInfo[mediaIndex];
+//    return 0;
+//}
+
+//int DataSource::getTsPkt(char *buf, int len, uint64_t &pcr)
+//{
+//    return m_reader.getTsPKT(buf,len,pcr);
+//}
+
+//void DataSource::updateRtpTime(uint32_t time)
+//{
+//    m_mediaInfo[0].rtp_time = time;
+//}
+
+//void DataSource::seekFilePosition(int second)
+//{
+//    m_reader.seekByTime(second);
+//}
+
+//int DataSource::playScope(int startSecond, int endSecond)
+//{
+//    if(endSecond != -1 && endSecond <= m_range)
+//        m_endSecond = endSecond;
+//    if(startSecond != -1 && startSecond < m_endSecond)
+//    {
+//        m_startSecond = startSecond;
+//        m_reader.seekByTime(m_startSecond);
+//    }
+//    return 0;
+//}
+
+//int DataSource::getEndSecond(int &startSec, int &endSec)
+//{
+//    startSec = m_startSecond;
+//    endSec = m_endSecond;
+//}
+
+//void DataSource::updateMediaInfo(DataSource::MediaInfo mediaInfo)
+//{
+//    m_mediaInfo[0] = mediaInfo;
+//}

@@ -1,77 +1,47 @@
 #include "rtspsession.h"
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/time.h>
-#include <time.h>
-
-const RtspMethodStr methods[RTSP_METHOD_MAX] = {
-    {RTSP_OPTIONS, "OPTIONS"},
-    {RTSP_DESCRIBE, "DESCRIBE"},
-    {RTSP_SETUP, "SETUP"},
-    {RTSP_PLAY, "PLAY"},
-    {RTSP_PAUSE, "PAUSE"},
-    {RTSP_TEARDOWN, "TEARDOWN"},
-    {RTSP_SET_PARAMETER, "SET_PARAMETER"},
-    {RTSP_GET_PARAMETER, "GET_PARAMETER"},
-};
-
-const RtspCode codes[15] = {
-    { 200, "OK" },
-    { 302, "Moved Temporarily" },
-    { 400, "Bad Request" },
-    { 401, "Unauthorized" },
-    { 403, "Forbidden" },
-    { 404, "Not Found" },
-    { 405, "Method Not Allowed" },
-    { 454, "Session Not Found" },
-    { 457, "Invalid Range" },
-    { 461, "Unsupported transport" },
-    { 500, "Internal Server Error" },
-    { 503, "Service Unavailable" },
-    { 505, "RTSP Version not supported" },
-    { 551, "Option not supported" },
-    { 0, NULL }
-};
 
 RtspSession::RtspSession()
 {
     memset(m_recvBuff, 0, sizeof(m_recvBuff));
-    m_recv_len = 0;
-    m_cseq = 0;
+    m_recvLen = 0;
+    memset(m_Cseq,0,sizeof (m_Cseq));
     m_rtpChannel = 0;
     memset(m_url, 0, sizeof (m_url));
 }
 
-void RtspSession::processSession(int fd)
+int RtspSession::processSession(int fd, ThreadPool *tp)
 {
     m_sock.attachFd(fd);
-
+    m_threadPool = tp;
     while(m_sock.getFd() > 0)
     {
         if(reciveData() < 0)
         {
             printf("ReciveData failed.\n");
-            break;
+            m_sock.closeSocket();
+            return -1;
         }
     }
+    return 0;
 }
 
 int RtspSession::reciveData()
 {
-    int reciveLen = sizeof(m_recvBuff) - 1 - m_recv_len;
+    int reciveLen = sizeof(m_recvBuff) - 1 - m_recvLen;
     if(reciveLen <= 0)
     {
         printf("ReciveBuffer have not enough space.\n");
         return -1;
     }
-    int ret = m_sock.recive(m_recvBuff + m_recv_len, reciveLen);
+    int ret = m_sock.recive(m_recvBuff + m_recvLen, reciveLen);
     if(ret < 0)
     {
         printf("Recive data failed.\n");
         return -1;
     }
-    m_recv_len += ret;
+    m_recvLen += ret;
 
     return handleData();
 }
@@ -79,38 +49,38 @@ int RtspSession::reciveData()
 int RtspSession::handleData()
 {
     char *reciveBuf = m_recvBuff;
-    m_recvBuff[m_recv_len] = '\0';
+    m_recvBuff[m_recvLen] = '\0';
 
     int ret = -1;
-    while(m_recv_len > 0)
+    while(m_recvLen > 0)
     {
         ret = 0;
         if(*reciveBuf == '$')
         {
-            if(m_recv_len <= sizeof (struct RtpTcpHeader))
+            if(m_recvLen <= sizeof (struct RtpTcpHeader))
                 break;
             struct RtpTcpHeader* rtpHeader = (struct RtpTcpHeader*)reciveBuf;
             uint32_t rtpLen = ntohs(rtpHeader->len);
-            if(m_recv_len < rtpLen + 4)
+            if(m_recvLen < rtpLen + 4)
                 break;
 
-            m_recv_len -= rtpLen + 4;
+            m_recvLen -= rtpLen + 4;
             reciveBuf += rtpLen + 4;
         }
         else
         {
-            int parseLen = parseDataLen(reciveBuf, m_recv_len);
+            int parseLen = parseDataLen(reciveBuf, m_recvLen);
             if(parseLen < 0)
                 break;
             printClientCmd(reciveBuf, parseLen);
             if(handleCommand(reciveBuf,parseLen) < 0)
                 return -1;
-            m_recv_len -= parseLen;
+            m_recvLen -= parseLen;
             reciveBuf += parseLen;
         }
     }
-    if(m_recv_len > 0)
-        memmove(m_recvBuff, reciveBuf,m_recv_len);
+    if(m_recvLen > 0)
+        memmove(m_recvBuff, reciveBuf,m_recvLen);
     return ret;
 }
 
@@ -147,6 +117,33 @@ void RtspSession::printClientCmd(const char *data, int len)
     printf("%s", tmp);
 }
 
+int RtspSession::handleCommand(const char *data, int len)
+{
+    char method[40];
+    RtspMethod rMethod = parseMethod(data);
+
+    if( rMethod == RTSP_METHOD_MAX ){
+        printf("Unsupported this method.\n");
+        return -1;
+    }
+    parserCseq(data, len);
+    switch(rMethod){
+    case RTSP_OPTIONS:
+        return handleCmd_OPTIONS();
+    case RTSP_SETUP:
+        return handleCmd_SETUP(data,len);
+    case RTSP_DESCRIBE:
+        return handleCmd_DESCRIBE(data,len);
+    case RTSP_PLAY:
+        return handleCmd_PLAY(data,len);
+    case RTSP_TEARDOWN:
+        return  handleCmd_TEARDOWN();
+    case RTSP_PAUSE:
+        return handleCmd_PAUSE();
+    }
+    return 0;
+}
+
 RtspMethod RtspSession::parseMethod(const char *data)
 {
     RtspMethod rtsp_method = RTSP_METHOD_MAX;
@@ -169,23 +166,47 @@ RtspMethod RtspSession::parseMethod(const char *data)
     return rtsp_method;
 }
 
-void RtspSession::codeMessage(char *result, int code)
+int RtspSession::parserUrl(const char *data, int len)
 {
-    int i = 0;
-    for(; ; i++)
-    {
-        if(code == codes[i].code)
-            break;
-        else if(codes[i].code == 0)
-        {
-            i = 2;
-            break;
-        }
+    memset( m_url, 0, sizeof(m_url) );
+    const char* url_s_mark = "rtsp://";
+    if( getStr( data, len, url_s_mark, " RTSP", m_url, sizeof(m_url)-1 ) < 0 ){
+        printf("get url failed\n" );
+        return -1;
     }
+    return 0;
+}
 
-    sprintf(result,"RTSP/1.0 %d %s\r\n"
-                   "CSeq: %d\r\n",
-            codes[i].code,codes[i].code_str,m_cseq);
+void RtspSession::parserCseq(const char *data, int len)
+{
+    memset( m_Cseq, 0, sizeof(m_Cseq) );
+    getStr( data, len, "CSeq:", "\r\n", m_Cseq, sizeof(m_Cseq)- 1 - strlen("\r\n"));
+}
+
+int RtspSession::getStr(const char *data, int len, const char *s_mark, const char *e_mark, char *dest, int dest_len)
+{
+    const char* satrt = strstr( data, s_mark );
+    if( satrt != NULL ){
+        const char* end = strstr( satrt, e_mark );
+        if( end != NULL )
+            strncpy( dest, satrt, end-satrt>dest_len?dest_len:end-satrt );
+        return 0;
+    }
+    return -1;
+}
+
+int RtspSession::sendMessage(const char *data, int len)
+{
+    printf("---------------S->C--------------\n");
+    printf("%s", data);
+    return m_sock.send(data,len);
+}
+
+uint64_t RtspSession::getCurrentUs()
+{
+    struct timeval cur_time;
+    gettimeofday( &cur_time, NULL );
+    return cur_time.tv_sec*1000000+cur_time.tv_usec;
 }
 
 int RtspSession::handleCmd_OPTIONS()
@@ -229,7 +250,7 @@ int RtspSession::handleCmd_SETUP(const char *data, int len)
         return sendMessage(sendBuf,strlen(sendBuf));
     }
 
-    snprintf(m_session, sizeof(m_session), "Session: %X\r\n",(uint64_t)getCurrentUs());
+    snprintf(m_session, sizeof(m_session), "Session: %X\r\n",getCurrentUs());
     codeMessage(sendBuf,200);
     char result[512];
     snprintf(result, sizeof(result),
@@ -243,19 +264,24 @@ int RtspSession::handleCmd_SETUP(const char *data, int len)
 int RtspSession::handleCmd_DESCRIBE(const char *data, int len)
 {
     char sendBuf[512];
-    if(strstr(m_url, "rtsp://") == NULL)
+    if(parserUrl(data, len) < 0)
     {
         codeMessage(sendBuf,400);
         return sendMessage(sendBuf,strlen(sendBuf));
     }
 
     char *fileName = strstr(strstr(m_url,"rtsp://") + strlen("rtsp://"), "/") + 1;
+
     if(m_dataSource.init(fileName) < 0)
     {
         codeMessage(sendBuf,404);
         return sendMessage(sendBuf,strlen(sendBuf));
     }
-    const char* sdp = m_dataSource.getSdp();
+
+    //    char sdp[1024];
+    //    memset(sdp,0,sizeof (sdp));
+    //    m_dataSource.getSdp(sdp);
+    const char *sdp = m_dataSource.getSdp();
 
     codeMessage(sendBuf,200);
     char result[512];
@@ -273,7 +299,8 @@ int RtspSession::handleCmd_DESCRIBE(const char *data, int len)
 
 int RtspSession::handleCmd_PLAY(const char *data, int len)
 {
-    int range = m_dataSource.getRange();
+    int range = 0;
+    range = m_dataSource.getRange();
     int startSec = 0;
     int endSec = range;
 
@@ -289,7 +316,7 @@ int RtspSession::handleCmd_PLAY(const char *data, int len)
                 endSec = sec;
         }
     }
-    m_dataSource.preparePlay(startSec,endSec);
+    m_dataSource.playScope(startSec,endSec);
     DataSource::MediaInfo mediaInfo;
     m_dataSource.getMediaInfo(0,mediaInfo);
     char sendBuf[512];
@@ -305,11 +332,13 @@ int RtspSession::handleCmd_PLAY(const char *data, int len)
         return -1;
     }
 
-    return m_dataSource.play(&m_sock,m_rtpChannel);
+//    return m_rtpSession.play(&m_sock,m_rtpChannel,&m_dataSource/*,m_threadPool*/);
+    return m_dataSource.play(&m_sock,m_rtpChannel,m_threadPool);
 }
 
 int RtspSession::handleCmd_PAUSE()
 {
+//    m_rtpSession.pause();
     m_dataSource.pause();
     char sendBuf[512];
     codeMessage(sendBuf,200);
@@ -330,92 +359,25 @@ int RtspSession::handleCmd_TEARDOWN()
             "\r\n");
     strcat(sendBuf,result);
     sendMessage(sendBuf,strlen(sendBuf));
-    return -1;
-}
-
-int RtspSession::handleCommand(const char *data, int len)
-{
-    char method[40];
-    parseData(data,len,method);
-    RtspMethod rMethod = parseMethod(data);
-
-    if( rMethod == RTSP_METHOD_MAX ){
-        printf("Unsupported this method.\n");
-        return -1;
-    }
-
-    switch(rMethod){
-    case RTSP_OPTIONS:
-        return handleCmd_OPTIONS();
-    case RTSP_SETUP:
-        return handleCmd_SETUP(data,len);
-    case RTSP_DESCRIBE:
-        return handleCmd_DESCRIBE(data,len);
-    case RTSP_PLAY:
-        return handleCmd_PLAY(data,len);
-    case RTSP_TEARDOWN:
-        return  handleCmd_TEARDOWN();
-    case RTSP_PAUSE:
-        return handleCmd_PAUSE();
-    }
+    m_sock.closeSocket();
     return 0;
 }
 
-void RtspSession::parseData(const char *data, int len, char *method)
+void RtspSession::codeMessage(char *result, int code)
 {
-    char tmpbuf[1024];
     int i = 0;
-    for(; i < len; ++i)
+    for(; ; i++)
     {
-        tmpbuf[i] = data[i];
+        if(code == codes[i].code)
+            break;
+        else if(codes[i].code == 0)
+        {
+            i = 2;
+            break;
+        }
     }
 
-    char *tmp;
-    char line[512];
-    char version[40];
-
-    /* 解析方法 */
-    tmp = getLineFromBuf(tmpbuf, line);
-    if(sscanf(line, "%s %s %s\r\n", method, m_url, version) != 3)
-    {
-        printf("parse first line err.\n");
-    }
-
-    /* 解析序列号 */
-    tmp = getLineFromBuf(tmp, line);
-    if(sscanf(line, "CSeq: %d\r\n", &m_cseq) != 1)
-    {
-        printf("parse second line err.\n");
-    }
-}
-
-char *RtspSession::getLineFromBuf(char *buf, char *line)
-{
-    while(*buf != '\n')
-    {
-        *line = *buf;
-        line++;
-        buf++;
-    }
-
-    *line = '\n';
-    ++line;
-    *line = '\0';
-
-    ++buf;
-    return buf;
-}
-
-int RtspSession::sendMessage(const char *data, int len)
-{
-    printf("---------------S->C--------------\n");
-    printf("%s", data);
-    return m_sock.send(data,len);
-}
-
-uint64_t RtspSession::getCurrentUs()
-{
-    struct timeval cur_time;
-    gettimeofday( &cur_time, NULL );
-    return cur_time.tv_sec*1000000+cur_time.tv_usec;
+    sprintf(result,"RTSP/1.0 %d %s\r\n"
+                   "%s\r\n",
+            codes[i].code,codes[i].code_str,m_Cseq);
 }

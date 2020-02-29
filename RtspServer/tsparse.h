@@ -30,16 +30,15 @@ typedef struct{
     uint16_t pcr_ext:9,
              reserved:6,
              pcr_basebit:1;
-}TSPcr;
+}TSPcr; //时间戳
 
-class TsParser
+class TsParse
 {
 public:
-    TsParser();
-    ~TsParser();
+    TsParse();
+    ~TsParse();
 
-    //获取视频时钟标签
-    static int getPcr(const uint8_t* data, uint64_t& pcr);
+    static int getPcr(const uint8_t* data, uint64_t& pcr); //获取视频时间戳
     static bool isUnitStart(const uint8_t* data);  //判断是否是音视频单元的开始
 };
 

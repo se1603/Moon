@@ -11,7 +11,7 @@ ThreadPool::ThreadPool(int number) :
 //        std::cout << "创建第" << i + 1 << "个线程" << std::endl;
         work_threads.emplace_back(ThreadPool::worker,this);
     }
-    std::cout << "已创建" << number << "个线程" << std::endl;
+//    std::cout << "已创建" << number << "个线程" << std::endl;
 }
 
 ThreadPool::~ThreadPool()

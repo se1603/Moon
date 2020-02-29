@@ -1,5 +1,4 @@
 #include "rtspserver.h"
-#include <stdio.h>
 #include <string.h>
 
 RtspServer::RtspServer()
@@ -7,11 +6,16 @@ RtspServer::RtspServer()
 
 }
 
-int RtspServer::start(const char* ip,int port)
+RtspServer::~RtspServer()
+{
+
+}
+
+int RtspServer::start(const char *ip, int port)
 {
     closeSocket();
 
-    if(openSocket(SOCK_STREAM) < 0)
+    if(createSocket(SOCK_STREAM) < 0)
         return -1;
     if(setAddrReuse() < 0 || bindSocket(ip,port) < 0)
     {
@@ -27,6 +31,11 @@ int RtspServer::start(const char* ip,int port)
     }
 
     printf("Start RTSP Server success! Listen port: %d\n", port);
+    printf("Play streams from this server using the URL "
+           "rtsp://%s:%d/<filename>\n"
+           "where <filename> is a file which type is "
+           "inferred from its name suffix: \".ts\"\n"
+           "\r\n",ip,port);
 
     while(1)
     {
@@ -41,9 +50,8 @@ int RtspServer::start(const char* ip,int port)
             return -1;
         }
         printf("accept client;client ip:%s,client port:%d\n", clientIp, clientPort);
-        threadPool.append(std::bind(&RtspServer::processClient, this, clientSockFd));
+        threadPool.append(std::bind(&RtspServer::processClient, this, clientSockFd,&threadPool));
     }
-
 }
 
 int RtspServer::acceptClient(int sockfd, char *ip, int *port)
@@ -65,9 +73,10 @@ int RtspServer::acceptClient(int sockfd, char *ip, int *port)
     return clientfd;
 }
 
-void RtspServer::processClient(int fd)
+int RtspServer::processClient(int fd, ThreadPool *tp)
 {
     RtspSession* session = new RtspSession;
-    session->processSession(fd);
     m_sessionMap[fd] = session;
+    session->processSession(fd,tp);
+    return 0;
 }

@@ -1,8 +1,7 @@
 #include "tcpsocket.h"
-#include <sys/socket.h>
-#include <errno.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
+#include <errno.h>
 
 TcpSocket::TcpSocket()
 {
@@ -16,11 +15,11 @@ TcpSocket::~TcpSocket()
 
 int TcpSocket::connect(const char *ip, int port)
 {
-    if(openSocket(SOCK_STREAM) < 0)
+    if(createSocket(SOCK_STREAM) < 0)
         return -1;
     setBlock(true);
     struct sockaddr_in remote;
-    if(getAddr(ip,port,remote) < 0)
+    if(setAddr(ip,port,remote) < 0)
         return -1;
     if(::connect(m_fd,(struct sockaddr *)&remote, sizeof (struct sockaddr)) == -1)
     {

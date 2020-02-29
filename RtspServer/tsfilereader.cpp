@@ -4,9 +4,9 @@ TsFileReader::TsFileReader()
 {
     m_file = NULL;
     m_fileSize = 0;
-    m_first_pcr = -1;
-    m_last_pcr = -1;
-    m_current_pcr = -1;
+    m_startPcr = -1;
+    m_lastPcr = -1;
+    m_currentPcr = -1;
 }
 
 TsFileReader::~TsFileReader()
@@ -35,17 +35,17 @@ int TsFileReader::openFile(const char *filename)
     if(readFile() < 0)
         return -1;
 
-    printf("Open success! File size: %lld, first pcr:%lld, last pcr:%lld\n",
-           m_fileSize,m_first_pcr,m_last_pcr);
+    printf("Open success! File size: %lld, start pcr:%lld, last pcr:%lld\n",
+           m_fileSize,m_startPcr,m_lastPcr);
     return 0;
 }
 
 int TsFileReader::readFile()
 {
     m_fileSize = 0;
-    m_first_pcr = -1;
-    m_last_pcr = -1;
-    m_current_pcr = -1;
+    m_startPcr = -1;
+    m_lastPcr = -1;
+    m_currentPcr = -1;
 
     //设置文件指针位置
     if(fseeko64(m_file, 0, SEEK_END) != 0)
@@ -87,25 +87,25 @@ int TsFileReader::readFile()
         }
 
         uint64_t pcr = 0;
-        if(TsParser::getPcr(buffer,pcr) < 0)
+        if(TsParse::getPcr(buffer,pcr) < 0)
         {
             if(offset != -1)
                 offset -= TSPKTLEN;
             continue;
         }
-        if(m_first_pcr == (uint64_t) - 1)
+        if(m_startPcr == (uint64_t) - 1)
         {
-            m_current_pcr = m_first_pcr = pcr;
+            m_currentPcr = m_startPcr = pcr;
             offset = (m_fileSize / TSPKTLEN - 1) * TSPKTLEN;
         }
         else
         {
-            m_last_pcr = pcr;
+            m_lastPcr = pcr;
             break;
         }
     }
 
-    if(m_last_pcr <= m_first_pcr)
+    if(m_lastPcr <= m_startPcr)
     {
         printf("Get file Range failde.\n");
         return -1;
@@ -120,15 +120,15 @@ int TsFileReader::readFile()
 
 int TsFileReader::getFileRange()
 {
-    return int((m_last_pcr - m_first_pcr) / 90000);
+    return int((m_lastPcr - m_startPcr) / 90000);
 }
 
 bool TsFileReader::seekByTime(uint64_t sec)
 {
-    int64_t diff_sec = (int64_t)( m_first_pcr + sec*1000 - m_current_pcr );
+    int64_t diff_sec = (int64_t)( m_startPcr + sec*1000 - m_currentPcr );
     if( diff_sec < 2000 && diff_sec > -2000 )
         return true;
-    int64_t offset = m_fileSize/((m_last_pcr-m_first_pcr)/90000)*sec/TSPKTLEN*TSPKTLEN;
+    int64_t offset = m_fileSize/((m_lastPcr-m_startPcr)/90000)*sec/TSPKTLEN*TSPKTLEN;
     if( offset > (int64_t)m_fileSize )
         offset = m_fileSize;
     if( fseeko64( m_file, offset, SEEK_SET ) != 0 ){
@@ -148,9 +148,9 @@ int TsFileReader::getTsPKT(char *buf, int len, uint64_t &pcr)
 
     uint64_t cur_pcr = -1;
     for( int i = 0; i < ret/TSPKTLEN; i++ )
-        TsParser::getPcr( (const uint8_t*)buf+i*TSPKTLEN, cur_pcr );
+        TsParse::getPcr( (const uint8_t*)buf+i*TSPKTLEN, cur_pcr );
     if( cur_pcr != (uint64_t)-1 )
-        m_current_pcr = cur_pcr;
-    pcr = m_current_pcr;
+        m_currentPcr = cur_pcr;
+    pcr = m_currentPcr;
     return ret;
 }
