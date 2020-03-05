@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>LoginPage.qml</file>
+        <file>MainItem.qml</file>
+        <file>ManageUserPage.qml</file>
+        <file>ManageAdvertPage.qml</file>
+        <file>ManageMTVPage.qml</file>
+        <file>Advert/AdvertMenu.qml</file>
+        <file>Advert/AdvertAdd.qml</file>
+        <file>Advert/AdvertCalculation.qml</file>
+        <file>Advert/AdvertDir.qml</file>
+        <file>Advert/VideoTypeMenu.qml</file>
+        <file>Advert/AdvertChoice.qml</file>
+        <file>Advert/VideoChoice.qml</file>
+        <file>Advert/SearchVideo.qml</file>
+        <file>image/advert/search.png</file>
+        <file>Advert/VideoPage.qml</file>
+        <file>Advert/VideoDetailAdvert.qml</file>
+    </qresource>
+</RCC>
