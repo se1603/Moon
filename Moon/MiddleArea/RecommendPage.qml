@@ -11,6 +11,7 @@ Rectangle {
 
     property var recommendResource
 
+
     ScrollView{
         anchors.fill: parent
         clip: true
@@ -33,6 +34,7 @@ Rectangle {
                 }
             }
 
+            //大海报推荐
             Row{
                 id: recommendLayout
                 Rectangle{
@@ -80,11 +82,13 @@ Rectangle {
                 width: parent.width
                 height: 15
             }
+
+            //分类推荐 小海报
             ColumnLayout{
                 spacing: 25
 
                 Repeater{
-                    id: classifiedRecommend  //分类推荐
+                    id: classifiedRecommend
                     model: recommendResource.secondRecommends.resource
                     Rectangle{
                         width: recommendPage.width
@@ -148,10 +152,12 @@ Rectangle {
                                         MouseArea{
                                             anchors.fill: parent
                                             onClicked: {
+                                                middleArea.stopPlay()
                                                 playName = postName.text
                                                 playPost = postimage.source
-                                                middleArea.middleLoader.sourceComponent =
-                                                        playComponent
+                                                playUrl = modelData.rtspURL
+                                                middleArea.middleLoader.visible = false
+                                                middleArea.playLoader.visible = true
                                             }
                                         }
                                     }
@@ -175,6 +181,7 @@ Rectangle {
         }
     }
 
+    //分类菜单
     Component{
         id: typeMenuDelegate
         Rectangle{
@@ -217,6 +224,7 @@ Rectangle {
         }
     }
 
+    //大海报切换计时器
     Timer {
         id:time
         interval: 3000
@@ -233,6 +241,7 @@ Rectangle {
         }
     }
 
+    //大海报动画
     Component{
         id: recommendNameDelegate
         Rectangle{

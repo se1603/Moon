@@ -18,8 +18,7 @@ import QtQuick.Layouts 1.3
 import "../MiddleArea"
 
 Rectangle {
-
-    id:play
+    id: play
     visible: true
     width: middleArea.width
     height: middleArea.height
@@ -31,6 +30,11 @@ Rectangle {
     property string image: middleArea.playPost
     property bool xRflag: false
     property bool xLflag: true
+    property string url: middleArea.playUrl
+
+    Component.onCompleted: {
+        middleArea.stopPlay.connect(myplayer.stopPlay)
+    }
 
     //右边的组合动画
     ParallelAnimation{
@@ -276,15 +280,21 @@ Rectangle {
         }
     }
 
-    Rectangle{
-        id:center
+    Item{
+        id:centerItem
         anchors.right: rightRectangle.left
         anchors.left: leftRectangle.right
         height: parent.height
         //        color:"green"
 
+        VideoPlayer{
+            id: myplayer
+            anchors.fill: parent
+            videoPath: url
+        }
+
         Rectangle{
-            //                visible: play.name ? false :true
+            visible: play.name ? false :true
             width: parent.width
             height: parent.height
             color:  "#8B8378"

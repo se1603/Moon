@@ -49,7 +49,9 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             onClicked: {
-               middleArea.middleLoader.sourceComponent = middleArea.browsePage
+                middleArea.middleLoader.visible = true
+                middleArea.playLoader.visible = false
+//               middleArea.middleLoader.sourceComponent = middleArea.browsePage
             }
         }
     }
@@ -78,7 +80,8 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             onClicked: {
-                middleArea.middleLoader.sourceComponent = middleArea.playPage
+                middleArea.middleLoader.visible = false
+                middleArea.playLoader.visible = true
             }
         }
     }

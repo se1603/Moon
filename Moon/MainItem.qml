@@ -11,6 +11,7 @@ Item {
 
     TopArea{
         id: topArea
+        visible: true
     }
 
     MiddleArea{
@@ -21,4 +22,15 @@ Item {
         id:audienceItem
     }
 
+    function fullScreen(){
+        topArea.visible = false
+        topArea.z = -1
+        fullScreenFlag = false
+    }
+
+    function exitfullScreen(){
+        topArea.visible = true
+        topArea.z = 1
+        fullScreenFlag = true
+    }
 }

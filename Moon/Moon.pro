@@ -19,7 +19,9 @@ SOURCES += \
         collection.cpp \
         main.cpp \
         network.cpp \
-        record.cpp
+        record.cpp \
+        videodecoder.cpp \
+        videoplayer.cpp
 
 RESOURCES += \
     qml.qrc
@@ -40,6 +42,10 @@ HEADERS += \
     client.h \
     collection.h \
     network.h \
-    record.h
+    record.h \
+    videodecodedefine.h \
+    videodecoder.h \
+    videoplayer.h
 
-LIBS += -lboost_system -lpthread -lboost_thread -ljsoncpp -lmysqlclient
+LIBS += -lboost_system -lpthread -lboost_thread -ljsoncpp -lmysqlclient  \
+        -lavcodec -lavformat -lavdevice -lavfilter -lavutil -lswresample -lswscale -lpostproc -lSDL2

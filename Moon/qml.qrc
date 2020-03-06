@@ -70,5 +70,6 @@
         <file>PlayArea/Play.qml</file>
         <file>PlayArea/Program.qml</file>
         <file>PlayArea/Record.qml</file>
+        <file>PlayArea/VideoPlayer.qml</file>
     </qresource>
 </RCC>
