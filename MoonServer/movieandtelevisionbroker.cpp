@@ -1335,3 +1335,38 @@ std::string MovieAndTelevisionBroker::dealRegion(std::string region)
         return "7";
     }
 }
+
+std::vector<Film *> MovieAndTelevisionBroker::searchFilm(std::string name)
+{
+    std::vector<Film *> p;
+    for(auto it = m_films.begin(); it != m_films.end(); it++)
+    {
+        if(it->second.findByName(name)){
+            p.push_back(&it->second);  //传入film对象
+        }
+    }
+    return p;
+}
+
+std::vector<Drama *> MovieAndTelevisionBroker::searchDrama(std::string name)
+{
+    std::vector<Drama *> p;
+    for(auto it = m_dramas.begin(); it != m_dramas.end(); it++)
+    {
+        if(it->second.findByName(name)){
+            p.push_back(&it->second);  //传入drama对象
+        }
+    }
+    return p;
+}
+
+std::vector<Comic *> MovieAndTelevisionBroker::searchComic(std::string name)
+{
+    std::vector<Comic *> p;
+    for(auto it = m_comics.begin(); it != m_comics.end(); it++){
+        if(it->second.findByName(name)){
+            p.push_back(&it->second);
+        }
+    }
+    return p;
+}

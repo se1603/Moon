@@ -81,6 +81,9 @@ public:
     //添加评论
     Q_INVOKABLE void addComment(QString aName, QString videoname, QString t, QString c);
 
+    //搜索
+    Q_INVOKABLE QString search(QString key);
+
 signals:
     //用户信号
     void loginsucceed(QString name,QString avatar);

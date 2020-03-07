@@ -32,3 +32,8 @@ ManagerController *ControllerFactory::createManagerController()
 {
     return ManagerController::getInstance();
 }
+
+SearchController *ControllerFactory::createSearchController()
+{
+    return SearchController::getInstace();
+}

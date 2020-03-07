@@ -79,7 +79,7 @@ QString Client::showCategory(QString interface)
 
     QString qmlValue = QString::fromStdString(result);
 
-//    qDebug() << qmlValue;
+    //    qDebug() << qmlValue;
     return qmlValue;
 }
 
@@ -119,7 +119,7 @@ QString Client::showRecommend(QString interface)
     }
 
     QString qmlValue = QString::fromStdString(result);
-//    qDebug() << qmlValue;
+    //    qDebug() << qmlValue;
     return qmlValue;
 }
 
@@ -181,7 +181,7 @@ QString Client::showType(QString interface, QString type)
     }
 
     QString qmlValue = QString::fromStdString(result);
-//    qDebug() << qmlValue;
+    //    qDebug() << qmlValue;
     return qmlValue;
 }
 
@@ -586,9 +586,9 @@ void Client::addBrowseRecord(QString recordName, QString startTime, QString dura
             vec.push_back(newstr);
 
             if(flag = 0){
-                    value.push_back(root);
-                    browseRecordBuffer = value.dump();
-                    addRecordToFile(rN,sT,d,p);
+                value.push_back(root);
+                browseRecordBuffer = value.dump();
+                addRecordToFile(rN,sT,d,p);
             }else{
                 std::string newRecord;
                 for(auto &v:vec){
@@ -731,25 +731,50 @@ QString Client::showGoodComment(QString name)
 void Client::addComment(QString aName, QString videoname, QString t, QString c)
 {
     json root;
-        std::cout << aName.toStdString() <<":" << t.toStdString()
-                  << ":" << videoname.toStdString() << ":" << c.toStdString() << std::endl;
-        root["system"] = "CLIENT";
-        root["request"] = "INSERTCOMMENT";
-        root["audiencename"] = aName.toStdString();
-        root["name"] = videoname.toStdString();
-        root["time"] = t.toStdString();
-        root["comment"] = c.toStdString();
-        root.dump();
-        std::string message = root.dump();
+    std::cout << aName.toStdString() <<":" << t.toStdString()
+              << ":" << videoname.toStdString() << ":" << c.toStdString() << std::endl;
+    root["system"] = "CLIENT";
+    root["request"] = "INSERTCOMMENT";
+    root["audiencename"] = aName.toStdString();
+    root["name"] = videoname.toStdString();
+    root["time"] = t.toStdString();
+    root["comment"] = c.toStdString();
+    root.dump();
+    std::string message = root.dump();
 
-        socket_ptr udpsock;
-        udpsock = sendMessage(message);
-        NetWork sock(udpsock);
+    socket_ptr udpsock;
+    udpsock = sendMessage(message);
+    NetWork sock(udpsock);
 
-        std::string res = sock.receive();
-        if(res == "FAILED"){
-            emit insertFailed();
-        }else{
-            emit insertSuccessed();
-        }
+    std::string res = sock.receive();
+    if(res == "FAILED"){
+        emit insertFailed();
+    }else{
+        emit insertSuccessed();
+    }
+}
+
+QString Client::search(QString key)
+{
+    json root;
+    root["system"] = "CLIENT";
+    root["request"] = "SEARCH";
+    root["name"] = key.toStdString();
+    std::string message = root.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+
+    std::string searchResult;
+    searchResult = sock.receive();
+
+    json replay = json::parse(searchResult);
+    json qmlValue;
+    qmlValue["resource"] = replay["searchResult"];
+
+    std::string result = qmlValue.dump();
+    QString qmlValues = QString::fromStdString(result);
+    qDebug() << qmlValues;
+    return qmlValues;
 }

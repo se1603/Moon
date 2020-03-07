@@ -71,5 +71,6 @@
         <file>PlayArea/Program.qml</file>
         <file>PlayArea/Record.qml</file>
         <file>PlayArea/VideoPlayer.qml</file>
+        <file>MiddleArea/SearchResult.qml</file>
     </qresource>
 </RCC>

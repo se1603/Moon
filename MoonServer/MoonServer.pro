@@ -33,6 +33,7 @@ managercontroller.cpp \
         audiencecontroller.cpp \
         commentbroker.cpp \
         commentcontroller.cpp \
+        searchcontroller.cpp \
 
 LIBS += -lboost_system -lpthread -lboost_thread -lmysqlclient
 
@@ -67,4 +68,5 @@ HEADERS += \
     audiencecontroller.h \
     commentbroker.h \
     commentcontroller.h \
-    variety.h
+    variety.h   \
+    searchcontroller.h \

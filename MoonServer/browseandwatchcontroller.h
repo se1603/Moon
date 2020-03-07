@@ -33,6 +33,7 @@ public:
     std::string deleteTv(std::string name,std::string type);//删除影视
     std::string delayTV(std::string interface);//到期影视
 
+    std::string getUrl(std::string name);//获取资源
 
 private:
     BrowseAndWatchController();

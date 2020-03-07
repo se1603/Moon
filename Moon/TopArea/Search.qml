@@ -8,6 +8,8 @@ Item {
     anchors.leftMargin: 1/7 * parent.width
     anchors.verticalCenter: parent.verticalCenter
 
+    property var searchResult
+
     Rectangle{
         id:topSearch
         width:3/4 * parent.width
@@ -55,7 +57,10 @@ Item {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 hoverEnabled: true
                 onClicked: {
-
+                    searchResult = JSON.parse(client.search(searchEdit.text))
+                    console.log(searchResult)
+                    middleArea.searchResource = searchResult
+                    middleArea.middleLoader.sourceComponent = middleArea.searchPage
                 }
             }
         }

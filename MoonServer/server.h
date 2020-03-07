@@ -45,6 +45,7 @@ private:
     AudienceController* m_AudienceController;//用户
     CommentController *m_commentController;
     ManagerController *m_managerController;
+    SearchController *m_searchController;
 };
 
 #endif // SERVER_H

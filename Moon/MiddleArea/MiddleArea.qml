@@ -18,6 +18,9 @@ Rectangle {
     property string playName
     property string playUrl
 
+    property var searchResource
+    property alias searchPage: searchComponent
+
     signal stopPlay()  //停止播放之前的视频
 
     Loader{
@@ -51,6 +54,13 @@ Rectangle {
     Component{
         id: playComponent
         Play{
+
+        }
+    }
+
+    Component{
+        id: searchComponent
+        SearchResult{
 
         }
     }

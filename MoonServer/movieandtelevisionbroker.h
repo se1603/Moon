@@ -82,6 +82,10 @@ public:
     std::string dealType(std::string type);//处理影视类型
     std::string dealRegion(std::string region);//处理影视地域
 
+    //搜索
+    std::vector<Film *> searchFilm(std::string name); //从map中读取数据，返回给controller
+    std::vector<Drama *> searchDrama(std::string name);
+    std::vector<Comic *> searchComic(std::string name);
 
 private:
     MovieAndTelevisionBroker();

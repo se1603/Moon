@@ -11,6 +11,7 @@ Server::Server()
     m_AudienceController = m_controllerFactory->createAudienceController();
     m_commentController = m_controllerFactory->createCommentController();
     m_managerController = m_controllerFactory->createManagerController();
+    m_searchController = m_controllerFactory->createSearchController();
 }
 
 void Server::acceptMreeage()
@@ -207,6 +208,11 @@ void Server::processClientRequest(json j,endpoint ep)
     else if(request == "ADVERTADDRESS")
     {
         replay = m_BrowseAndWatchController->getAdvertInformation(j["name"]);
+        sendMessage(replay,ep);
+    }
+    else if(request == "SEARCH")
+    {
+        replay = m_searchController->searchKeywords(j["name"]);
         sendMessage(replay,ep);
     }
 }

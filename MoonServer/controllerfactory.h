@@ -5,6 +5,7 @@
 #include "audiencecontroller.h"
 #include "commentcontroller.h"
 #include "managercontroller.h"
+#include "searchcontroller.h"
 
 class ControllerFactory
 {
@@ -19,6 +20,7 @@ public:
     AudienceController *createAudienceController();//用户
     CommentController *createCommentController();
     ManagerController *createManagerController();
+    SearchController *createSearchController();
 private:
     ControllerFactory();
     static ControllerFactory* m_instance;

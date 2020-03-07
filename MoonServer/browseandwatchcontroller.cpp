@@ -883,6 +883,13 @@ std::string BrowseAndWatchController::delayTV(std::string interface)
     result = value.dump();
     return result;
 }
+
+std::string BrowseAndWatchController::getUrl(std::string name)
+{
+//    std::string url = "rtsp://" + m_rtspAddress + "/movies/" + name;
+    std::string url = "rtsp://" + m_rtspAddress + "/test.ts";
+    return url;
+}
 std::string BrowseAndWatchController::deleteTv(std::string name, std::string type)
 {
     json result;

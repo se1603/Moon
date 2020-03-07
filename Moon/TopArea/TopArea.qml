@@ -51,7 +51,7 @@ Rectangle {
             onClicked: {
                 middleArea.middleLoader.visible = true
                 middleArea.playLoader.visible = false
-//               middleArea.middleLoader.sourceComponent = middleArea.browsePage
+               middleArea.middleLoader.sourceComponent = middleArea.browsePage
             }
         }
     }
