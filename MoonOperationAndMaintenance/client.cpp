@@ -5,8 +5,8 @@
 #include <dirent.h>
 
 boost::asio::io_service service;
-boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.0.102"),8001);
-boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7789));
+boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.1.13"),8001);
+boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7788));
 
 Client::Client(QObject *p) :
     QObject(p)
