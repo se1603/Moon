@@ -29,6 +29,11 @@ public:
     std::string getActorInfomation(std::string name);//获取演员的基本信息
     std::string getAdvertInformation(std::string name);//获取广告
 
+    std::string initMovies(std::string bigType);//插入影视信息
+    std::string deleteTv(std::string name,std::string type);//删除影视
+    std::string delayTV(std::string interface);//到期影视
+
+
 private:
     BrowseAndWatchController();
     static BrowseAndWatchController* m_instance;

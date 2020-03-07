@@ -1,6 +1,8 @@
 #include "movieandtelevisionbroker.h"
 #include <iostream>
+#include "json.hpp"
 
+using json = nlohmann::json;
 using std::cout;    using std::string;
 using std::endl;
 
@@ -1174,4 +1176,162 @@ bool MovieAndTelevisionBroker::deleteVideoAdverts(std::string videoname, std::st
     }
 
     return res;
+}
+bool MovieAndTelevisionBroker::initMovieandTelevision(std::string s)
+{
+    json j = json::parse(s);
+    //    for (json::iterator it = j.begin(); it != j.end(); ++it) {
+    //      std::cout << *it << '\n';
+
+    //    }
+    MYSQL* mysql;
+    mysql = new MYSQL;
+
+    mysql_init(mysql);
+    if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
+        std::cout << "Database connect failed" << std::endl;
+    }else{
+        std::cout << "Database connect Successed" << std::endl;
+    }
+
+    for(int i = 0;i < j.size();i++){
+        std::string name = j[i]["name"];
+        std::string typ = j[i]["type"];
+        std::string type = dealType(typ);
+        std::string regio = j[i]["region"];
+        std::string region = dealRegion(regio);
+        std::string esd = j[i]["episode"];
+        std::string director = j[i]["director"];
+        std::string actor = j[i]["actor"];
+        std::string introduction = j[i]["introduction"];
+        std::string image = j[i]["image"];
+        std::string rec;
+        if("否" == j[i]["recommmd"]){
+            rec ="99";
+        }else{
+            rec ="2";
+        }
+        std::string sql;
+        if("剧集" == j[i]["bigType"]){
+            sql = "insert into Drama(name,type,region,director,actor,post,introduction,recommend, episode) values('"+name+"','"+type+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"','"+esd+"');";
+
+        }else if("动漫" == j[i]["bigType"]){
+            sql = "insert into Comic(name,type,region,epilide,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+region+"','"+esd+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+        }else if("电影" == j[i]["bigType"]){
+            sql = "insert into Film(name,type,region,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+        }else if("综艺" == j[i]["bigType"]){
+            sql = "insert into VarietyShow(name,type,episodes,region,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+esd+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+        }
+
+        if(mysql_query(mysql,sql.data())){
+            std::cout <<"insert failed"<< std::endl;
+            return false;
+        }else{
+            return true;
+        }
+    }
+}
+bool MovieAndTelevisionBroker::delect(std::string name, std::string type)
+{
+    std::vector<std::string> videos;
+    splictString(name,videos,"/");
+
+    MYSQL* mysql;
+    mysql = new MYSQL;
+
+    mysql_init(mysql);
+    if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
+        std::cout << "Database connect failed" << std::endl;
+    }else{
+        std::cout << "Database connect Successed" << std::endl;
+    }
+    std::string sql;
+
+    if("电影" == type){
+        for(int i =0;i < videos.size();i++){
+            auto it = m_films.find(videos[i]);
+            if(it != m_films.end()){
+                m_films.erase(it);
+            }
+            sql = "DELETE FROM Film WHERE name = '"+videos[i]+"';" ;
+        }
+
+    }else if("动漫"== type){
+
+        for(int i =0;i < videos.size();i++){
+            auto it = m_comics.find(videos[i]);
+            if(it != m_comics.end()){
+                m_comics.erase(it);
+            }
+            sql = "DELETE FROM Comic WHERE name = '"+videos[i]+"';" ;
+        }
+//        sql = "DELETE FROM Comic WHERE name = '"+name +"';";
+    }else if("剧集"== type){
+        for(int i =0;i < videos.size();i++){
+            auto it = m_dramas.find(videos[i]);
+            if(it != m_dramas.end()){
+                m_dramas.erase(it);
+            }
+            sql = "DELETE FROM Drama WHERE name = '"+videos[i]+"';" ;
+        }
+//        sql = "DELETE FROM Drama WHERE name = '"+name +"';";
+    }else if("综艺"== type){
+        for(int i =0;i < videos.size();i++){
+            auto it = m_varieties.find(videos[i]);
+            if(it != m_varieties.end()){
+                m_varieties.erase(it);
+            }
+            sql = "DELETE FROM VarietyShow WHERE name = '"+videos[i]+"';" ;
+        }
+//        sql = "DELETE FROM VarietyShow WHERE name = '"+name +"';";
+    }
+
+    if(mysql_query(mysql,sql.data())){
+        std::cout <<"insert failed"<< std::endl;
+        return false;
+    }else{
+        return true;
+    }
+//    sql = "DELETE FROM " + table + " WHERE"
+}
+
+std::string MovieAndTelevisionBroker::dealType(std::string type)
+{
+    if(type == "机战"||type =="古装"||type =="武侠"||type =="真人秀"){
+        return "1";
+    }else if(type == "青春"||type =="悬疑"||type =="悬疑"||type =="选秀"){
+        return "2";
+    }else if(type == "格斗"||type =="武侠"||type =="喜剧"||type =="美食"){
+        return "3";
+    }else if(type == "恋爱"||type =="都市"||type =="动作"||type =="旅游"){
+        return "4";
+    }else if(type == "美少女"||type =="历史"||type =="爱情"||type =="纪实"){
+        return "5";
+    }else if(type == "热血"||type =="偶像"||type =="动画"||type =="搞笑"){
+        return "6";
+    }else if(type == "校园"||type =="家庭"||type =="惊悚"||type =="访谈"){
+        return "7";
+    }else if (type == "科幻"||type =="科幻") {
+        return "8";
+    }
+    //    return "0";
+}
+
+std::string MovieAndTelevisionBroker::dealRegion(std::string region)
+{
+    if(region == "中国"){
+        return "1";
+    }else if(region == "美国"){
+        return "2";
+    }else if(region == "韩国"){
+        return "3";
+    }else if(region == "恋爱"){
+        return "4";
+    }else if(region == "泰国"){
+        return "5";
+    }else if(region == "英国"){
+        return "6";
+    }else if(region == "日本"){
+        return "7";
+    }
 }

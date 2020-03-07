@@ -36,6 +36,7 @@ public:
 
     long int sendFile(FILE *fp, endpoint ep);
 
+    void  receiveFile(FILE *fp);
 private:
     socket_ptr m_sock;
 };

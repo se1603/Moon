@@ -144,7 +144,64 @@ int NetWork::sendto(std::string message, endpoint receive_ep)
     }
     return returnLen;
 }
+std::string NetWork::receive(boost::asio::ip::udp::endpoint &sender_ep)
+{
+    Package data;
+    bzero(&data,sizeof (data));
+    PackageHead pack_head;     //返回给客户端包正确的消息
+    bzero(&pack_head,sizeof (pack_head));
+    unsigned int crc32value;
+    long int id = 1;   //包序列号
 
+    char buffer[1024*10];
+    bzero(buffer,sizeof (buffer));   //消息缓存
+
+    //检测数据的完整
+    size_t len = m_sock->receive_from(boost::asio::buffer(reinterpret_cast<char*>(&data), sizeof(data)),sender_ep);
+
+    int count = data.head.count;
+    int read = 0;
+
+    while(count){
+        if(len < 0)
+            std::cout << "Receive Message From Client failed.\n";
+        else {
+            crc32value = crc32(crc,(unsigned char *)data.buff,sizeof(data));  //生成校验码
+            if(data.head.index == id)
+            {
+                if(data.head.crc32val == crc32value)
+                {
+                    pack_head.index = data.head.index;
+                    pack_head.len = len;
+                    ++id;
+                    m_sock->send_to(boost::asio::buffer((char *)&pack_head,sizeof(pack_head)),sender_ep);
+                    memcpy(buffer + read,data.buff,sizeof (data.buff));
+                    read += len;
+                }
+                else {
+                    //错误包，重发
+                    pack_head.index = data.head.index;
+                    pack_head.len = len;
+                    pack_head.errorFlag = 1;
+                    m_sock->send_to(boost::asio::buffer((char *)&pack_head,sizeof(pack_head)),sender_ep);
+                }
+            }
+            else if (data.head.index < 0) {//重发包
+                pack_head.index = data.head.index;
+                pack_head.len = len;
+                pack_head.errorFlag = 0;
+                m_sock->send_to(boost::asio::buffer((char *)&pack_head,sizeof(pack_head)),sender_ep);
+            }
+            else {
+                id = 1;
+            }
+        }
+        --count;
+    }
+    std::string s = buffer;
+
+    return s;
+}
 std::string NetWork::receive()
 {
     Package data;

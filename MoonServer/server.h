@@ -32,7 +32,13 @@ public:
 
     void sendFile(std::string filename,endpoint ep);  //发送文件
 
+    void receiveFile(std::string message,endpoint clientep);
+    void receiveFilename(boost::system::error_code &e,boost::asio::ip::udp::endpoint sender_ep,socket_ptr udpsock);
+    void receive_file_content();
 private:
+    FILE *fp;
+    File_info file_info;
+
     ThreadPool threadpool;
     ControllerFactory *m_controllerFactory;
     BrowseAndWatchController *m_BrowseAndWatchController;

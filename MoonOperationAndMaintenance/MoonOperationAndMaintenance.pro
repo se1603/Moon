@@ -40,3 +40,5 @@ HEADERS += \
     network.h
 
 LIBS += -lboost_system -lpthread -lboost_thread -ljsoncpp -lmysqlclient
+
+DISTFILES +=

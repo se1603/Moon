@@ -267,3 +267,68 @@ long NetWork::sendFile(FILE *fp, endpoint ep)
 }
 
 
+void NetWork::receiveFile(FILE *fp)
+{
+    int len = 0;
+    boost::asio::ip::udp::endpoint sender_ep;
+
+    unsigned int crc32tmp;
+    long int id = 1;
+    while(1)
+    {
+        PackageHead head; //定义确认包变量
+        Package data;
+
+        len = m_sock->receive_from(boost::asio::buffer(reinterpret_cast<char*>(&data), sizeof(data)),sender_ep);
+
+        //        std::cout << "len: " << len << std::endl;
+
+        if(len > 0)
+        {
+            //            std::cout << "len: " << len << std::endl;
+            crc32tmp = crc32(crc,(unsigned char *)data.buff,sizeof(data));
+            //            std::cout << "crc32:" << data.head.errorFlag << std::endl;
+            //            std::cout << "id:"  << data.head.id << std::endl;
+
+            if(data.head.index == id)
+            {
+                if(data.head.crc32val == crc32tmp)
+                {
+                    head.index = data.head.index;
+                    head.len = len;
+                    ++id;
+
+                    //                    std::cout << "data id: " << data.head.id << std::endl;
+                    m_sock->send_to(boost::asio::buffer((char *)&head,sizeof(head)),sender_ep);
+
+                    //                    std::cout << data.buff << std::endl;
+                    fwrite(data.buff,sizeof (char),data.head.len,fp);
+                }
+                else {
+                    //错误包，重发
+                    head.index = data.head.index;
+                    head.len = len;
+                    head.errorFlag = 1;
+
+                    m_sock->send_to(boost::asio::buffer((char *)&head,sizeof(head)),sender_ep);
+                }
+            }
+            else if(data.head.index < id){ //重发包
+                head.index = data.head.index;
+                head.len = len;
+                head.errorFlag = 0;
+
+                m_sock->send_to(boost::asio::buffer((char *)&head,sizeof(head)),sender_ep);
+            }
+            else {
+                break;
+            }
+        }
+        else {
+            std::cout << "accept " << std::endl;
+            break;
+        }
+    }
+    fclose(fp);
+    std::cout << "Transfer successful." << std::endl;
+}

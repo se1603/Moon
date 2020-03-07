@@ -730,3 +730,158 @@ std::string BrowseAndWatchController::getAdvertInformation(std::string name)
     std::string res = root.dump();
     return res;
 }
+std::string BrowseAndWatchController::initMovies(std::string bigType)
+{
+    json result;
+    result["request"] = "UP";
+    if(m_movieAndTelevisionBroker->initMovieandTelevision(bigType))
+    {
+        result["update"] = "UPSUCCEED";
+
+    }
+    else
+    {
+        result["update"] = "UPFAILED";
+    }
+
+    std::string replay = result.dump();
+    return replay;
+
+
+}
+std::string BrowseAndWatchController::delayTV(std::string interface)
+{
+    std::string result;
+
+    json value;
+    value["request"] = "RECOMMENDINTERFACE";
+    value["interface"] = interface;
+
+    if(interface == "电影")
+    {
+        json commonFilm;
+
+
+            std::vector<Film> films = m_movieAndTelevisionBroker->getRecommendFilms(99);
+            json arry;
+            json item;
+            for(int a = 0; a != films.size();a++)
+            {
+                std::vector<std::string> resource;
+                json film;
+                resource = films[a].show(false);
+                film["name"] = resource[0];
+                film["post"] = resource[1];
+
+                arry.push_back(film); //存小图电影
+                item["films"] = arry;
+
+            }
+
+            value["resource"] = item;
+//        }
+//        value["secondRecommends"] = commonFilm;   //普通
+
+    }
+    else if (interface == "剧集") {
+
+        json commonDrama;
+//        for(int i = 0; i != 6;i++)
+//        {
+            std::vector<Drama> dramas = m_movieAndTelevisionBroker->getRecommendDramas(2);
+            json arry;
+            json item;
+            for(int a = 0; a != dramas.size();a++)
+            {
+                std::vector<std::string> resource;
+                json drama;
+
+
+                resource = dramas[a].show(false);
+                drama["name"] = resource[0];
+                drama["post"] = resource[1];
+
+                arry.push_back(drama); //存小图
+                item["films"] = arry;
+
+            }
+
+            value["resource"] = item;
+//        }
+//        value["secondRecommends"] = commonDrama;   //普通
+
+    }
+    else if (interface == "动漫") {
+
+        json commonComic;
+//        for(int i = 0;i != 6;i++){
+            std::vector<Comic> comics = m_movieAndTelevisionBroker->getRecommendComics(99);
+            json array;
+            json item;
+            for(int a = 0;a != comics.size();a++){
+                std::vector<std::string> resource;
+                json comic;
+
+
+                resource = comics[a].show(false);
+                comic["name"] = resource[0];
+                comic["post"] = resource[1];
+
+                array.push_back(comic); //存小图电影
+                item["films"] = array;
+
+            }
+
+            value["resource"]  =item;
+//        }
+//        value["secondRecommends"] = commonComic;   //普通
+
+    }
+    else if(interface == "综艺")
+    {
+        json commonVariety;
+//        for(int i=0;i!=5;i++){
+            std::vector<Variety> varieties = m_movieAndTelevisionBroker->getRecommendVarieties(99);
+            json arry;
+            json item;
+            for(int a=0;a!=varieties.size();a++)
+            {
+                std::vector<std::string> resource;
+                json variety;
+
+                resource = varieties[a].show(false);
+                variety["name"] = resource[0];
+                variety["post"] = resource[1];
+
+                arry.push_back(variety);
+
+                item["films"] = arry;
+
+            }
+
+            value["resource"] = item;
+//        }
+//        value["secondRecommends"] = commonVariety;
+
+    }
+
+    result = value.dump();
+    return result;
+}
+std::string BrowseAndWatchController::deleteTv(std::string name, std::string type)
+{
+    json result;
+    result["request"] = "DELECT";
+    if(m_movieAndTelevisionBroker->delect(name,type))
+    {
+        result["delect"] = "DELECTSUCCEED";
+
+    }
+    else
+    {
+        result["delect"] = "DELECTFAILED";
+    }
+
+    std::string replay = result.dump();
+    return replay;
+}

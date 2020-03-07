@@ -261,6 +261,25 @@ void Server::processOMRequest(json j, endpoint ep)
     if(request == "DELETEVIDEOADVERTS"){
         replay = m_managerController->deleteVideoAdverts(j["videoname"],j["advertname"]);
         sendMessage(replay,ep);
+    }else if(request == "UP"){
+        json re = j["resource"];
+        std::string s = re.dump();
+        replay = m_BrowseAndWatchController->initMovies(s);
+        receiveFile(replay,ep);
+
+        std::string commend ="cp -r ./image.tar.gz ../MoonServer/images";
+        system(commend.c_str());
+    }else if(request == "CATEGORY"){
+        replay = m_BrowseAndWatchController->InterfaceCategory(j["interface"]);
+        sendMessage(replay,ep);
+
+    }else if(request =="RECOMMENDINTERFACE"){
+        replay = m_BrowseAndWatchController->delayTV(j["interface"]);
+        sendMessage(replay,ep);
+    }else if(request == "DELECT")
+    {
+        replay = m_BrowseAndWatchController->deleteTv(j["name"],j["type"]);
+        sendMessage(replay,ep);
     }
 }
 
@@ -351,4 +370,56 @@ void Server::sendFile(std::string filename, endpoint ep)
               << "  transferred_bytes: " << total_bytes_read << " bytes\n"
               << "speed: " <<  speed << " MB/s\n\n";
     return;
+}
+void Server::receiveFile(std::string message,endpoint clientep)
+{
+    std::cout << "Send message:"  << message << std::endl;
+    //创建一个新的套接字。
+    socket_ptr udpsock(new boost::asio::ip::udp::socket(service,boost::asio::ip::udp::endpoint()));
+    boost::asio::ip::udp::endpoint sender_ep;
+
+    NetWork sock(udpsock);
+
+    sock.sendto(message,clientep);
+
+    std::cout << "======Receive file size======" << std::endl;
+
+    udpsock->receive_from(boost::asio::buffer(reinterpret_cast<char*>(&file_info), sizeof(file_info)),sender_ep);  //接收文件大小
+
+    std::cout << "filename: " << file_info.filename_size << std::endl;
+    if(file_info.filename_size == 0){
+        std::cout << "The file doesn't exit." << std::endl;
+        return;
+    }
+    boost::system::error_code error;
+    receiveFilename(error,sender_ep,udpsock);
+}
+
+void Server::receiveFilename(boost::system::error_code &e, boost::asio::ip::udp::endpoint sender_ep, socket_ptr udpsock)
+{
+    std::cout << "======Receive fileName======" << std::endl;
+    if(e)
+    {
+        std::cout << boost::system::system_error(e).what() << std::endl;
+    }
+
+    int len = file_info.filename_size;
+    char filename[len];
+    memset(filename,0,sizeof (char) * len);
+
+    //    boost::asio::ip::udp::endpoint sender_ep;
+
+    udpsock->receive_from(boost::asio::buffer(filename,len),sender_ep); //接收文件名
+
+    std::cout << filename << std::endl;
+
+    fp = fopen(filename, "wb");
+    if (fp == NULL) {
+        std::cerr << "Failed to open file to write\n";
+        return;
+    }
+
+    NetWork sock(udpsock);
+
+    sock.receiveFile(fp);
 }

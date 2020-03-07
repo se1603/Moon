@@ -34,6 +34,7 @@ Rectangle {
         onClicked: {
             if(advertChoice.advertName !== ""){
                 commitAdd()
+                console.log(message)
             }
         }
     }

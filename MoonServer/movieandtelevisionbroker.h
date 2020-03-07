@@ -76,6 +76,13 @@ public:
     MovieAndTelevision *initAdvertLinks(std::string videoname, Advert* a);
     //删除广告链接
     bool deleteVideoAdverts(std::string videoname, std::string advertname);
+
+    bool initMovieandTelevision(std::string s);//添加影视信息到数据库
+    bool delect(std::string name,std::string type);//下架影视
+    std::string dealType(std::string type);//处理影视类型
+    std::string dealRegion(std::string region);//处理影视地域
+
+
 private:
     MovieAndTelevisionBroker();
     static MovieAndTelevisionBroker *m_instance;
