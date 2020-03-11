@@ -157,3 +157,30 @@ void Drama::showPost(std::string &post)
 {
     post = m_post[0];
 }
+
+bool Drama::findByTypeName(std::string type)
+{
+    std::string t;
+    if(m_type[0] == DramaType::Idol){
+        t = "偶像";
+    }else if(m_type[0] == DramaType::Family){
+        t = "家庭";
+    }else if(m_type[0] == DramaType::History){
+        t = "历史";
+    }else if(m_type[0] == DramaType::Suspense){
+        t = "悬疑";
+    }else if(m_type[0] == DramaType::Metropolis){
+        t = "都市";
+    }else if(m_type[0] == DramaType::MartialArts){
+        t = "武侠";
+    }else if(m_type[0] == DramaType::AncientCostume){
+        t = "古装";
+    }else if(m_type[0] == DramaType::ScienceFiction){
+        t = "科幻";
+    }
+
+    if(t == type)
+        return true;
+    else
+        return false;
+}

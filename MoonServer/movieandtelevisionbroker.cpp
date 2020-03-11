@@ -1177,6 +1177,65 @@ bool MovieAndTelevisionBroker::deleteVideoAdverts(std::string videoname, std::st
 
     return res;
 }
+
+std::vector<std::string> MovieAndTelevisionBroker::findCategory(std::string category)
+{
+    std::vector<std::string> vec={};
+
+    if(category == "电影"){
+        for(auto item = m_films.begin(); item != m_films.end(); item++){
+            vec.push_back(item->first);
+        }
+    }else if(category == "综艺"){
+        for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
+            vec.push_back(item->first);
+        }
+    }else if(category == "动漫"){
+        for(auto item = m_comics.begin(); item != m_comics.end(); item++){
+            vec.push_back(item->first);
+        }
+    }else if(category == "剧集"){
+        for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
+            vec.push_back(item->first);
+        }
+    }
+
+    return vec;
+}
+
+std::vector<std::string> MovieAndTelevisionBroker::findTypeVideo(std::string type, std::string category)
+{
+    std::vector<std::string> vec={};
+
+    if(category == "电影"){
+        for(auto item = m_films.begin(); item != m_films.end(); item++){
+            if(item->second.findByTypeName(type) == true){
+                vec.push_back(item->first);
+            }
+        }
+    }else if(category == "综艺"){
+        for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
+            if(item->second.findByTypeName(type) == true){
+                vec.push_back(item->first);
+            }
+        }
+    }else if(category == "动漫"){
+        for(auto item = m_comics.begin(); item != m_comics.end(); item++){
+            if(item->second.findByTypeName(type) == true){
+                vec.push_back(item->first);
+            }
+        }
+    }else if(category == "剧集"){
+        for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
+            if(item->second.findByTypeName(type) == true){
+                vec.push_back(item->first);
+            }
+        }
+    }
+
+    return vec;
+}
+
 bool MovieAndTelevisionBroker::initMovieandTelevision(std::string s)
 {
     json j = json::parse(s);

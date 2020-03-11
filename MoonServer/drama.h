@@ -36,6 +36,8 @@ public:
     void save(std::map<std::string,Drama> &Dramas);
 
     void showPost(std::string &post);
+
+    bool findByTypeName(std::string type);
 private:
     std::vector<DramaType> m_type;
 };

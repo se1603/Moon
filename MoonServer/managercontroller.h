@@ -30,7 +30,10 @@ public:
     //添加广告
     std::string addAdvert(std::string advertname, std::string company,
                           std::string duetime, std::string videosmessage,
-                          std::string videotype);
+                          std::string videotype, std::string detailtype);
+    //整个目录添加广告
+    std::string addAdvertToCategory(std::string advert, std::string company,
+                                    std::string duetime, std::string category);
     //搜索影视
     std::string searchVideo(std::string name);
     //初始化所有广告

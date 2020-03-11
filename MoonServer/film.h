@@ -45,6 +45,8 @@ public:
 
     void showPost(std::string &post);
 
+    bool findByTypeName(std::string type);
+
 private:
     std::vector<FilmType> m_type;
 };

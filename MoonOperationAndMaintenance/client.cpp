@@ -5,7 +5,7 @@
 #include <dirent.h>
 
 boost::asio::io_service service;
-boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.1.13"),8001);
+boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.43.76"),8001);
 boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7788));
 
 Client::Client(QObject *p) :
@@ -136,37 +136,70 @@ QString Client::showVideos(QString category, QString detailtype)
 }
 
 void Client::addAdvertToVideos(QString advert, QString company, QString duetime,
-                                QString videomessage, QString videotype)
+                               QString videomessage, QString videotype, QString detailtype,
+                               QString path)
 {
-//    std::vector<std::string> videos;
-//    splictString(videomessage.toStdString(),videos,"/");
-//    std::cout << advert.toStdString() << company.toStdString() << duetime.toStdString()
-//              << std::endl;
-//    for(auto i=videos.begin();i!=videos.end();i++){
-//        std::cout << *i << std::endl;
-//    }
+    //    std::vector<std::string> videos;
+    //    splictString(videomessage.toStdString(),videos,"/");
+    //    std::cout << advert.toStdString() << company.toStdString() << duetime.toStdString()
+    //              << std::endl;
+    //    for(auto i=videos.begin();i!=videos.end();i++){
+    //        std::cout << *i << std::endl;
+    //    }
 
-        json advertLinkvideo;
-        advertLinkvideo["system"] = "MANAGE";
-        advertLinkvideo["request"] = "ADDADVERT";
-        advertLinkvideo["advert"] = advert.toStdString();
-        advertLinkvideo["company"] = company.toStdString();
-        advertLinkvideo["duetime"] = duetime.toStdString();
-        advertLinkvideo["videos"] = videomessage.toStdString();
-        advertLinkvideo["videotype"] = videotype.toStdString();
-        std::string message = advertLinkvideo.dump();
+    json advertLinkvideo;
+    advertLinkvideo["system"] = "MANAGE";
+    advertLinkvideo["request"] = "ADDADVERT";
+    advertLinkvideo["advert"] = advert.toStdString();
+    advertLinkvideo["company"] = company.toStdString();
+    advertLinkvideo["duetime"] = duetime.toStdString();
+    advertLinkvideo["videos"] = videomessage.toStdString();
+    advertLinkvideo["videotype"] = videotype.toStdString();
+    advertLinkvideo["detailtype"] = detailtype.toStdString();
+    std::string message = advertLinkvideo.dump();
 
-        socket_ptr udpsockptr;
-        udpsockptr = sendMessage(message);
-        NetWork sock(udpsockptr);
-        std::string res = sock.receive();
+    std::cout << path.toStdString() << std::endl;
 
-        json replay = json::parse(res);
-        if(replay["replay"] == "SUCCEED"){
-            emit addAdvertSucceed();
-        }else if(replay["replay"] == "FAILED"){
-            emit addAdvertFailed();
-        }
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    boost::asio::ip::udp::endpoint sender_ep;
+    std::string res = sock.receive(sender_ep);
+    sendFile(path.toStdString(),sender_ep);
+
+    json replay = json::parse(res);
+    if(replay["replay"] == "SUCCEED"){
+        emit addAdvertSucceed();
+    }else if(replay["replay"] == "FAILED"){
+        emit addAdvertFailed();
+    }
+}
+
+void Client::addAdvertToCategory(QString advert, QString company, QString duetime, QString category, QString path)
+{
+    json categorys;
+    categorys["system"] = "MANAGE";
+    categorys["request"] = "ADDADVERTTOCATEGORY";
+    categorys["advert"] = advert.toStdString();
+    categorys["company"] = company.toStdString();
+    categorys["duetime"] = duetime.toStdString();
+    categorys["category"] = category.toStdString();
+    std::string message = categorys.dump();
+
+        std::cout << path.toStdString() << std::endl;
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    boost::asio::ip::udp::endpoint sender_ep;
+    std::string res = sock.receive(sender_ep);
+    sendFile(path.toStdString(),sender_ep);
+
+    json replay = json::parse(res);
+    if(replay["replay"] == "SUCCEED"){
+        emit addAdvertSucceed();
+    }else if(replay["replay"] == "FAILED"){
+        emit addAdvertFailed();
+    }
 }
 
 QString Client::searchVideos(QString name)
@@ -271,12 +304,12 @@ QString Client::getLocalMessages()
         std::vector<std::string> files;
         files = getFiles(path);
         if(files.empty()){
-             emit filmEmpty();
+            emit filmEmpty();
         }else{
 
             json up;
-        //    up["system"] = "MANAGE";
-        //    up["request"] = "UP";
+            //    up["system"] = "MANAGE";
+            //    up["request"] = "UP";
             json resources;
 
             for(int i = 0; i != files.size();i++)
@@ -309,11 +342,11 @@ QString Client::getLocalMessages()
                     value["actor"] = messages[i+6];
                     value["introduction"] = messages[i+7];
                     value["recommmd"] = messages[i+8];
-        //            std::string m = messages[i+9];
-        //            std::string s = messages[i+10];
-        //            m = m.erase(0,17);
-        //            s = s.erase(0,45);
-        //            std::string v = "."+s+m;
+                    //            std::string m = messages[i+9];
+                    //            std::string s = messages[i+10];
+                    //            m = m.erase(0,17);
+                    //            s = s.erase(0,45);
+                    //            std::string v = "."+s+m;
                     value["image"] = messages[i+9];
                     resources.push_back(value);
                     std:: cout << messages[i+9] << std::endl;
@@ -324,7 +357,7 @@ QString Client::getLocalMessages()
             up["resources"] = resources;
             std::string message = up.dump();
             QString qmlValues = QString::fromStdString(message);
-        //    qDebug() << qmlValue;
+            //    qDebug() << qmlValue;
             return qmlValues;
         }
     }
@@ -342,44 +375,44 @@ void Client::upServer()
         if(files.empty()){
             emit filmEmpty();
         }else{
-             readFile(files);
+            readFile(files);
         }
     }
-//        return;
+    //        return;
 
-//    std::string path = "./上架/";
-//    std::vector<std::string> files;
-//    files = getFiles(path);
-//    if(files.empty())
-//        return;
+    //    std::string path = "./上架/";
+    //    std::vector<std::string> files;
+    //    files = getFiles(path);
+    //    if(files.empty())
+    //        return;
 }
 
 void Client::deleteMovie(QString name,QString type)
 {
-//    std::vector<std::string> videos;
-//    splictString(name.toStdString(),videos,"/");
-//    std::string e = type.toStdString();
-//    std::string s = recommendInterfaceBuffer[e];
-//    json k = json::parse(s);
-//    json value = k["resource"]["films"];
-//    int index;
-//    for(int v = 0;v < videos.size();v++){
-//        for(int i = 0;i < value.size();i++){
-//            if(value[i]["name"] == videos[v]){
-//                std::cout<< i <<" "<< value.size() << std::endl;
-//                index  = i;
-//                break;
-//            }
-//        }
-//        auto num = value.size();
-//        std::cout << num << std::endl;
-//        for(int i = index;i < num;i++){
-//            value[i] = value[i+1];
-//        }
-//    }
+    //    std::vector<std::string> videos;
+    //    splictString(name.toStdString(),videos,"/");
+    //    std::string e = type.toStdString();
+    //    std::string s = recommendInterfaceBuffer[e];
+    //    json k = json::parse(s);
+    //    json value = k["resource"]["films"];
+    //    int index;
+    //    for(int v = 0;v < videos.size();v++){
+    //        for(int i = 0;i < value.size();i++){
+    //            if(value[i]["name"] == videos[v]){
+    //                std::cout<< i <<" "<< value.size() << std::endl;
+    //                index  = i;
+    //                break;
+    //            }
+    //        }
+    //        auto num = value.size();
+    //        std::cout << num << std::endl;
+    //        for(int i = index;i < num;i++){
+    //            value[i] = value[i+1];
+    //        }
+    //    }
 
-//    k["resource"]["films"] = value;
-//    recommendInterfaceBuffer[e] = k.dump();
+    //    k["resource"]["films"] = value;
+    //    recommendInterfaceBuffer[e] = k.dump();
 
     json delect;
     delect["system"] = "MANAGE";
@@ -510,6 +543,11 @@ void Client::sendFile(std::string filename, endpoint ep)
 
     std::string path = "./";
     path += filename;
+
+    std::string str = "//";
+    if(filename[0] = str[0]){
+        path = filename;
+    }
     std::cout << path << std::endl;
     auto fileName = path.data();
     FILE *fp = fopen(fileName,"rb");
@@ -634,7 +672,7 @@ std::vector<std::string> Client::getFiles(std::string path)
         std::cout<<"Can not open dir "<< path << std::endl;
         //        return;
     }else{
-         std::cout <<"Successfully opened the dir !" << std::endl;
+        std::cout <<"Successfully opened the dir !" << std::endl;
     }
 
     /* read all the files in the dir ~ */ //读取该目录下所有的文件名
@@ -653,10 +691,10 @@ std::vector<std::string> Client::getFiles(std::string path)
 void Client::readFile(std::vector<std::string> files)
 {
     std::string path = "./上架/";
-//    std::vector<std::string> files;
-//    files = getFiles(path);
-//    if(files.empty())
-//        return;
+    //    std::vector<std::string> files;
+    //    files = getFiles(path);
+    //    if(files.empty())
+    //        return;
 
 
     json up;
@@ -723,11 +761,11 @@ void Client::readFile(std::vector<std::string> files)
 
     if(result == "UPSUCCEED")
     {
-                std::string commend1 ="cp -r ../MoonOperationAndMaintenance/image ./";
-                system(commend1.c_str());
+        std::string commend1 ="cp -r ../MoonOperationAndMaintenance/image ./";
+        system(commend1.c_str());
         std::string commend = " tar zcvf image.tar.gz image";
         system(commend.c_str());
-//        tar zcvf FileName.tar.gz DirName
+        //        tar zcvf FileName.tar.gz DirName
         std::string fileName = "image.tar.gz";
         sendFile(fileName,sender_ep);
         emit upSucceed();
@@ -782,7 +820,7 @@ QString Client::showCategory(QString interface)
 
     QString qmlValue = QString::fromStdString(result);
 
-//    qDebug() << qmlValue;
+    //    qDebug() << qmlValue;
     return qmlValue;
 }
 
@@ -791,37 +829,37 @@ QString Client::showRecommend(QString interface)
     std::string result;
 
     //查找缓存
-//    if(recommendInterfaceBuffer.find(interface.toStdString()) !=
-//            recommendInterfaceBuffer.end())
-//    {
-//        result = recommendInterfaceBuffer[interface.toStdString()];
-//    }
-//    else
-//    {
-        json request;
-        request["system"] = "MANAGE";
-        request["request"] = "RECOMMENDINTERFACE";
-        request["interface"] = interface.toStdString();
+    //    if(recommendInterfaceBuffer.find(interface.toStdString()) !=
+    //            recommendInterfaceBuffer.end())
+    //    {
+    //        result = recommendInterfaceBuffer[interface.toStdString()];
+    //    }
+    //    else
+    //    {
+    json request;
+    request["system"] = "MANAGE";
+    request["request"] = "RECOMMENDINTERFACE";
+    request["interface"] = interface.toStdString();
 
-        std::string message = request.dump();
+    std::string message = request.dump();
 
-        socket_ptr udpsock;
-        udpsock = sendMessage(message);
-        NetWork sock(udpsock);
-        std::string res = sock.receive();
+    socket_ptr udpsock;
+    udpsock = sendMessage(message);
+    NetWork sock(udpsock);
+    std::string res = sock.receive();
 
-        json replay = json::parse(res);
-        json qmlValue;
-        qmlValue["resource"] = replay["resource"];
-//        qmlValue["firstRecommends"] = replay["firstRecommends"];
-//        qmlValue["secondRecommends"] = replay["secondRecommends"];
+    json replay = json::parse(res);
+    json qmlValue;
+    qmlValue["resource"] = replay["resource"];
+    //        qmlValue["firstRecommends"] = replay["firstRecommends"];
+    //        qmlValue["secondRecommends"] = replay["secondRecommends"];
 
-        result = qmlValue.dump();
+    result = qmlValue.dump();
 
-//        recommendInterfaceBuffer[interface.toStdString()] = result;
-//    }
+    //        recommendInterfaceBuffer[interface.toStdString()] = result;
+    //    }
 
     QString qmlValues = QString::fromStdString(result);
-//    qDebug() << qmlValue;
+    //    qDebug() << qmlValue;
     return qmlValues;
 }

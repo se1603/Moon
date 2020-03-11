@@ -38,7 +38,12 @@ public:
     //插播广告
     Q_INVOKABLE void addAdvertToVideos(QString advert, QString company,
                                        QString duetime, QString videomessage,
-                                       QString videotype);
+                                       QString videotype, QString detailtype,
+                                       QString path);
+    //插播整个目录
+    Q_INVOKABLE void addAdvertToCategory(QString advert, QString company,
+                                         QString duetime, QString category,
+                                         QString path);
     //搜索视频
     Q_INVOKABLE QString searchVideos(QString name);
     //读取视频广告信息
@@ -58,8 +63,6 @@ public:
     Q_INVOKABLE QString showCategory(QString interface);  //显示下架影视的分类
     Q_INVOKABLE QString showRecommend(QString interface);  //显示各个页面的推荐影视
     Q_INVOKABLE void deleteMovie(QString name,QString type);//下架影视
-
-
 
     void writeFile(std::string name,std::string message);//影视编辑编辑影视信息，写入本地文件
     std::vector<std::string> getFiles(std::string path);//获取上架文件

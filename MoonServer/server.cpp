@@ -208,6 +208,7 @@ void Server::processClientRequest(json j,endpoint ep)
     else if(request == "ADVERTADDRESS")
     {
         replay = m_BrowseAndWatchController->getAdvertInformation(j["name"]);
+        std::cout << replay << std::endl;
         sendMessage(replay,ep);
     }
     else if(request == "SEARCH")
@@ -246,7 +247,15 @@ void Server::processOMRequest(json j, endpoint ep)
     if(request == "ADDADVERT")
     {
         replay = m_managerController->addAdvert(j["advert"],j["company"],
-                j["duetime"], j["videos"],j["videotype"]);
+                j["duetime"], j["videos"],j["videotype"],j["detailtype"]);
+        receiveFile(replay,ep);
+        sendMessage(replay,ep);
+    }
+    if(request == "ADDADVERTTOCATEGORY")
+    {
+        replay = m_managerController->addAdvertToCategory(j["advert"], j["company"],
+                j["duetime"], j["category"]);
+        receiveFile(replay,ep);
         sendMessage(replay,ep);
     }
     if(request == "SEARCHVIDEO")

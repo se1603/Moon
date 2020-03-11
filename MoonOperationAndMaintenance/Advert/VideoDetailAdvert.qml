@@ -15,14 +15,7 @@ Rectangle {
 
     property var advertsmessage:""
     property var backmessage:""
-
-    Connections {
-        target: advertChoice.deletebutton
-        onClicked: {
-            if(advertList.model.length !== 0)
-                deleteAdvert()
-        }
-    }
+    property var videotype: parent.currentType
 
     Connections {
         target: client
@@ -42,17 +35,42 @@ Rectangle {
         id: videoRow
         width: parent.width
         height: 3 / 10 * parent.height
-        spacing: 1 / 20 * parent.width
+        spacing: 1 / 40 * parent.width
+
         Image {
             width: 120
             height: 160
             source: "file:" + parent.parent.parent.currentPost
         }
 
-        Text {
-            id: txt
-            text: parent.parent.parent.currentName
-            font.pixelSize: 18
+        Row {
+            Image {
+                width: 50
+                height: 50
+                source: "../image/advert/left.png"
+                opacity: 0.5
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: enabled
+                    enabled: true
+                    onEntered: {
+                        parent.opacity = 1
+                    }
+                    onExited: {
+                        parent.opacity = 0.5
+                    }
+                    onClicked: {
+                        advertStack.push(advertAdd,StackView.Immediate)
+                    }
+                }
+            }
+
+            Text {
+                id: txt
+                text: parent.parent.parent.parent.currentName
+                font.pixelSize: 18
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
     }
 
@@ -73,9 +91,28 @@ Rectangle {
                 anchors.topMargin: spacing
                 spacing: 1 / 20 * videoRow.height
 
+                Row {
+                    width: parent.width
+                    spacing: 19 / 36 * parent.width
+
+                    Text {
+                        id: txttitle
+                        text: "该影视所投放的广告："
+                        font.pixelSize: 22
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Button {
+                        text: "勾选删除"
+                        onClicked: {
+                            deleteAdvert()
+                        }
+                    }
+                }
+
                 Text {
                     id: notice
-                    text: "暂时没有任何广告"
+                    text: "暂无"
                     font.pixelSize: 22
                     color: "#696969"
                     visible: (advertsRec.adverts[0].name === "NULL"
@@ -172,7 +209,7 @@ Rectangle {
                     onClicked: {
                         client.deleteVideoAdverts(txt.text, advertsmessage)
                         advertsRec.adverts =
-                                JSON.parse(client.showVideoAdverts(txt.text, "空"))
+                                JSON.parse(client.showVideoAdverts(txt.text, videotype))
                     }
                 }
                 Button {

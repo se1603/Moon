@@ -32,6 +32,8 @@ Rectangle {
     property bool xLflag: true
     property string url: middleArea.playUrl
 
+    property var adverts: JSON.parse(client.advertInfo(play.name))
+
     Component.onCompleted: {
         middleArea.stopPlay.connect(myplayer.stopPlay)
     }
@@ -130,6 +132,10 @@ Rectangle {
                 onClicked: {
                     right_stack.push(comment_page,StackView.Immediate)
                 }
+            }
+            Text{
+                text: adverts[0].rtsp
+                font.pixelSize: 6
             }
         }
 

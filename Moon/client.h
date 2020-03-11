@@ -83,7 +83,8 @@ public:
 
     //搜索
     Q_INVOKABLE QString search(QString key);
-
+    //获取广告地址
+    Q_INVOKABLE QString advertInfo(QString videoname);
 signals:
     //用户信号
     void loginsucceed(QString name,QString avatar);

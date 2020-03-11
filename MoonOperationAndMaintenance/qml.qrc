@@ -36,5 +36,7 @@
         <file>image/avatar/8.jpeg</file>
         <file>image/avatar/9.jpg</file>
         <file>mtv/EmptyDialog.qml</file>
+        <file>image/advert/left.png</file>
+        <file>image/advert/right.png</file>
     </qresource>
 </RCC>

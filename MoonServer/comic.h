@@ -37,6 +37,8 @@ public:
     void save(std::map<std::string,Comic> &comics);
 
     void showPost(std::string &post);
+
+    bool findByTypeName(std::string type);
 private:
     std::vector<ComicType> m_type;
 };

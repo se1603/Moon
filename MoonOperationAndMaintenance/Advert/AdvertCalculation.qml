@@ -19,20 +19,45 @@ Rectangle {
         height: 1 / 10 * parent.height
         spacing: txtInput.height
         anchors.top: parent.top
-        anchors.topMargin: 1 / 20 * parent.height
+        anchors.topMargin: 1 / 40 * parent.height
+
+        Image {
+            width: 50
+            height: 50
+            source: "../image/advert/left.png"
+            opacity: 0.5
+            anchors.verticalCenter: parent.verticalCenter
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: enabled
+                enabled: true
+                onEntered: {
+                    parent.opacity = 1
+                }
+                onExited: {
+                    parent.opacity = 0.5
+                }
+                onClicked: {
+                    advertStack.push(advertAdd,StackView.Immediate)
+                }
+            }
+        }
 
         Text {
             text: "搜索公司名称："
             font.pixelSize: 16
+            anchors.verticalCenter: parent.verticalCenter
         }
 
         TextField {
             id: txtInput
+            anchors.verticalCenter: parent.verticalCenter
         }
 
         Image {
             id: searchbutton
             source: "qrc:/image/advert/search.png"
+            anchors.verticalCenter: parent.verticalCenter
             MouseArea {
                 anchors.fill: parent
                 onClicked:

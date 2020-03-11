@@ -35,6 +35,8 @@ public:
     void save(std::map<std::string,Variety> &varietys);
 
     void showPost(std::string &post);
+
+    bool findByTypeName(std::string type);
 private:
     std::vector<VarietyType> m_type;
 };

@@ -12,10 +12,9 @@ Rectangle {
     border.color: "gray"
 
     property var advertName: ""
+    property var path:""
 
     property alias addbutton:addbutton
-    property alias allbutton:allbutton
-    property alias deletebutton:deletebutton
 
     ColumnLayout {
         id: choiceColumn
@@ -27,6 +26,11 @@ Rectangle {
         Button {
             text: "选择广告"
             onClicked: {
+                advertDir.folderPathName = "file:///root"
+                advertDir.changePathName = ""
+                advertDir.absolutePath = "/root"
+                advertDir.advertname = ""
+                advertDir.folder = advertDir.folderPathName
                 advertDir.open()
             }
         }
@@ -37,20 +41,10 @@ Rectangle {
         }
 
         Button {
-            id: allbutton
-            text: "此页影视全选"
-        }
-
-        Button {
             text: "搜索单个影视"
             onClicked: {
                 advertLoader.source = "SearchVideo.qml"
             }
-        }
-
-        Button {
-            id: deletebutton
-            text: "删除广告"
         }
     }
 
@@ -59,6 +53,8 @@ Rectangle {
         anchors.top: choiceColumn.bottom
         anchors.topMargin: choiceColumn.spacing
         anchors.horizontalCenter: parent.horizontalCenter
-        text: "已选广告：" + '\n\n' + advertName
+        width: 5 / 6 * parent.width
+        text: "已选广告：" + '\n\n' + path
+        wrapMode: Text.Wrap
     }
 }

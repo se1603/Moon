@@ -107,11 +107,16 @@ std::string ManagerController::showCategoryType(std::string category)
 
 std::string ManagerController::addAdvert(std::string advertname, std::string company,
                                          std::string duetime, std::string videosmessage,
-                                         std::string videotype)
+                                         std::string videotype, std::string detailtype)
 {
     json value;
     std::vector<std::string> videos;
-    splictString(videosmessage,videos,"/");
+    if(videosmessage != "")
+        splictString(videosmessage,videos,"/");
+
+    std::vector<std::string> types;
+    if(detailtype != "")
+        splictString(detailtype,types,"/");
 
     bool res1 = m_advertBroker->addAdvert(advertname, company, duetime);
 
@@ -129,6 +134,47 @@ std::string ManagerController::addAdvert(std::string advertname, std::string com
             auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,videotype);
             m_advertBroker->initVideoLink(advertname, mv);
             m_advertBroker->addAdvertLinkVideo(advertname, v);
+        }
+
+        for(auto &t:types){
+            auto vec = m_movieAndTelevisionBroker->findTypeVideo(t,videotype);
+            for(auto &v:vec){
+                auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,videotype);
+                m_advertBroker->initVideoLink(advertname, mv);
+                m_advertBroker->addAdvertLinkVideo(advertname, v);
+            }
+        }
+
+        value["replay"] = "SUCCEED";
+    }
+    else{
+        value["replay"] = "FAILED";
+    }
+    std::string replay = value.dump();
+    return replay;
+}
+
+std::string ManagerController::addAdvertToCategory(std::string advert, std::string company, std::string duetime, std::string category)
+{
+    json value;
+
+    bool res1 = m_advertBroker->addAdvert(advert, company, duetime);
+
+    Advert* a;
+
+    if(res1 == true){
+        a = m_advertBroker->createAdvertEntity(advert,company,duetime);
+    }else{
+        a = m_advertBroker->findAdvert(advert);
+    }
+
+    if(a != nullptr){
+
+        auto videos = m_movieAndTelevisionBroker->findCategory(category);
+        for(auto &v:videos){
+            auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,category);
+            m_advertBroker->initVideoLink(advert, mv);
+            m_advertBroker->addAdvertLinkVideo(advert, v);
         }
 
         value["replay"] = "SUCCEED";

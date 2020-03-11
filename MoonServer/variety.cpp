@@ -103,7 +103,7 @@ void Variety::recodeInfo(std::string name, std::vector<std::string> &v)
                 break;
             }
             case VarietyType::TalentShow:{
-                v.push_back("悬疑");
+                v.push_back("选秀");
                 break;
             }
             case VarietyType::Travel:{
@@ -114,8 +114,6 @@ void Variety::recodeInfo(std::string name, std::vector<std::string> &v)
                 v.push_back("纪实");
                 break;
             }
-            default:v.push_back("选秀");
-                break;
             }
         }
     }else{
@@ -156,4 +154,29 @@ void Variety::save(std::map<std::string, Variety> &varietys)
 void Variety::showPost(std::string &post)
 {
     post = m_post[0];
+}
+
+bool Variety::findByTypeName(std::string type)
+{
+    std::string t;
+    if(m_type[0] == VarietyType::Food){
+        t = "美食";
+    }else if(m_type[0] == VarietyType::Funny){
+        t = "搞笑";
+    }else if(m_type[0] == VarietyType::Travel){
+        t = "旅游";
+    }else if(m_type[0] == VarietyType::Interview){
+        t = "访谈";
+    }else if(m_type[0] == VarietyType::TalentShow){
+        t = "选秀";
+    }else if(m_type[0] == VarietyType::RealityShow){
+        t = "真人秀";
+    }else if(m_type[0] == VarietyType::ActualRecord){
+        t = "纪实";
+    }
+
+    if(t == type)
+        return true;
+    else
+        return false;
 }

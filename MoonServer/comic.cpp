@@ -105,6 +105,9 @@ void Comic::recodeInfo(std::string name, std::vector<std::string> &v)
             if(t == ComicType::Youth){
                 v.push_back("青春");
             }
+            if(t == ComicType::WarmBlood){
+                v.push_back("热血");
+            }
 //            switch(t){
 //            case ComicType::Campus:{
 //                v.push_back("校园");
@@ -172,4 +175,29 @@ void Comic::save(std::map<std::string, Comic> &comics)
 void Comic::showPost(std::string &post)
 {
     post = m_post[0];
+}
+
+bool Comic::findByTypeName(std::string type)
+{
+    std::string t;
+    if(m_type[0] == ComicType::Love){
+        t = "恋爱";
+    }else if(m_type[0] == ComicType::Youth){
+        t = "青春";
+    }else if(m_type[0] == ComicType::Campus){
+        t = "校园";
+    }else if(m_type[0] == ComicType::Combat){
+        t = "格斗";
+    }else if(m_type[0] == ComicType::Kayoing){
+        t = "美少女";
+    }else if(m_type[0] == ComicType::RobotWars){
+        t = "机战";
+    }else if(m_type[0] == ComicType::WarmBlood){
+        t = "热血";
+    }
+
+    if(t == type)
+        return true;
+    else
+        return false;
 }

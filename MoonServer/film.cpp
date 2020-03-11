@@ -166,6 +166,33 @@ void Film::showPost(std::string &post)
     post = m_post[0];
 }
 
+bool Film::findByTypeName(std::string type)
+{
+    std::string t;
+    if(m_type[0] == FilmType::MartialArts){
+        t = "武侠";
+    }else if(m_type[0] == FilmType::Suspense){
+        t = "悬疑";
+    }else if(m_type[0] == FilmType::Comedy){
+        t = "喜剧";
+    }else if(m_type[0] == FilmType::Action){
+        t = "动作";
+    }else if(m_type[0] == FilmType::Love){
+        t = "爱情";
+    }else if(m_type[0] == FilmType::Cartoon){
+        t = "动画";
+    }else if(m_type[0] == FilmType::Terror){
+        t = "惊悚";
+    }else if(m_type[0] == FilmType::ScienceFiction){
+        t = "科幻";
+    }
+
+    if(type == t)
+        return true;
+    else
+        return false;
+}
+
 //MartialArts = 1,    //武侠
 //Suspense = 2,       //悬疑
 //Comedy = 3,         //喜剧

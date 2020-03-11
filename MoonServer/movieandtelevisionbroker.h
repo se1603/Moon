@@ -76,6 +76,10 @@ public:
     MovieAndTelevision *initAdvertLinks(std::string videoname, Advert* a);
     //删除广告链接
     bool deleteVideoAdverts(std::string videoname, std::string advertname);
+    //获取目录影视
+    std::vector<std::string> findCategory(std::string category);
+    //获取细类影视
+    std::vector<std::string> findTypeVideo(std::string type, std::string category);
 
     bool initMovieandTelevision(std::string s);//添加影视信息到数据库
     bool delect(std::string name,std::string type);//下架影视

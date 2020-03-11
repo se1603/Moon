@@ -16,17 +16,13 @@ Rectangle {
     property var backmessage: ""
 
     Connections {
-        target: advertChoice.allbutton
-        onClicked: {
-            allBeChoosen(true)
-        }
-    }
-
-    Connections {
         target: advertChoice.addbutton
         onClicked: {
             if(advertChoice.advertName){
                 commitAdd()
+            }else{
+                backmessage = "请先勾选待插播视频并选取广告!"
+                messageDialog.open()
             }
         }
     }
@@ -106,6 +102,32 @@ Rectangle {
                             width: parent.width
                             height: 5 / 6 * parent.height
                             source: "file:" + parent.source
+                            Text {
+                                id: notes
+                                visible: false
+                                text: "点击查看详情"
+                                font.pixelSize: 16
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                enabled: true
+                                onEntered: {
+                                    parent.opacity = 0.5
+                                    notes.visible = true
+                                }
+                                onExited: {
+                                    parent.opacity = 1
+                                    notes.visible = false
+                                }
+                                onClicked: {
+                                    advertLoader.currentName = parent.parent.name
+                                    advertLoader.currentPost = parent.parent.source
+                                    advertLoader.source = "VideoDetailAdvert.qml"
+                                }
+                            }
                         }
                         CheckBox {
                             id: videoCheck
@@ -129,77 +151,117 @@ Rectangle {
         visible: false
         anchors.centerIn: parent
 
-        GridLayout {
-            id: content
+        ColumnLayout {
+            width: 3 / 4 * parent.width
+            height: parent.height
             anchors.top: parent.top
-            anchors.topMargin: 20
+            anchors.topMargin: 5
             anchors.horizontalCenter: parent.horizontalCenter
-            columnSpacing: 10
-            rowSpacing: 20
-            columns: 2
+            spacing: 10
 
-            Text {
-                text: qsTr("广告名称")
-                font.pixelSize: 14
+            Row {
+                spacing: 14
+                Text {
+                    text: qsTr("广告名称")
+                    font.pixelSize: 14
+                }
+
+                Text {
+                    text: advertName
+                    font.pixelSize: 14
+                }
             }
 
-            Text {
-                text: advertName
-                font.pixelSize: 14
+            Row{
+                spacing: 40
+                Text {
+                    text: qsTr("公司")
+                    font.pixelSize: 14
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                TextField {
+                    id: txtCompany
+                    font.pixelSize: 14
+                }
             }
 
-            Text {
-                text: qsTr("公司")
-                font.pixelSize: 14
+            Row{
+                spacing: 12
+                Text {
+                    text: qsTr("到期时间")
+                    font.pixelSize: 14
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                TextField {
+                    id: txtYear
+                    font.pixelSize: 14
+                    width: 60
+                }
+
+                Text {
+                    text: "-"
+                    font.pixelSize: 14
+                }
+
+                TextField {
+                    id: txtMonth
+                    font.pixelSize: 14
+                    width: 30
+                }
+
+                Text {
+                    text: "-"
+                    font.pixelSize: 14
+                }
+
+                TextField {
+                    id: txtDay
+                    font.pixelSize: 14
+                    width: 30
+                }
             }
 
-            TextField {
-                id: txtCompany
-                font.pixelSize: 14
-            }
-
-            Text {
-                text: qsTr("到期时间")
-                font.pixelSize: 14
-            }
-
-            TextField {
-                id: txtDuetime
-                font.pixelSize: 14
-            }
-        }
-
-        Text {
-            id: messages
-            text: "待插播视频：" + message
-            font.pixelSize: 14
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: content.bottom
-            anchors.topMargin: 20
-            width: content.width
-            wrapMode: Text.Wrap
-        }
-
-        Row{
-            anchors.top: messages.bottom
-            anchors.topMargin: 30
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 30
-            Button {
-                text: qsTr("Commit")
-                onClicked: {
-                    if(txtCompany.text !== "" && txtDuetime.text !== ""){
-                        client.addAdvertToVideos(advertName, txtCompany.text,
-                                                  txtDuetime.text, message,
-                                                 "未知")
+            Rectangle {
+                id: txtRec
+                width: parent.width
+                height: 50
+                ScrollView{
+                    anchors.fill: parent
+                    clip: true
+                    Column{
+                        Text {
+                            id: messages
+                            text: "待插播视频：\n" + message
+                            font.pixelSize: 14
+                            width: txtRec.width
+                            wrapMode: Text.Wrap
+                        }
                     }
                 }
             }
 
-            Button {
-                text: qsTr("CLose")
-                onClicked: {
-                    commitDialog.close()
+            Row{
+                spacing: 50
+                Button {
+                    text: qsTr("Commit")
+                    onClicked: {
+                        var txtTime = txtYear.text+"-"+txtMonth.text+"-"+txtDay.text
+                        if(txtCompany.text !== "" && txtDuetime.text !== ""){
+                            client.addAdvertToVideos(advertName, txtCompany.text,
+                                                     txtTime, message,
+                                                     "未知")
+                            advertChoice.advertName = ""
+                        }
+                    }
+                }
+
+                Button {
+                    text: qsTr("CLose")
+                    onClicked: {
+                        commitDialog.close()
+                    }
                 }
             }
         }
@@ -218,6 +280,8 @@ Rectangle {
 
             Text {
                 text: backmessage
+                width: parent.width
+                wrapMode: Text.Wrap
             }
 
             Button {
@@ -246,6 +310,7 @@ Rectangle {
         }
 
         advertName = advertChoice.advertName
+        advertPath = advertChoice.path
 
         if(advertName !== "" && message !== ""){
             commitDialog.open()
