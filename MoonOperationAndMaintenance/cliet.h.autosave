@@ -1,0 +1,19 @@
+#ifndef CLIET_H
+#define CLIET_H
+
+#include <QObject>
+#include "network.h"
+#include "json.hpp"
+
+using json = nlohmann::json;
+
+class Cliet : public QObject
+{
+    Q_OBJECT
+public:
+    Cliet(QObject *p = nullptr);
+    
+    socket_ptr sendMessage(std::string message);
+};
+
+#endif // CLIET_H
