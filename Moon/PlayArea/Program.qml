@@ -12,10 +12,6 @@ Rectangle {
     property string info: ""
     property string imge:""
 
-
-    property var date:new Date()
-    property var collections
-
     property var datas: play.datas
     width: right_stack.width
     height: right_stack.height
@@ -86,34 +82,12 @@ Rectangle {
         anchors.leftMargin: 10
         width: 100
         height: 30
-        spacing: 5
+        spacing: 15
         Image{
             id:dowm_img
             width: 25
             height: 30
             source: "qrc:/image/play/download.png"
-        }
-        Image{
-            id:collect_img
-            width: 25
-            height: 30
-            source: "qrc:/image/play/collect.png"
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    var year = date.getFullYear()
-                    var month = date.getMonth()+1
-                    var day = date.getDate()
-                    var hours = date.getHours()
-                    var minutes = date.getMinutes()
-                    var collecttime = year+"-"+month+"-"+day+"-"+hours+":"+minutes
-                    if(audienceInterface.audienceName === ""){
-                        audienceItem.open()
-                    }else{
-                        search(play.name,collecttime)
-                    }
-                }
-            }
         }
         Image {
             id: share_img
@@ -149,21 +123,4 @@ Rectangle {
     DetailPop{
           id:pop
       }
-
-    function search(cName,collecttime){
-        var flag = 0
-        collections = JSON.parse(client.audienceCollection(audienceInterface.audienceName))
-        for(var i=0;i<collections.length;i++){
-            if(cName === collections[i].name){
-                notice.text = "已经收藏过了"
-                flag = 1
-            }
-        }
-
-        if(flag === 0){
-            notice.text = "正在收藏..."
-            client.addCollection(audienceInterface.audienceName,
-                                 collecttime,play.name,play.datas.resource.category)
-        }
-    }
 }

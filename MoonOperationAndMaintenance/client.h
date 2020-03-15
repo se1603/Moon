@@ -52,6 +52,8 @@ public:
     Q_INVOKABLE QString showCompanyClicksRank(QString companyname);
     //删除广告
     Q_INVOKABLE void deleteVideoAdverts(QString videoname, QString advertname);
+    //分割时间
+    Q_INVOKABLE QString cliptime(QString duetime);
 
 
     Q_INVOKABLE void getMovieInfo(QString name, QString message,QString pAdress,QString sAdress);//获取影视信息写入本地文件

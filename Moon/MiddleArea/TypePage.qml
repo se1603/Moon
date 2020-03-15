@@ -10,6 +10,8 @@ Rectangle {
     property var showResource: browsePage.showTypeResource
     property alias typeModel: typeMenuRepeater.model
 
+    property var date: new Date()
+
     ScrollView{
         anchors.fill: parent
         clip: true

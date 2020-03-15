@@ -10,6 +10,8 @@ Rectangle {
     anchors.fill: parent
     property var showResult: middleArea.searchResource.resource
 
+    property var date: new Date()
+
     //顶部提示栏
 //    Rectangle{
 //        id:toprectangle
@@ -226,7 +228,11 @@ Rectangle {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 onClicked: {
-                                    middleArea.stopPlay()
+                                    //开始记录
+                                    middleArea.recordTime()
+
+                                    middleArea.stopPlay(modelData.name)
+
                                     playName = modelData.name
                                     playPost = poster.source
                                     playUrl = modelData.rtspURL

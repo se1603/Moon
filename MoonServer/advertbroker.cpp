@@ -18,12 +18,6 @@ AdvertBroker::~AdvertBroker()
 
 bool AdvertBroker::addAdvert(std::string advertname, std::string company, std::string duetime)
 {
-    for(auto item = currentAdverts.begin(); item != currentAdverts.end(); item++){
-        if(item->first == advertname){
-            return false;
-        }
-    }
-
     MYSQL* mysql;
     mysql = new MYSQL;
 

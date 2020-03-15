@@ -72,5 +72,6 @@
         <file>PlayArea/Record.qml</file>
         <file>PlayArea/VideoPlayer.qml</file>
         <file>MiddleArea/SearchResult.qml</file>
+        <file>image/videoController/star2.png</file>
     </qresource>
 </RCC>

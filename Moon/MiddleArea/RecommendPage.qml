@@ -151,10 +151,15 @@ Rectangle {
                                         MouseArea{
                                             anchors.fill: parent
                                             onClicked: {
-                                                middleArea.stopPlay()
+                                                //开始记录
+                                                middleArea.recordTime()
+
+                                                middleArea.stopPlay(postName.text)
+
                                                 playName = postName.text
                                                 playPost = postimage.source
                                                 playUrl = modelData.rtspURL
+
                                                 middleArea.middleLoader.visible = false
                                                 middleArea.playLoader.visible = true
                                                 adverts = JSON.parse(client.advertInfo(playName))

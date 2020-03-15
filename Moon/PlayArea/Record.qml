@@ -7,7 +7,7 @@ ScrollView{
     id:all_scroll
     clip: true
 
-//    property var records:JSON.parse(client.browseRecord())
+    property var records:JSON.parse(client.browseRecord())
 
     ListView{
         id:listview

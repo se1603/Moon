@@ -5,7 +5,7 @@
 #include <dirent.h>
 
 boost::asio::io_service service;
-boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.1.13"),8001);
+boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.43.76"),8001);
 boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7788));
 
 Client::Client(QObject *p) :
@@ -282,6 +282,26 @@ void Client::deleteVideoAdverts(QString videoname, QString advertname)
     }
 }
 
+QString Client::cliptime(QString duetime)
+{
+    std::string time = duetime.toStdString();
+    std::vector<std::string> vec;
+    splictString(time,vec,"-");
+    if(vec[1].length() == 1){
+        auto tmp = vec[1];
+        vec[1] = '0';
+        vec[1]+=tmp;
+    }
+    if(vec[2].length() == 1){
+        auto tmp = vec[2];
+        vec[2] = '0';
+        vec[2]+=tmp;
+    }
+    std::string str = vec[0]+vec[1]+vec[2];
+    QString qmlvalue = QString::fromStdString(str);
+    return qmlvalue;
+}
+
 void Client::getMovieInfo(QString name,QString message,QString pAdress,QString sAdress)
 {
     makeFile();
@@ -548,6 +568,9 @@ void Client::sendFile(std::string filename, endpoint ep)
     if(filename[0] = str[0]){
         path = filename;
     }
+    std::vector<std::string> vec={};
+    splictString(filename,vec,"/");
+    filename = "../build-RtspServer-Desktop_Qt_5_13_2_GCC_64bit-Debug/adverts/"+vec[vec.size()-1];
     std::cout << path << std::endl;
     auto fileName = path.data();
     FILE *fp = fopen(fileName,"rb");

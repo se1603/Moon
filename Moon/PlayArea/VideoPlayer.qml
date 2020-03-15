@@ -24,6 +24,61 @@ Rectangle {
 
     property var clickAvert: 0
 
+    property var lastName:middleArea.playName
+    property var lastPost:middleArea.playPost
+    property var lastType:middleArea.playType
+    property var startTime:""
+    property var lastStartTime:""
+
+    property var date:new Date()
+    property var collections: (audienceInterface.audienceName === "") ? ""
+                                                                      :        JSON.parse(client.audienceCollection(audienceInterface.audienceName))
+
+    Connections {
+        target: middleArea
+        onStopPlay: {
+            if(newName !== lastName){
+                cplayer.stop()
+                if(lastName !== "" && lastStartTime !== "" && lastPost !== ""){
+                    //终止记录
+                    var stop = new Date()
+                    var hours = stop.getHours()
+                    var minutes = stop.getMinutes()
+                    var seconds = stop.getSeconds()
+                    var time = hours+":"+minutes+":"+seconds
+                    client.addBrowseRecord(lastName, startTime, time, lastPost)
+                }
+
+                //                if(audienceInterface.audienceName === ""){
+                //                    client.addBrowseRecord(lastName, startTime, stopTime, lastPost)
+                //                }
+                //                else{
+                //                    client.addRecord(audienceInterface.audienceName,
+                //                                     lastName, startTime, stopTime, lastType)
+                //                    client.addBrowseRecord(lastName, startTime, stopTime, lastPost);
+                //                }
+            }
+        }
+        onRecordTime: {
+            //get
+            var year = date.getFullYear()
+            var month = date.getMonth()+1
+            var day = date.getDate()
+            var hours = date.getHours()
+            var minutes = date.getMinutes()
+            var seconds = date.getSeconds()
+            var starttime = year+"-"+month+"-"+day+"-"+hours+":"+minutes+":"+seconds
+            if(startTime === ""){
+                startTime = starttime
+                lastStartTime = ""
+            }else{
+                lastStartTime = startTime
+                startTime = starttime
+            }
+        }
+    }
+
+
     CVideoPlayer{
         id: cplayer
         anchors.fill: parent
@@ -145,6 +200,7 @@ Rectangle {
             if(isPlayingAdvert)
             {
                 clickAvert++
+                //add
                 console.log(clickAvert)
             }
             else
@@ -447,10 +503,30 @@ Rectangle {
                 anchors.right: fullScreen.left
                 anchors.rightMargin: 20
                 Image {
+                    id: starImg
                     width: parent.height
                     height: parent.height
                     anchors.fill: parent
-                    source: "../image/videoController/star.png"
+                    source: (collections.length !== 0 && search(play.name) === true)
+                            ? "../image/videoController/star2.png"
+                            : "../image/videoController/star.png"
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            var year = date.getFullYear()
+                            var month = date.getMonth()+1
+                            var day = date.getDate()
+                            var hours = date.getHours()
+                            var minutes = date.getMinutes()
+                            var collecttime = year+"-"+month+"-"+day+"-"+hours+":"+minutes
+                            if(audienceInterface.audienceName === ""){
+                                audienceItem.open()
+                            }else{
+                                addCollection(play.name,collecttime)
+                                collections = JSON.parse(client.audienceCollection(audienceInterface.audienceName))
+                            }
+                        }
+                    }
                 }
             }
 
@@ -595,4 +671,30 @@ Rectangle {
 
     }
 
+    function search(cName){
+        var flag = 0
+        for(var i=0;i<collections.length;i++){
+            if(cName === collections[i].name){
+                flag = 1
+            }
+        }
+        if(flag === 0)
+            return false
+        else
+            return true
+    }
+
+    function addCollection(cName,collecttime){
+
+        var flag = 0
+        for(var i=0;i<collections.length;i++){
+            if(cName === collections[i].name){
+                flag = 1
+            }
+        }
+        if(flag === 0) {
+            client.addCollection(audienceInterface.audienceName,
+                                 collecttime,play.name,play.datas.resource.category)
+        }
+    }
 }

@@ -207,7 +207,7 @@ void AudienceBroker::createAudienceRecord(std::string aname, std::string startPl
     }
 }
 
-void AudienceBroker::readAudienceRecord(std::string name, std::map<std::string, MovieAndTelevision *> &recordmap)
+void AudienceBroker::readAudienceRecord(std::string name, std::multimap<std::string, MovieAndTelevision *> &recordmap)
 {
     for(auto &la:loginedAudiences){
         if(la.verifyName(name) == true){
@@ -216,7 +216,7 @@ void AudienceBroker::readAudienceRecord(std::string name, std::map<std::string, 
     }
 }
 
-void AudienceBroker::readAudienceCollection(std::string name, std::map<std::string, MovieAndTelevision *> &collectionmap)
+void AudienceBroker::readAudienceCollection(std::string name, std::multimap<std::string, MovieAndTelevision *> &collectionmap)
 {
     for(auto &la:loginedAudiences){
         if(la.verifyName(name) == true){

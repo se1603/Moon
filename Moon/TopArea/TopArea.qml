@@ -52,6 +52,7 @@ Rectangle {
                 middleArea.middleLoader.visible = true
                 middleArea.playLoader.visible = false
                middleArea.middleLoader.sourceComponent = middleArea.browsePage
+                middleArea.audienceInterface.visible = false
             }
         }
     }
@@ -82,6 +83,7 @@ Rectangle {
             onClicked: {
                 middleArea.middleLoader.visible = false
                 middleArea.playLoader.visible = true
+                middleArea.audienceInterface.visible = false
             }
         }
     }

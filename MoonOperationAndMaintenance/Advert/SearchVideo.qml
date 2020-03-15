@@ -247,7 +247,7 @@ Rectangle {
                 Button {
                     text: qsTr("Commit")
                     onClicked: {
-                        var txtTime = txtYear.text+"-"+txtMonth.text+"-"+txtDay.text
+                        var txtTime = txtYear.text+txtMonth.text+txtDay.text
                         if(txtCompany.text !== "" && txtDuetime.text !== ""){
                             client.addAdvertToVideos(advertName, txtCompany.text,
                                                      txtTime, message,

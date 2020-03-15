@@ -145,8 +145,7 @@ Item {
                         audienceItem.open()
                     }else if(loginstatus === true){
                         audienceItem.close()
-                        middleArea.audienceInterface.visible =
-                                !middleArea.audienceInterface.visible
+                        middleArea.audienceInterface.visible = true
                     }
                 }
             }

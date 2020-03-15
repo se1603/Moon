@@ -17,6 +17,8 @@ Rectangle {
     property var backmessage:""
     property var videotype: parent.currentType
 
+    property var date: new Date()
+
     Connections {
         target: client
         onDeleteAdvertSucceed: {
@@ -159,8 +161,11 @@ Rectangle {
 
                             Text {
                                 width: 1 / 5 * videoRow.width
-                                text: "Time: " + videoRec.duetime
-                                font.pixelSize: 14
+                                text: (judgeTime(videoRec.duetime) === true)
+                                      ? "Time: " + videoRec.duetime
+                                      : "Time: " + videoRec.duetime + " 已到期请删除"
+                                font.pixelSize: (judgeTime(videoRec.duetime) === true)
+                                                ? 14 : 12
                             }
                         }
 
@@ -258,6 +263,22 @@ Rectangle {
             if(advertsmessage !== "" && txt.text !== ""){
                 deleteDialog.open()
             }
+        }
+    }
+
+    function judgeTime(duetime){
+        var year = date.getFullYear()
+        var month = date.getMonth()+1
+        var day = date.getDate()
+
+        var str = year+"-"+month+"-"+day
+        var newstr = client.cliptime(str)
+        console.log(newstr)
+
+        if(duetime > newstr){
+            return true
+        }else{
+            return false
         }
     }
 }

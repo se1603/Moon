@@ -162,7 +162,7 @@ std::string AudienceController::audienceInfo(std::string name)
 
 void AudienceController::audienceCollection(std::string name, std::vector<std::string> &collectlist)
 {
-    std::map<std::string,MovieAndTelevision*> collectionmap;
+    std::multimap<std::string,MovieAndTelevision*> collectionmap;
     m_audienceBroker->readAudienceCollection(name,collectionmap);
 
     if(collectionmap.size()!=0){
@@ -176,7 +176,7 @@ void AudienceController::audienceCollection(std::string name, std::vector<std::s
 
 void AudienceController::audienceRecord(std::string name, std::vector<std::string> &recordlist)
 {
-    std::map<std::string,MovieAndTelevision*> recordmap;
+    std::multimap<std::string,MovieAndTelevision*> recordmap;
     m_audienceBroker->readAudienceRecord(name,recordmap);
 
     if(recordmap.size()!=0){

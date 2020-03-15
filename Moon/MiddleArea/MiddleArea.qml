@@ -18,14 +18,20 @@ Rectangle {
     property string playPost
     property string playName
     property string playUrl
+    property string playType
     property var adverts
+
+    property var date: new Date()
 
     property var searchResource
     property alias searchPage: searchComponent
+    property var lastPlayName
 
-    signal stopPlay()  //停止播放之前的视频
+    signal stopPlay(var newName)  //停止播放之前的视频
     signal loadAdvert()  //播放广告
     signal startPlay()
+    signal newPlay()
+    signal recordTime()
 
     Loader{
         id: loader

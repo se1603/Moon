@@ -8,7 +8,7 @@ BrowseAndWatchController* BrowseAndWatchController::m_instance = new BrowseAndWa
 
 BrowseAndWatchController::BrowseAndWatchController()
 {
-    m_rtspAddress = "192.168.1.13:8554";
+    m_rtspAddress = "192.168.43.76:8554";
     m_movieAndTelevisionBroker = MovieAndTelevisionBroker::getInstance();
 }
 
@@ -740,25 +740,46 @@ std::string BrowseAndWatchController::getAdvertInformation(std::string name)
 {
     json root;
     json arry;
-    std::vector<std::string> info;
     std::vector<Advert*> vec = m_movieAndTelevisionBroker->showAdverts(name,"空");
+
+    time_t timep;
+    time (&timep);
+    char tmp1[64];
+    char tmp2[64];
+    char tmp3[64];
+    strftime(tmp1, sizeof(tmp1), "%Y",localtime(&timep));
+    strftime(tmp2, sizeof(tmp2), "%m",localtime(&timep));
+    strftime(tmp3, sizeof(tmp3), "%d",localtime(&timep));
+
+    std::string a;
+    a+=tmp1;
+    a+=tmp2;
+    a+=tmp3;
+
+//    std::cout << "----------" << a << std::endl;
+
+    std::vector<std::string> info;
     for(auto &item:vec){
         item->showDetails(info);
-        json value;
-        value["name"] = info[0];
-        value["company"] = info[1];
-        value["duetime"] = info[3];
-        std::string url = "rtsp://" + m_rtspAddress + "/adverts/" + info[0];
-        value["rtsp"] = url;
-
-        arry.push_back(value);
+        std::cout << "???" << info[3] << std::endl;
+        if(a < info[3]){
+            json value;
+            value["name"] = info[0];
+            value["company"] = info[1];
+            value["duetime"] = info[3];
+            std::string url = "rtsp://" + m_rtspAddress + "/adverts/" + info[0];
+            value["rtsp"] = url;
+            arry.push_back(value);
+        }
         info.clear();
     }
 
     root["adverts"] = arry;
     std::string res = root.dump();
+//    std::cout << "zhejiushi" << res << "------" << std::endl;
     return res;
 }
+
 std::string BrowseAndWatchController::initMovies(std::string bigType)
 {
     json result;

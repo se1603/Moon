@@ -68,14 +68,14 @@ void Audience::addRecord(Record r)
     m_records.push_back(r);
 }
 
-void Audience::showCollection(std::map<std::string, MovieAndTelevision *> &collectionmap)
+void Audience::showCollection(std::multimap<std::string, MovieAndTelevision *> &collectionmap)
 {
     for(auto c:m_collections){
         collectionmap.insert(std::make_pair(c.m_collectionTime,c.m_movieAndTelevision));
     }
 }
 
-void Audience::showRecord(std::map<std::string, MovieAndTelevision *> &recordmap)
+void Audience::showRecord(std::multimap<std::string, MovieAndTelevision *> &recordmap)
 {
     for(auto r:m_records){
         std::string m = r.m_startPlayTime+"/"+r.m_duration;

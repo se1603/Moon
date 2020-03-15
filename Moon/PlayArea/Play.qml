@@ -25,6 +25,7 @@ Rectangle {
 
     property var datas: JSON.parse(client.showInfomation(play.name))
     property string name: middleArea.playName
+    property string lastName: ""
     property string type: ""
     property string infoma:""
     property string image: middleArea.playPost
