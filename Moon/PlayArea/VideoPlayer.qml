@@ -9,6 +9,7 @@ Rectangle {
     height: parent.height
     color: "black"
 
+    property bool isPlayingAdvert: false
     property bool isPlaying: false
     property string videoPath: ""
     property bool isFirstPlay: true
@@ -18,31 +19,146 @@ Rectangle {
     property var previousWidth: 1075
     property var previousHeight: 670
 
+    property var advertsPlaying
+    property var allAdvertsTime: 30
+
+    property var clickAvert: 0
 
     CVideoPlayer{
         id: cplayer
         anchors.fill: parent
     }
 
-    MouseArea{
-        anchors.fill: parent
-        onClicked: {
-            if(isPlaying)
-            {
-                isPlaying = false
-                cplayer.pause();
-            }
-            else
-            {
-                isPlaying = true
-                if(isFirstPlay)
-                {
+
+    Rectangle{
+        id: skipAdvert
+        width: 80
+        height: 25
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        anchors.right: parent.right
+        color: "#444444"
+        radius: 50
+        opacity: 0.8
+        visible: isPlayingAdvert ? true : false
+        z:2
+
+        Text {
+            font.pixelSize: 16
+            text: qsTr("跳过广告")
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            color: "white"
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton | Qt.LeftButton
+                hoverEnabled: true
+                enabled: true
+
+                onEntered: {
+                    parent.color = "blue"
+                }
+                onExited: {
+                    parent.color = "white"
+                }
+                onClicked: {
+                    //停止播放广告
+                    isPlayingAdvert = false
+                    advertTimer.stop()
+                    stopPlay()
+                    allAdvertsTime = 30
+
+                    //播放视频
+                    isPlaying = true
                     isFirstPlay = false
                     cplayer.startPlay(videoPath)
                     cplayer.visible = true
+                    console.log("a:" + isPlaying)
+                }
+            }
+        }
+    }
+
+    Timer{
+        id: advertTimer
+        interval: 1000
+        //        running: true
+        triggeredOnStart: true
+        repeat: true
+        onTriggered: {
+            aTime.text = allAdvertsTime
+            allAdvertsTime--
+            if(allAdvertsTime < 0)
+            {
+                //停止播放广告
+                isPlayingAdvert = false
+                advertTimer.stop()
+                stopPlay()
+                allAdvertsTime = 30
+
+                //播放视频
+                isPlaying = true
+                isFirstPlay = false
+                cplayer.startPlay(videoPath)
+                cplayer.visible = true
+            }
+        }
+    }
+
+    Rectangle{
+        id: advertTime
+        width: 60
+        height: 25
+        anchors.right: skipAdvert.left
+        anchors.rightMargin: 20
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        color: "#444444"
+        radius: 50
+        opacity: 0.8
+        visible: isPlayingAdvert ? true : false
+        Text{
+            id: aTime
+            font.pixelSize: 16
+            text: allAdvertsTime
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "red"
+            font.bold: true
+        }
+
+        Text {
+            font.pixelSize: 16
+            text: qsTr("秒")
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            color: "white"
+        }
+    }
+
+    MouseArea{
+        anchors.fill: parent
+        onClicked: {
+            if(isPlayingAdvert)
+            {
+                clickAvert++
+                console.log(clickAvert)
+            }
+            else
+            {
+                if(isPlaying)
+                {
+                    isPlaying = false
+                    cplayer.pause()
                 }
                 else
+                {
+                    isPlaying = true
                     cplayer.play()
+                }
             }
         }
     }
@@ -68,6 +184,7 @@ Rectangle {
         onSigVideoIsOver:
         {
             cplayer.stop();
+            console.log("llll")
             isPlaying = false
             isFirstPlay = true;
             cplayer.visible = false;
@@ -85,11 +202,13 @@ Rectangle {
     }
 
     Rectangle{
+        id: bottomControl
         color: "black"
+        opacity: 0
         width: parent.width
         height: parent.height * 1 / 18
         anchors.bottom: parent.bottom
-        visible: true
+        visible: isPlayingAdvert ? false : true
 
         MouseArea{
             anchors.fill: parent
@@ -126,7 +245,7 @@ Rectangle {
         width: parent.width
         height: parent.height * 1 / 18
         anchors.bottom: parent.bottom
-        visible: true
+        visible: isPlayingAdvert ? false : true
 
         Slider{
             id: progressBar
@@ -201,7 +320,7 @@ Rectangle {
                                 cplayer.visible = true
                             }
                             else
-                               cplayer.play()
+                                cplayer.play()
                         }
                     }
                 }
@@ -426,6 +545,16 @@ Rectangle {
         }
 
     }
+
+    function startPlay()
+    {
+        console.log("dd:" + videoPath)
+        isPlaying = true
+        cplayer.startPlay(videoPath)
+        cplayer.visible = true
+        isFirstPlay = false
+    }
+
     function stopPlay()
     {
         isFirstPlay = true
@@ -435,5 +564,35 @@ Rectangle {
         timing.text = "00:00:00"
         cplayer.stop()
         cplayer.visible = false
+
+        //        播放视频
+        //        isPlaying = true
+        //        cplayer.startPlay(videoPath)
+        //        if(isFirstPlay)
+        //        {
+        //            isFirstPlay = false
+        //            cplayer.startPlay(videoPath)
+        //            cplayer.visible = true
+        //        }
     }
+
+    function playAdverts()
+    {
+        console.log("ooooo:" + adverts.length)
+
+        isPlayingAdvert = true
+        allAdvertsTime = 30
+        advertTimer.start()
+        if(adverts.length > 0)
+        {
+            var i = 0;
+            for(; i !== adverts.length; i++)
+            {
+                cplayer.visible = true
+                cplayer.startPlay(adverts[i].rtsp)
+            }
+        }
+
+    }
+
 }

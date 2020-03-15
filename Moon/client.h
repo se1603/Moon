@@ -102,6 +102,7 @@ signals:
     //评论信号
     void insertSuccessed();
     void insertFailed();
+
 private:
     //文件
     FILE *fp;

@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import "../Audience"
 import "../PlayArea"
+
 Rectangle {
     width: parent.width
     height:fullScreenFlag ? parent.height - 38 : parent.height //17/18 * parent.height
@@ -17,11 +18,14 @@ Rectangle {
     property string playPost
     property string playName
     property string playUrl
+    property var adverts
 
     property var searchResource
     property alias searchPage: searchComponent
 
     signal stopPlay()  //停止播放之前的视频
+    signal loadAdvert()  //播放广告
+    signal startPlay()
 
     Loader{
         id: loader

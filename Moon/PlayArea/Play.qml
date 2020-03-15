@@ -32,10 +32,11 @@ Rectangle {
     property bool xLflag: true
     property string url: middleArea.playUrl
 
-    property var adverts: JSON.parse(client.advertInfo(play.name))
-
+    property var allAdverts: middleArea.adverts
     Component.onCompleted: {
         middleArea.stopPlay.connect(myplayer.stopPlay)
+        middleArea.loadAdvert.connect(myplayer.playAdverts)
+        middleArea.startPlay.connect(myplayer.startPlay)
     }
 
     //右边的组合动画
@@ -297,6 +298,7 @@ Rectangle {
             id: myplayer
             anchors.fill: parent
             videoPath: url
+            advertsPlaying: allAdverts
         }
 
         Rectangle{
@@ -381,5 +383,4 @@ Rectangle {
             }
         }
     }
-
 }

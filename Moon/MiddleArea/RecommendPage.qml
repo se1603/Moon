@@ -11,7 +11,6 @@ Rectangle {
 
     property var recommendResource
 
-
     ScrollView{
         anchors.fill: parent
         clip: true
@@ -158,6 +157,16 @@ Rectangle {
                                                 playUrl = modelData.rtspURL
                                                 middleArea.middleLoader.visible = false
                                                 middleArea.playLoader.visible = true
+                                                adverts = JSON.parse(client.advertInfo(playName))
+                                                if(adverts !== null)
+                                                {
+                                                    middleArea.loadAdvert()
+                                                }
+                                                else
+                                                {
+                                                    console.log(playUrl)
+                                                    middleArea.startPlay()
+                                                }
                                             }
                                         }
                                     }

@@ -1,9 +1,11 @@
 #include "rtspserver.h"
 #include <string.h>
+#include <dirent.h>
 
 RtspServer::RtspServer()
 {
-
+    std::string advertsPath = "mkdir ./adverts";
+    system(advertsPath.c_str());
 }
 
 RtspServer::~RtspServer()
