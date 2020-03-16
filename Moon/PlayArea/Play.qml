@@ -33,6 +33,8 @@ Rectangle {
     property bool xLflag: true
     property string url: middleArea.playUrl
 
+    property var esipode: Number(datas.resource.esipode)
+
     property var allAdverts: middleArea.adverts
     Component.onCompleted: {
         middleArea.stopPlay.connect(myplayer.stopPlay)
@@ -298,8 +300,9 @@ Rectangle {
         VideoPlayer{
             id: myplayer
             anchors.fill: parent
-            videoPath: url
+            videoPath: esipode === 1 ? (url + ".ts") : (url + "/1.ts")
             advertsPlaying: allAdverts
+            allEsipode: esipode
         }
 
         Rectangle{
@@ -320,7 +323,7 @@ Rectangle {
         id:rightbt
         y:parent.height/2
         z:3
-        anchors.right: center.right
+        anchors.right: centerItem.right
         width: 20
         height: 30
         opacity: 0.5
@@ -355,7 +358,7 @@ Rectangle {
         id:leftbu
         y:parent.height/2
         z:3
-        anchors.left: center.left
+        anchors.left: centerItem.left
         width: 20
         height: 30
         opacity: 0.5

@@ -34,6 +34,9 @@ Rectangle {
     property var collections: (audienceInterface.audienceName === "") ? ""
                                                                       :        JSON.parse(client.audienceCollection(audienceInterface.audienceName))
 
+    property var allEsipode
+    property var currentEsipode: 1
+
     Connections {
         target: middleArea
         onStopPlay: {
@@ -61,20 +64,20 @@ Rectangle {
         }
         onRecordTime: {
             //get
-            var year = date.getFullYear()
-            var month = date.getMonth()+1
-            var day = date.getDate()
-            var hours = date.getHours()
-            var minutes = date.getMinutes()
-            var seconds = date.getSeconds()
-            var starttime = year+"-"+month+"-"+day+"-"+hours+":"+minutes+":"+seconds
-            if(startTime === ""){
-                startTime = starttime
-                lastStartTime = ""
-            }else{
-                lastStartTime = startTime
-                startTime = starttime
-            }
+//            var year = date.getFullYear()
+//            var month = date.getMonth()+1
+//            var day = date.getDate()
+//            var hours = date.getHours()
+//            var minutes = date.getMinutes()
+//            var seconds = date.getSeconds()
+//            var starttime = year+"-"+month+"-"+day+"-"+hours+":"+minutes+":"+seconds
+//            if(startTime === ""){
+//                startTime = starttime
+//                lastStartTime = ""
+//            }else{
+//                lastStartTime = startTime
+//                startTime = starttime
+//            }
         }
     }
 
@@ -197,6 +200,9 @@ Rectangle {
     MouseArea{
         anchors.fill: parent
         onClicked: {
+            console.log("esipode:" + allEsipode)
+            console.log("currEs:" + currentEsipode)
+            console.log(videoPath)
             if(isPlayingAdvert)
             {
                 clickAvert++
