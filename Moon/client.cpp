@@ -4,7 +4,7 @@
 #include <dirent.h>
 
 boost::asio::io_service service;
-boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.1.13"),8001);
+boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.0.102"),8001);
 boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7789));
 
 Client::Client(QObject *p) :
@@ -802,4 +802,35 @@ QString Client::advertInfo(QString videoname)
     result = qmlValue.dump();
     QString qmlValues = QString::fromStdString(result);
     return qmlValues;
+}
+void Client::reflash()
+{
+//    std::string pathStart = "./";
+
+    std::vector<std::string> pathNames{"recommend","films","comics","drama","varietyshow","actors","directors"};
+
+    std::string pathEnd = ".tar.gz";
+
+    for(int i = 0; i != pathNames.size();i++)
+    {
+//        std::string path = pathStart + pathNames[i];
+//        DIR * dir;
+//        dir = opendir(path.data());
+//        if(dir == nullptr )
+//        {
+            json root;
+            root["system"] = "CLIENT";
+            root["request"] = "FILETRANSFER";
+            root["fileName"] =
+                    pathNames[i] + pathEnd;
+
+            std::string message = root.dump();
+
+            receiveFile(message);
+
+            std::string commend = "tar xzvf " + pathNames[i] + pathEnd;
+            system(commend.c_str());
+            emit reflashed();
+//        }
+    }
 }

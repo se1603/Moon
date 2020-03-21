@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 Popup {
-    id:empty
+    id:up
     padding: 10
 
     anchors.centerIn: parent
@@ -15,7 +15,7 @@ Popup {
     Text{
         id:input
         anchors.centerIn: parent
-        text: "文件为空,请添加影视信息"
+        text: "确认上传吗"
         font.family: "Helvetica"
         font.pointSize: 20
         color: "blue"
@@ -26,8 +26,19 @@ Popup {
         anchors.top: input.bottom
         anchors.topMargin: 30
         onClicked: {
-
-            empt.close()
+            client.noticeUp()
+            up.close()
+        }
+    }
+    Button{
+        id:canncle
+        text: "Cancle"
+        anchors.top: input.bottom
+        anchors.topMargin: 30
+        anchors.left: btnOk.right
+        anchors.leftMargin: 20
+        onClicked: {
+            up.close()
         }
     }
 

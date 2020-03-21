@@ -26,17 +26,24 @@
         <file>mtv/ImagePup.qml</file>
         <file>mtv/GroundingMovie.qml</file>
         <file>mtv/AddDialog.qml</file>
-        <file>image/avatar/1.jpeg</file>
-        <file>image/avatar/3.jpeg</file>
-        <file>image/avatar/2.jpeg</file>
-        <file>image/avatar/4.jpeg</file>
-        <file>image/avatar/5.jpeg</file>
-        <file>image/avatar/6.jpeg</file>
-        <file>image/avatar/7.jpeg</file>
-        <file>image/avatar/8.jpeg</file>
-        <file>image/avatar/9.jpg</file>
         <file>mtv/EmptyDialog.qml</file>
         <file>image/advert/left.png</file>
         <file>image/advert/right.png</file>
+        <file>mtv/Seach.qml</file>
+        <file>mtv/DeleteDialog.qml</file>
+        <file>mtv/UpdateDialog.qml</file>
+        <file>mtv/UpDialog.qml</file>
+        <file>image/avatar/daerwenyouxi.jpg</file>
+        <file>image/avatar/datangnvfayi.jpg</file>
+        <file>image/avatar/feichangxiari.jpg</file>
+        <file>image/avatar/fengshenbang.jpg</file>
+        <file>image/avatar/lueduozhe.jpg</file>
+        <file>image/avatar/kewang.jpg</file>
+        <file>image/avatar/luomajiari.jpg</file>
+        <file>image/avatar/qunyangongshe.jpg</file>
+        <file>image/avatar/shenhua.jpg</file>
+        <file>image/avatar/wudang2.jpg</file>
+        <file>image/avatar/yingxiongbense.jpg</file>
+        <file>image/avatar/zhongguodarenxiu.jpg</file>
     </qresource>
 </RCC>

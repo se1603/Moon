@@ -110,6 +110,7 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 onClicked: {
+                    client.reflash()
 //                    middleArea.middleface.showPage.visible = false
 //                    middleArea.refersh.visible = true
 //                    middleArea.startTimer.start()

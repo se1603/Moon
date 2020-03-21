@@ -277,15 +277,22 @@ void Server::processOMRequest(json j, endpoint ep)
         replay = m_managerController->deleteVideoAdverts(j["videoname"],j["advertname"]);
         sendMessage(replay,ep);
     }else if(request == "UP"){
-        json re = j["resource"];
-        std::string s = re.dump();
-        replay = m_BrowseAndWatchController->initMovies(s);
-        receiveFile(replay,ep);
-
-        std::string commend ="cp -r ./image.tar.gz ../MoonServer/images";
+        std::string s = j.dump();
+//        replay = m_BrowseAndWatchController->initMovies(s);
+        receiveFile(s,ep);
+        std::string commend = "tar xzvf ./images.tar.gz";
         system(commend.c_str());
-    }else if(request == "CATEGORY"){
-        replay = m_BrowseAndWatchController->InterfaceCategory(j["interface"]);
+        tarFiles();
+    }else if(request =="NOTICEUP"){
+
+        replay = m_BrowseAndWatchController->initMovies();
+        sendMessage(replay,ep);
+//        std::string commend = "rm -rf ./images/上架";
+//        system(commend.c_str());
+//        tarFiles();
+    }
+    else if(request == "CATEGORY"){
+        replay = m_BrowseAndWatchController->InterfaceCategory1(j["interface"]);
         sendMessage(replay,ep);
 
     }else if(request =="RECOMMENDINTERFACE"){
@@ -294,6 +301,13 @@ void Server::processOMRequest(json j, endpoint ep)
     }else if(request == "DELECT")
     {
         replay = m_BrowseAndWatchController->deleteTv(j["name"],j["type"]);
+        sendMessage(replay,ep);
+    }else if(request == "SEACH"){
+        replay = m_managerController->seach(j["name"]);
+        sendMessage(replay,ep);
+    }else if(request == "UPDATE"){
+        std::string s = j["resource"].dump();
+        replay = m_managerController->update(s);
         sendMessage(replay,ep);
     }
 }
@@ -437,4 +451,24 @@ void Server::receiveFilename(boost::system::error_code &e, boost::asio::ip::udp:
     NetWork sock(udpsock);
 
     sock.receiveFile(fp);
+}
+void Server::tarFiles()
+{
+    //        std::string path = "./images";
+    std::vector<std::string> files{"films","comics","drama","varietyshow"};
+    //        files = getFiles(path);  tar xzvf ./images.tar.gz
+    for(auto i:files){
+        std::cout << i << std::endl;
+        std::string commend2 ="tar xzvf ../MoonServer/images/"+i+".tar.gz";
+        system(commend2.c_str());
+    }
+    for(auto i:files){
+        std::string commend3 ="cp -rf ./images/"+i+" ./";
+        system(commend3.c_str());
+        std::string commend = "tar zcvf "+i+".tar.gz "+i;
+        std::cout << commend << std::endl;
+        system(commend.c_str());
+        std::string commend1 ="cp -r ./"+i+".tar.gz ../MoonServer/images";
+        system(commend1.c_str());
+    }
 }

@@ -56,17 +56,23 @@ public:
     Q_INVOKABLE QString cliptime(QString duetime);
 
 
-    Q_INVOKABLE void getMovieInfo(QString name, QString message,QString pAdress,QString sAdress);//获取影视信息写入本地文件
+     Q_INVOKABLE void getMovieInfo(QString name, QString fileName, QString message, QString pAdress, QString sAdress);//获取影视信息写入本地文件
     Q_INVOKABLE QString getLocalMessages();//获取本地影视信息文件，传输到qml端
 
-    Q_INVOKABLE void upServer();//把信息传到服务端
+    Q_INVOKABLE void upServer();//把文件传到服务端
+    Q_INVOKABLE void noticeUp();//通知服务器处理影视信息
+    Q_INVOKABLE void modifiedImage(QString imagePath,QString name);//修改影视内容
 
     //下架界面显示
     Q_INVOKABLE QString showCategory(QString interface);  //显示下架影视的分类
-    Q_INVOKABLE QString showRecommend(QString interface);  //显示各个页面的推荐影视
+    Q_INVOKABLE QString showRecommend(QString interface);  //显示各个页面的影视
     Q_INVOKABLE void deleteMovie(QString name,QString type);//下架影视
+    Q_INVOKABLE void updateVideos(QString str);
 
-    void writeFile(std::string name,std::string message);//影视编辑编辑影视信息，写入本地文件
+    //搜索视频
+    Q_INVOKABLE QString search(QString name);
+
+   void writeFile(std::string filename, std::string message, std::string name);//影视编辑编辑影视信息，写入本地文件
     std::vector<std::string> getFiles(std::string path);//获取上架文件
     void readFile(std::vector<std::string> files);//读取上架文件的信息
 
@@ -82,6 +88,7 @@ public:
     void receive_file_content();
 
     void sendFile(std::string filename,endpoint ep);  //发送文件
+    void sendFile1(std::string filename,endpoint ep);  //发送文件
 
 
 signals:
@@ -98,6 +105,10 @@ signals:
     void delectSucceed();
     void delectFailed();
     void filmEmpty();
+
+    void updateSucceed();
+    void updateFalied();
+    void seachEmpty();
 private:
     //文件
     FILE *fp;

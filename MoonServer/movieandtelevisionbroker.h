@@ -81,10 +81,24 @@ public:
     //获取细类影视
     std::vector<std::string> findTypeVideo(std::string type, std::string category);
 
+    bool getMTVMessage();
+    std::vector<std::string> getFiles(std::string path);//获取上架文件
+    bool readFile(std::vector<std::string> files);//从文件中读取影视信息
     bool initMovieandTelevision(std::string s);//添加影视信息到数据库
     bool delect(std::string name,std::string type);//下架影视
-    std::string dealType(std::string type);//处理影视类型
-    std::string dealRegion(std::string region);//处理影视地域
+    std::vector<std::string> dealType(std::string type);//处理影视类型
+    Region dealRegion(std::string& region);//处理影视地域
+    std::vector<Actor *> dealActor(std::string actor);//处理演员
+    std::vector<Director *> dealDirector(std::string director);//处理导演
+    std::vector<std::string> dealPost(std::string image);//处理海报
+    std::vector<int> dealRecommends(std::string recommend);
+
+    std::string subString(std::string type,std::string s);
+//    template<typename T> std::string dealTypes(std::string type, std::vector<T>& y);
+
+
+    bool updateVideos(std::string s);//更新影视
+
 
     //搜索
     std::vector<Film *> searchFilm(std::string name); //从map中读取数据，返回给controller

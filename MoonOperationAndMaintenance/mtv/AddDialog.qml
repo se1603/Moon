@@ -48,9 +48,9 @@ Popup {
         onClicked: {
             console.log(txField.text)
             listModel.append({"name":txField.text,episode: " ",
-                                 typ:"type",
-                                 region:"region1",
-                                 bigType:"bigType",
+                                 typ:"悬疑",
+                                 region:"中国",
+                                 bigType:"电影",
                                  introduction:"简介",
                                  actor:"演员",
                                  dictor:"导演",

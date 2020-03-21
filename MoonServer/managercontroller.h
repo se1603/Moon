@@ -44,6 +44,12 @@ public:
     std::string showCompanyClicksRank(std::string companyname);
     //删除影视广告
     std::string deleteVideoAdverts(std::string videoname, std::string advertname);
+
+    //搜索影视信息
+    std::string seach(std::string name);
+
+    //更新影视信息
+    std::string update(std::string s);
 private:
     ManagerController();
     static ManagerController* m_instance;

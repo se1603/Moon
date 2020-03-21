@@ -40,6 +40,29 @@ std::string BrowseAndWatchController::InterfaceCategory(std::string interface)
     return s;
 }
 
+std::string BrowseAndWatchController::InterfaceCategory1(std::string interface)
+{
+    std::vector<std::string> categorys;
+
+    categorys = m_movieAndTelevisionBroker->InterfaceCategory(interface);
+
+    json result;
+    result["request"] = "CATEGORY";
+    result["interface"] = interface;
+    json arry;
+
+    for(int i = 1; i < categorys.size(); i++)
+    {
+        json item;
+        item["category"] = categorys[i];
+        arry.push_back(item);
+    }
+    result["categorys"] = arry;
+
+    std::string s = result.dump();
+    return s;
+}
+
 std::string BrowseAndWatchController::recommendInterface(std::string interface)
 {
     std::string result;
@@ -697,6 +720,8 @@ std::string BrowseAndWatchController::getMovieInfomation(std::string name)
             value["category"] = f[2];
         }else if(i==3){
             value["region"] = f[3];
+        }else if(i == 4){
+            value["post"] = f[4];
         }
         else{
             type["type"] = f[i];
@@ -780,13 +805,13 @@ std::string BrowseAndWatchController::getAdvertInformation(std::string name)
     return res;
 }
 
-std::string BrowseAndWatchController::initMovies(std::string bigType)
+std::string BrowseAndWatchController::initMovies()
 {
     json result;
     result["request"] = "UP";
-    if(m_movieAndTelevisionBroker->initMovieandTelevision(bigType))
+    if(m_movieAndTelevisionBroker->getMTVMessage())
     {
-        result["update"] = "UPSUCCEED";
+        result["UPDATE"] = "UPSUCCEED";
 
     }
     else
@@ -799,6 +824,7 @@ std::string BrowseAndWatchController::initMovies(std::string bigType)
 
 
 }
+
 std::string BrowseAndWatchController::delayTV(std::string interface)
 {
     std::string result;
@@ -865,7 +891,7 @@ std::string BrowseAndWatchController::delayTV(std::string interface)
 
         json commonComic;
 //        for(int i = 0;i != 6;i++){
-            std::vector<Comic> comics = m_movieAndTelevisionBroker->getRecommendComics(99);
+            std::vector<Comic> comics = m_movieAndTelevisionBroker->getRecommendComics(2);
             json array;
             json item;
             for(int a = 0;a != comics.size();a++){

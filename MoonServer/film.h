@@ -44,6 +44,9 @@ public:
     void save(std::map<std::string,Film> &films);
 
     void showPost(std::string &post);
+    std::vector<Director*> showDirector();
+    std::vector<Actor*> showActor();
+    void showIntrodution(std::string &in);
 
     bool findByTypeName(std::string type);
 

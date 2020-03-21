@@ -84,6 +84,7 @@ void Variety::recodeInfo(std::string name, std::vector<std::string> &v)
         }
         default:break;
         }
+        v.push_back(m_post[0]);
         for(auto t: m_type){
             switch(t){
             case VarietyType::Food:{
@@ -154,6 +155,21 @@ void Variety::save(std::map<std::string, Variety> &varietys)
 void Variety::showPost(std::string &post)
 {
     post = m_post[0];
+}
+
+void Variety::showIntrodution(std::string &in)
+{
+    in = m_introduction;
+}
+
+std::vector<Director *> Variety::showDirector()
+{
+    return m_director;
+}
+
+std::vector<Actor *> Variety::showActor()
+{
+    return m_actors;
 }
 
 bool Variety::findByTypeName(std::string type)

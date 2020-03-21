@@ -315,3 +315,59 @@ std::string ManagerController::deleteVideoAdverts(std::string videoname, std::st
     std::string message = replay.dump();
     return message;
 }
+std::string ManagerController::seach(std::string name)
+{
+//   auto m = m_movieAndTelevisionBroker->getVideoInfo(name);
+   json root;
+   std::string out;
+   root["request"] = "SEACH";
+   root["name"] = name;
+   auto f = m_movieAndTelevisionBroker->getVideoInfo(name);
+   json value;
+   json types;
+   root["videotype"] = 1;
+   if(f.size() == 0){
+       root["empty"]="EMPTY";
+   }else{
+       root["empty"] = "NULL";
+   }
+
+   for(int i = 0;i != f.size();i++){
+       json type;
+       if(i == 0){
+           value["esipode"] = f[0];
+       }else if(i == 1){
+           value["introduction"] = f[1];
+       }else if(i == 2){
+           value["category"] = f[2];
+       }else if(i==3){
+           value["region"] = f[3];
+       }else if(i == 4){
+           value["post"] = f[4];
+       }
+       else{
+           type["type"] = f[i];
+           types.push_back(type);
+//            types.append(type);w
+       }
+   }
+   value["name"] = name;
+   value["videotype"] = types;
+   root["resource"] = value;
+   out = root.dump();
+
+   return out;
+}
+
+std::string ManagerController::update(std::string s)
+{
+    json update;
+    update["UPDATE"] ="update";
+    if(m_movieAndTelevisionBroker->updateVideos(s)){
+        update["MES"]= "sucessed";
+    }else{
+        update["MES"] = "failed";
+    }
+    std::string out = update.dump();
+    return out;
+}

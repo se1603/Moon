@@ -2,11 +2,11 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 Popup {
-    id:empty
+    id:deleteD
     padding: 10
 
     anchors.centerIn: parent
-    width: 400
+    width: 200
     height: 200
     x:400
     y:300
@@ -15,8 +15,8 @@ Popup {
     Text{
         id:input
         anchors.centerIn: parent
-        text: "文件为空,请添加影视信息"
-        font.family: "Helvetica"
+        text: "删除成功"
+//        font.family: "Helvetica"
         font.pointSize: 20
         color: "blue"
     }
@@ -26,8 +26,7 @@ Popup {
         anchors.top: input.bottom
         anchors.topMargin: 30
         onClicked: {
-
-            empt.close()
+            dele.close()
         }
     }
 
