@@ -315,6 +315,21 @@ std::string ManagerController::deleteVideoAdverts(std::string videoname, std::st
     std::string message = replay.dump();
     return message;
 }
+
+std::string ManagerController::addAdvertClicks(std::string advertname)
+{
+    json replay;
+
+    bool res = m_advertBroker->updateAdvertClicks(advertname);
+    if(res == true){
+        replay["replay"] = "SUCCEED";
+    }else{
+        replay["replay"] = "FAILED";
+    }
+
+    std::string message = replay.dump();
+    return message;
+}
 std::string ManagerController::seach(std::string name)
 {
 //   auto m = m_movieAndTelevisionBroker->getVideoInfo(name);

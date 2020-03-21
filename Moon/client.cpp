@@ -834,3 +834,18 @@ void Client::reflash()
 //        }
     }
 }
+
+void Client::addAdvertClicks(QString advertname)
+{
+    json request;
+    request["system"] = "CLIENT";
+    request["request"] = "ADVERTCLICKS";
+    request["advertname"] = advertname.toStdString();
+
+    std::string message = request.dump();
+
+    socket_ptr udpsock;
+    udpsock = sendMessage(message);
+    NetWork sock(udpsock);
+    std::string res = sock.receive();
+}

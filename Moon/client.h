@@ -87,6 +87,8 @@ public:
     Q_INVOKABLE QString advertInfo(QString videoname);
 
     Q_INVOKABLE void reflash();//刷新
+    //添加点击量
+    Q_INVOKABLE void addAdvertClicks(QString advertname);
 signals:
     //用户信号
     void loginsucceed(QString name,QString avatar);

@@ -44,6 +44,8 @@ public:
     std::string showCompanyClicksRank(std::string companyname);
     //删除影视广告
     std::string deleteVideoAdverts(std::string videoname, std::string advertname);
+    //添加广告点击量
+    std::string addAdvertClicks(std::string advertname);
 
     //搜索影视信息
     std::string seach(std::string name);

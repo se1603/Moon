@@ -213,10 +213,15 @@ std::multimap<std::string, std::string> AdvertBroker::readAdvertLinks()
     return currentAdvertLinks;
 }
 
-bool AdvertBroker::updateAdvertClicks(std::string advertname, std::string newclicks)
+bool AdvertBroker::updateAdvertClicks(std::string advertname)
 {
     MYSQL* mysql;
     mysql = new MYSQL;
+
+    MYSQL_RES *result;
+    MYSQL_ROW row;
+
+    std::string clicks;
 
     mysql_init(mysql);
     if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
@@ -225,9 +230,32 @@ bool AdvertBroker::updateAdvertClicks(std::string advertname, std::string newcli
         std::cout << "(UpdateClicks)Connect MYSQL succeed" << std::endl;
     }
 
-    std::string sql = "update Advert set clicks ='"+newclicks+"' where name = '"+advertname+"';";
+    std::string sql1 = "select * from Advert where name = '"+advertname+"';";
+    if(mysql_query(mysql,sql1.data())){
+        std::cout << "查询失败(advert)" << std::endl;
+    }else{
+        std::vector<std::string> links;
+        result = mysql_use_result(mysql);
+        while(1){
+            row = mysql_fetch_row(result);
+            if(row == nullptr){
+                return false;
+            }else{
+                for(unsigned i = 0; i < mysql_num_fields(result); ++i){
+                    links.push_back(std::string(row[i]));
+                }
+                clicks = links[2];
+            }
+        }
+    }
 
-    if(mysql_query(mysql,sql.data())){
+    int number = atoi(clicks.c_str());
+    number++;
+    std::string newclicks = std::to_string(number);
+
+    std::string sql2 = "update Advert set clicks ='"+newclicks+"' where name = '"+advertname+"';";
+
+    if(mysql_query(mysql,sql2.data())){
         std::cout << "Update clicks failed" << std::endl;
         return false;
     }else{

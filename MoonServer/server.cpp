@@ -216,6 +216,11 @@ void Server::processClientRequest(json j,endpoint ep)
         replay = m_searchController->searchKeywords(j["name"]);
         sendMessage(replay,ep);
     }
+    else if(request == "ADVERTCLICKS")
+    {
+        replay = m_managerController->addAdvertClicks(j["advertname"]);
+        sendMessage(replay,ep);
+    }
 }
 
 void Server::processOMRequest(json j, endpoint ep)

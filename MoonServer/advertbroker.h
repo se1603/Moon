@@ -35,7 +35,7 @@ public:
     //读取广告链接
     std::multimap<std::string, std::string> readAdvertLinks();
     //更新点击量
-    bool updateAdvertClicks(std::string advertname, std::string newclicks);
+    bool updateAdvertClicks(std::string advertname);
     //公司广告排名
     std::vector<Advert*> rankCompanyAdvert(std::string companyname);
     //删除广告链接

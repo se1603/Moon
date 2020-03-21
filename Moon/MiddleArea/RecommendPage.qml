@@ -152,9 +152,26 @@ Rectangle {
                                             anchors.fill: parent
                                             onClicked: {
                                                 //开始记录
-                                                middleArea.recordTime()
+                                                var d = new Date()
+                                                var year = d.getFullYear()
+                                                var month = d.getMonth()+1
+                                                var day = d.getDate()
+                                                var hours = d.getHours()
+                                                var minutes = d.getMinutes()
+                                                var starttime =
+                                                        year+"-"+month+"-"+day+"-"
+                                                        +hours+":"+minutes
+                                                if(middleArea.startTime === ""){
+                                                    middleArea.startTime = starttime
+                                                }else{
+                                                    middleArea.lastStartTime =
+                                                            middleArea.startTime
+                                                    middleArea.startTime = starttime
+                                                }
 
-                                                middleArea.stopPlay(postName.text)
+
+                                                middleArea.nextName = postName.text
+                                                middleArea.stopPlay(playName,nextName)
 
                                                 playName = postName.text
                                                 playPost = postimage.source

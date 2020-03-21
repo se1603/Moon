@@ -24,11 +24,7 @@ Rectangle {
 
     property var clickAvert: 0
 
-    property var lastName:middleArea.playName
     property var lastPost:middleArea.playPost
-    property var lastType:middleArea.playType
-    property var startTime:""
-    property var lastStartTime:""
 
     property var date:new Date()
     property var collections: (audienceInterface.audienceName === "") ? ""
@@ -40,44 +36,28 @@ Rectangle {
     Connections {
         target: middleArea
         onStopPlay: {
-            if(newName !== lastName){
+            if(middleArea.lastStartTime !== "" &&
+                    playname !== newname){
                 cplayer.stop()
-                if(lastName !== "" && lastStartTime !== "" && lastPost !== ""){
-                    //终止记录
-                    var stop = new Date()
-                    var hours = stop.getHours()
-                    var minutes = stop.getMinutes()
-                    var seconds = stop.getSeconds()
-                    var time = hours+":"+minutes+":"+seconds
-                    client.addBrowseRecord(lastName, startTime, time, lastPost)
-                }
 
-                //                if(audienceInterface.audienceName === ""){
-                //                    client.addBrowseRecord(lastName, startTime, stopTime, lastPost)
-                //                }
-                //                else{
-                //                    client.addRecord(audienceInterface.audienceName,
-                //                                     lastName, startTime, stopTime, lastType)
-                //                    client.addBrowseRecord(lastName, startTime, stopTime, lastPost);
-                //                }
+                category = play.datas.resource.category
+                console.log("---"+category)
+                //终止记录
+                var stop = new Date()
+                var hours = stop.getHours()
+                var minutes = stop.getMinutes()
+                var seconds = stop.getSeconds()
+                var time = hours+":"+minutes+":"+seconds
+
+                if(audienceInterface.audienceName === ""){
+//                    client.addBrowseRecord(playname, middleArea.lastStartTime, time, lastPost)
+                }
+                else{
+                    client.addRecord(audienceInterface.audienceName,
+                                     playname, middleArea.lastStartTime, time, category)
+//                    client.addBrowseRecord(playname, middleArea.lastStartTime, time, lastPost)
+                }
             }
-        }
-        onRecordTime: {
-            //get
-//            var year = date.getFullYear()
-//            var month = date.getMonth()+1
-//            var day = date.getDate()
-//            var hours = date.getHours()
-//            var minutes = date.getMinutes()
-//            var seconds = date.getSeconds()
-//            var starttime = year+"-"+month+"-"+day+"-"+hours+":"+minutes+":"+seconds
-//            if(startTime === ""){
-//                startTime = starttime
-//                lastStartTime = ""
-//            }else{
-//                lastStartTime = startTime
-//                startTime = starttime
-//            }
         }
     }
 
@@ -207,6 +187,12 @@ Rectangle {
             {
                 clickAvert++
                 //add
+                for(var i = 0; i !== play.allAdverts.length; i++){
+                    if(i === currentEsipode){
+                        var advertname = play.allAdverts[i].name
+                        client.addAdvertClicks(advertname)
+                    }
+                }
                 console.log(clickAvert)
             }
             else
