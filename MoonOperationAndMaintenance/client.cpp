@@ -160,7 +160,7 @@ void Client::addAdvertToVideos(QString advert, QString company, QString duetime,
     advertLinkvideo["detailtype"] = detailtype.toStdString();
     std::string message = advertLinkvideo.dump();
 
-    std::cout << path.toStdString() << std::endl;
+    std::cout <<" path is"<< path.toStdString() << std::endl;
 
     socket_ptr udpsockptr;
     udpsockptr = sendMessage(message);
@@ -441,6 +441,8 @@ void Client::noticeUp()
 
     if(result == "UPSUCCEED")
     {
+        std::string path = "/root/aaa/新少林五祖.ts";
+        sendFile(path,sender_ep);
         std::string fileName1 = "./上架/c";
         std::cout << fileName1 << std::endl;
 //        std::ifstream in(fileName1);
@@ -710,7 +712,9 @@ void Client::sendFile(std::string filename, endpoint ep)
     }
     std::vector<std::string> vec={};
     splictString(filename,vec,"/");
-    filename = "../build-RtspServer-Desktop_Qt_5_13_2_GCC_64bit-Debug/adverts/"+vec[vec.size()-1];
+//file:///root/毕业设计/Moon/build-RtspServer-C_C_Application_GCC_8_1_0-Debug
+
+    filename = "../build-RtspServer-C_C_Application_GCC_8_1_0-Debug/adverts/"+vec[vec.size()-1];
     std::cout << path << std::endl;
     auto fileName = path.data();
     FILE *fp = fopen(fileName,"rb");

@@ -291,10 +291,8 @@ void Server::processOMRequest(json j, endpoint ep)
     }else if(request =="NOTICEUP"){
 
         replay = m_BrowseAndWatchController->initMovies();
+        receiveFile(replay,ep);
         sendMessage(replay,ep);
-//        std::string commend = "rm -rf ./images/上架";
-//        system(commend.c_str());
-//        tarFiles();
     }
     else if(request == "CATEGORY"){
         replay = m_BrowseAndWatchController->InterfaceCategory1(j["interface"]);
