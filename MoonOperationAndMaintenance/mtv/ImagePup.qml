@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-02-14
+* Note:选择海报的文件框
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 import Qt.labs.folderlistmodel 2.2

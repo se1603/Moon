@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-02-20
+* Note:添加新的影视信息对话框
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3

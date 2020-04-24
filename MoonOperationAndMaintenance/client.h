@@ -78,6 +78,7 @@ public:
 
     void makeFile();//创建文件
 
+    void tarFiles();
 
 
 
@@ -87,7 +88,7 @@ public:
     void receiveFilename(boost::system::error_code &e,boost::asio::ip::udp::endpoint sender_ep,socket_ptr udpsock);
     void receive_file_content();
 
-    void sendFile(std::string filename,endpoint ep);  //发送文件
+    void sendFile(std::string filename,endpoint ep,bool flag);  //发送文件
     void sendFile1(std::string filename,endpoint ep);  //发送文件
 
 

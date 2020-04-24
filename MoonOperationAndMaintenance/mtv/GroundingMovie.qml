@@ -1,9 +1,12 @@
+/* Author:徐丹
+* Date:2020-02-12
+* Note:编辑影视信息界面
+*/
 import QtQuick 2.0
-//import QtQuick 2.13
 import QtLocation 5.13
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
-//import QtQuick.Controls 2.4
+
 Rectangle {
 
     id:groundPage

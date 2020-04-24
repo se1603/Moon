@@ -1,4 +1,7 @@
-
+/* Author:徐丹
+* Date:2020-02-25
+* Note:下架菜单
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 //import "./RecommendPage.qml"

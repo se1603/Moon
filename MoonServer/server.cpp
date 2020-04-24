@@ -292,7 +292,7 @@ void Server::processOMRequest(json j, endpoint ep)
 
         replay = m_BrowseAndWatchController->initMovies();
         receiveFile(replay,ep);
-        sendMessage(replay,ep);
+//        sendMessage(replay,ep);
     }
     else if(request == "CATEGORY"){
         replay = m_BrowseAndWatchController->InterfaceCategory1(j["interface"]);
@@ -457,21 +457,19 @@ void Server::receiveFilename(boost::system::error_code &e, boost::asio::ip::udp:
 }
 void Server::tarFiles()
 {
-    //        std::string path = "./images";
     std::vector<std::string> files{"films","comics","drama","varietyshow"};
-    //        files = getFiles(path);  tar xzvf ./images.tar.gz
+//    for(auto i:files){
+//        std::cout << i << std::endl;
+//        std::string commend2 ="tar xzvf ../MoonServer/images/"+i+".tar.gz";
+//        system(commend2.c_str());
+//    }
     for(auto i:files){
-        std::cout << i << std::endl;
-        std::string commend2 ="tar xzvf ../MoonServer/images/"+i+".tar.gz";
-        system(commend2.c_str());
-    }
-    for(auto i:files){
-        std::string commend3 ="cp -rf ./images/"+i+" ./";
-        system(commend3.c_str());
-        std::string commend = "tar zcvf "+i+".tar.gz "+i;
-        std::cout << commend << std::endl;
-        system(commend.c_str());
-        std::string commend1 ="cp -r ./"+i+".tar.gz ../MoonServer/images";
+//        std::string commend3 ="cp -rf ./images/"+i+" ./";
+//        system(commend3.c_str());
+//        std::string commend = "tar zcvf "+i+".tar.gz "+i;
+//        std::cout << commend << std::endl;
+//        system(commend.c_str());
+        std::string commend1 ="cp -r ./images/"+i+".tar.gz ../MoonServer/images";
         system(commend1.c_str());
     }
 }

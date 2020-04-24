@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-03-17
+* Note:搜索界面
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12

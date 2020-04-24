@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-02-26
+* Note:确认删除影视的对话框
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 

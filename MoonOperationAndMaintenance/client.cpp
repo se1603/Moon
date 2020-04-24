@@ -167,7 +167,7 @@ void Client::addAdvertToVideos(QString advert, QString company, QString duetime,
     NetWork sock(udpsockptr);
     boost::asio::ip::udp::endpoint sender_ep;
     std::string res = sock.receive(sender_ep);
-    sendFile(path.toStdString(),sender_ep);
+    sendFile(path.toStdString(),sender_ep,false);
 
     json replay = json::parse(res);
     if(replay["replay"] == "SUCCEED"){
@@ -194,7 +194,7 @@ void Client::addAdvertToCategory(QString advert, QString company, QString duetim
     NetWork sock(udpsockptr);
     boost::asio::ip::udp::endpoint sender_ep;
     std::string res = sock.receive(sender_ep);
-    sendFile(path.toStdString(),sender_ep);
+    sendFile(path.toStdString(),sender_ep,false);
 
     json replay = json::parse(res);
     if(replay["replay"] == "SUCCEED"){
@@ -386,8 +386,7 @@ void Client::upServer()
     std::string commend2 ="cp -r ./上架 ./images";
     system(commend2.c_str());
 
-    std::string commend1 ="cp -r ../MoonOperationAndMaintenance/images ./";
-    system(commend1.c_str());
+    tarFiles();
 
     std::string commend = " tar zcvf images.tar.gz images";
     system(commend.c_str());
@@ -417,7 +416,6 @@ void Client::upServer()
         std::string fileName = "images.tar.gz";
         sendFile1(fileName,sender_ep);
     }
-    noticeUp();
 }
 
 void Client::noticeUp()
@@ -442,7 +440,7 @@ void Client::noticeUp()
     if(result == "UPSUCCEED")
     {
         std::string path = "/root/aaa/新少林五祖.ts";
-        sendFile(path,sender_ep);
+        sendFile(path,sender_ep,true);
         std::string fileName1 = "./上架/c";
         std::cout << fileName1 << std::endl;
 //        std::ifstream in(fileName1);
@@ -697,7 +695,7 @@ void Client::receive_file_content()
     sock.receiveFile(fp);
 }
 
-void Client::sendFile(std::string filename, endpoint ep)
+void Client::sendFile(std::string filename, endpoint ep, bool flag)
 {
 
     socket_ptr sock(new boost::asio::ip::udp::socket(service,boost::asio::ip::udp::endpoint()));
@@ -712,9 +710,13 @@ void Client::sendFile(std::string filename, endpoint ep)
     }
     std::vector<std::string> vec={};
     splictString(filename,vec,"/");
-//file:///root/毕业设计/Moon/build-RtspServer-C_C_Application_GCC_8_1_0-Debug
 
-    filename = "../build-RtspServer-C_C_Application_GCC_8_1_0-Debug/adverts/"+vec[vec.size()-1];
+    if(flag == true){
+        filename = "../build-RtspServer-C_C_Application_GCC_8_1_0-Debug/videos/"+vec[vec.size()-1];
+    }else{
+        filename = "../build-RtspServer-C_C_Application_GCC_8_1_0-Debug/adverts/"+vec[vec.size()-1];
+    }
+
     std::cout << path << std::endl;
     auto fileName = path.data();
     FILE *fp = fopen(fileName,"rb");
@@ -792,6 +794,9 @@ void Client::sendFile1(std::string filename, endpoint ep)
       std::string path = "./";
       path += filename;
       std::cout << path << std::endl;
+
+//      filename = "../MoonServer/images";//file:///root/毕业设计/Moon/MoonServer
+
       auto fileName = path.data();
       FILE *fp = fopen(fileName,"rb");
 
@@ -1055,7 +1060,7 @@ void Client::readFile(std::vector<std::string> files)
         system(commend.c_str());
         //        tar zcvf FileName.tar.gz DirName
         std::string fileName = "image.tar.gz";
-        sendFile(fileName,sender_ep);
+        sendFile(fileName,sender_ep,true);
         emit upSucceed();
     }
     else if(result == "UPFAILED")
@@ -1074,6 +1079,16 @@ void Client::makeFile()
     std::string command = "mkdir " + name;
     system(command.c_str());
     std::cout << "创建文件夹成功" << std::endl;
+}
+
+void Client::tarFiles()
+{
+    std::vector<std::string> pathNames{"films","comics","drama","varietyshow"};
+    for(auto i : pathNames){
+        std::string commend = "tar zcvf ./images/"+i+".tar.gz "+i;
+        std::cout << commend << std::endl;
+        system(commend.c_str());
+    }
 }
 
 QString Client::showCategory(QString interface)

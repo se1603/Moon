@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-03-25
+* Note:更新对话框
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
