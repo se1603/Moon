@@ -1,3 +1,8 @@
+/*
+  * author:guchangrong 2016051604218
+  * date:2020.4.26
+  * 增加搜索相关界面的显示组件
+  */
 import QtQuick 2.0
 import "../Audience"
 import "../PlayArea"
@@ -28,7 +33,10 @@ Rectangle {
     property var date: new Date()
 
     property var searchResource
-    property alias searchPage: searchComponent
+    property alias searchFilmPage: searchFilmComponent
+    property alias searchDramaPage: searchDramaComponent
+    property alias searchCharacterPage: searchCharacterComponent
+    property alias searchNonePage: searchNoneComponent
     property var lastPlayName
 
     signal stopPlay(var playname, var newname)  //停止播放之前的视频
@@ -72,9 +80,34 @@ Rectangle {
         }
     }
 
+    //搜索电影界面
     Component{
-        id: searchComponent
-        SearchResult{
+        id: searchFilmComponent
+        SearchFilm{
+
+        }
+    }
+
+    //搜索连续剧界面
+    Component{
+        id:searchDramaComponent
+        SearchDrama{
+
+        }
+    }
+
+    //搜索演员和导演界面
+    Component{
+       id:searchCharacterComponent
+       SearchCharacter{
+
+       }
+    }
+
+    //未搜索到的界面
+    Component{
+        id:searchNoneComponent
+        SearchNone{
 
         }
     }

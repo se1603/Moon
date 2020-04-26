@@ -1,18 +1,23 @@
+/*
+  * author:guchangrong 2016051604218
+  * date:2020.4.26
+  * 显示搜索人物的界面
+  */
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
-import "../TopArea"
+import QtGraphicalEffects 1.0
 
 Rectangle {
-    id: movie
+    id: actor
     height: parent.height
     width: parent.width
     anchors.fill: parent
-    property var showResult: middleArea.searchResource.resource
+    property var searchCharacter: middleArea.searchResource.resource //传入的数据
 
     property var date: new Date()
 
-    //顶部提示栏
+//    //顶部提示栏
 //    Rectangle{
 //        id:toprectangle
 //        width: parent.width
@@ -42,17 +47,17 @@ Rectangle {
 //                    anchors.fill: parent
 //                    hoverEnabled: true
 //                    onClicked: {
-////                        if(search_stack.depth > 2) {
-////                            search_stack.pop()
-////                        } else {
-////                            middle_stack.pop(select_page)
-////                            middleArea.middleface.search.visible = false
-////                        }
+//                        if(search_stack.depth > 2) {
+//                            search_stack.pop()
+//                        } else {
+//                            middle_stack.pop(select_page)
+//                            middleArea.middleface.search.visible = false
+//                        }
 //                    }
 //                }
 //            }
 //        }
-        //关闭按钮，回到主页面
+//        //关闭按钮，回到主页面
 //        Rectangle{
 //            id: closebutton
 //            width: 50
@@ -75,18 +80,18 @@ Rectangle {
 //                    anchors.fill: parent
 //                    hoverEnabled: true
 //                    onClicked: {
-////                        middle_stack.pop(select_page)
-////                        middleArea.middleface.search.visible = false
+//                        middle_stack.pop(select_page)
+//                        middleArea.middleface.search.visible = false
 //                    }
 //                }
 //            }
 //        }
-//    }
+//    } //toprectangle
 
     //显示信息栏
     Rectangle{
-        id: showrectanggle
-        width: parent.width
+        id:showrectanggle
+        width: parent.width-50
         height: 19/20 * parent.height
         anchors.top: toprectangle.bottom
         anchors.left: parent.left
@@ -143,55 +148,63 @@ Rectangle {
                 }
             }
         }
-        Rectangle{   //将搜索的内容以列表的形式显示
-            id:showlist
+        Rectangle{ //显示搜索内容
+            id:showdetails
             width: 4/5 * parent.width
             height: parent.height-40
             anchors.top: relation.bottom
             anchors.left: parent.left
-
             Column{
                 anchors.top: parent.top
                 anchors.left: parent.left
                 spacing: 10
                 Repeater{
-                    model: showResult
+                    model: searchCharacter
                     Rectangle{
-                        width: showlist.width
-                        height: 200
-                        border.width: 1
-                        border.color: "lightgray"
+                        id:characterdetail
+                        width: parent.width
+                        height: 300
+                        anchors.top: parent.top
+                        anchors.left: parent.left
                         Rectangle{
-                            id:showposter
-                            width: 120
-                            height: 180
+                            id:photo
+                            width: 150
+                            height: 150
+                            radius: 75
                             anchors.left: parent.left
-                            anchors.leftMargin: 25
-                            anchors.verticalCenter: parent.verticalCenter
-                            border.width: 2
-                            border.color: "gray"
-
-                            Image {   //显示海报
+                            anchors.leftMargin: 30
+                            anchors.top: parent.top
+                            anchors.topMargin: 30
+                            Image {
                                 id: poster
-                                width:120
-                                height: 180
                                 anchors.fill: parent
-                                source: "file:" + modelData.post
-                                MouseArea{
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        console.log(poster.source)
-                                    }
-                                }
+                                sourceSize: Qt.size(parent.width, parent.height)
+                                smooth: true
+                                visible: false
+                                source: "file:" + modelData.photo
+                            }
+                            Rectangle{
+                                id: mask
+                                anchors.fill: parent
+                                radius: width / 2
+                                visible: false
+                                antialiasing: true
+                                smooth: true
                             }
 
-
+                            OpacityMask{
+                                anchors.fill: poster
+                                source: poster
+                                maskSource: mask
+                                visible: true
+                                antialiasing: true
+                            }
                         }
-                        Text{   //显示影视节目名称
-                            id: movietitle
+                        Text{   //显示姓名
+                            id: name
                             width: 100
                             height: 35
-                            anchors.left: showposter.right
+                            anchors.left: photo.right
                             anchors.leftMargin: 20
                             anchors.top: parent.top
                             anchors.topMargin: 20
@@ -199,65 +212,49 @@ Rectangle {
                             color: "lightblue"
                             text: modelData.name
                         }
-                        Text{     //显示简介
-                            id: movieintro
-                            width: parent.width - 240
-                            height: 50
-                            anchors.left: showposter.right
+                        Text{  //显示生日
+                            id: birthday
+                            width: 100
+                            height: 35
+                            anchors.left: photo.right
                             anchors.leftMargin: 20
-                            anchors.top: movietitle.bottom
+                            anchors.top: name.bottom
                             anchors.topMargin: 20
+                            font.pixelSize: 16
+//                            color: "lightblue"
+                            text: modelData.birthday
+                        }
+
+                        Text{  //显示地区
+                            id: region
+                            width: 100
+                            height: 35
+                            anchors.left: birthday.right
+                            anchors.leftMargin: 100
+                            anchors.top: name.bottom
+                            anchors.topMargin: 20
+                            font.pixelSize: 16
+//                            color: "lightblue"
+                            text: modelData.region
+                        }
+
+                        Text{  //显示简介
+                            id: intro
+                            width: parent.width - 240
+                            height: 120
+                            anchors.left: photo.right
+                            anchors.leftMargin: 20
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: 20
                             font.pixelSize: 12
                             wrapMode: Text.WrapAnywhere
                             lineHeight: 1
-                            text:modelData.introduction
-                        }
-                        Rectangle{   //播放按钮
-                            id: playbutton
-                            width: 80
-                            height: 30
-                            color: "#FFEFD5"
-                            anchors.left: showposter.right
-                            anchors.leftMargin: 50
-//                            anchors.top: movieintro.bottom
-//                            anchors.topMargin: 30
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 30
-                            MouseArea{
-                                id:playmousearea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onClicked: {
-                                    //开始记录
-                                    middleArea.recordTime()
-
-                                    middleArea.stopPlay(modelData.name)
-
-                                    playName = modelData.name
-                                    playPost = poster.source
-                                    playUrl = modelData.rtspURL
-                                    middleArea.middleLoader.visible = false
-                                    middleArea.playLoader.visible = true
-                                    console.log(playUrl)
-                                }
-                            }
-
-                            Text {
-                                id: buttontitle
-                                anchors.horizontalCenter: playbutton.horizontalCenter
-                                anchors.verticalCenter: playbutton.verticalCenter
-                                font.pixelSize: 18
-                                color: "lightblue"
-                                text: qsTr("开始播放")
-                            }
+                            text: modelData.introduction
                         }
                     }
                 }
             }
+        }
+    }
+}  //actor
 
-        }  //showlist
-    }//showrectangle
-//    function load_page(page){
-//            search_stack.push(searchmovie, StackView.Immediate)
-//    }
-}//searchpage
