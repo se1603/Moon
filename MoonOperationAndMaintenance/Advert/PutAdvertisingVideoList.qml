@@ -1,5 +1,6 @@
 /* Author:董梦丹
 * Date:2020-02-20
+* 最后修改: 04-26
 * Note:广告
 */
 import QtQuick 2.0
@@ -22,14 +23,19 @@ Rectangle {
     property var selecttype: ""
     property var selectcategory: ""
 
-    property var advertName: ""
-    property var advertPath: ""
+    //    property var advertName: ""
+    //    property var advertPath: ""
 
     property var backmessage: ""
 
     property var videotype: videoTypeMenu.types
 
     property var categoryStatus:""
+
+    property var date:new Date()
+    property var diff:""
+
+    property alias videodetail: videoDetail
 
     signal cancelAllSelect(var cancelname)
     signal uncheckdetail(var detailtype)
@@ -42,34 +48,21 @@ Rectangle {
     signal categorystate()
 
     Connections {
-        target: advertChoice.addbutton
+        target: advertisingButton
         onClicked: {
-            if(advertChoice.advertName !== ""){
-                selectcategory = ""
-                categorystate()
-            }else{
-                backmessage = "请先勾选待插播视频并选取广告!"
-                messageDialog.open()
-            }
+            selectcategory = ""
+            categorystate()
         }
     }
 
     Connections {
         target: client
         onAddAdvertSucceed: {
-            txtCompany.text = ""
-            txtYear.text = ""
-            txtMonth.text = ""
-            txtDay.text = ""
             commitDialog.close()
             backmessage = "Succeed!"
             messageDialog.open()
         }
         onAddAdvertFailed: {
-            txtCompany.text = ""
-            txtYear.text = ""
-            txtMonth.text = ""
-            txtDay.text = ""
             commitDialog.close()
             backmessage = "Failed!"
             messageDialog.open()
@@ -81,15 +74,12 @@ Rectangle {
         onSelectAll: {
             categoryStatus = typename
             judgeSelectedAll(categoryStatus)
-            //            console.log(categoryStatus)
         }
         onCancelSelect: {
             categoryStatus = ""
             judgeCancelSelected(cancelname)
-            //            console.log(categoryStatus)
         }
         onSendBack: {
-            //            console.log("---"+typename)
             if(typename !== " "){
                 commitCategoryAdd(typename)
             }else{
@@ -202,16 +192,17 @@ Rectangle {
 
     Rectangle {
         id: videoBlock
-        width: parent.width
+        width: 3 / 4 * parent.width
         height: parent.height - videoTypes.height
         anchors.top: videoTypes.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
 
         ScrollView {
             anchors.fill: parent
             clip: true
             GridLayout {
                 anchors.top: parent.top
-                columns: mainWindow.width < 1100 ? 4 : 5
+                columns: mainWindow.width < 1100 ? 5 : 6
                 columnSpacing: 1 / 2 * videoTypes.height
                 rowSpacing: 1 / 2 * videoTypes.height
 
@@ -221,8 +212,8 @@ Rectangle {
 
                     Rectangle {
                         id: videoRec
-                        width: 150
-                        height: 250
+                        width: 130
+                        height: 200
                         property var name:modelData.name
                         property var source:modelData.post
                         property bool check:false
@@ -237,7 +228,7 @@ Rectangle {
                                 id: notes
                                 visible: false
                                 text: "点击查看详情"
-                                font.pixelSize: 16
+                                font.pixelSize: 14
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.verticalCenter: parent.verticalCenter
                                 color: "white"
@@ -255,10 +246,9 @@ Rectangle {
                                     notes.visible = false
                                 }
                                 onClicked: {
-                                    advertLoader.currentName = parent.parent.name
-                                    advertLoader.currentPost = parent.parent.source
-                                    advertLoader.currentType = videochoice.videotype
-                                    advertLoader.source = "VideoDetailAdvert.qml"
+                                    videoDetail.currentName = videoRec.name
+                                    videoDetail.currentPost = videoRec.source
+                                    videoDetail.visible = true
                                 }
                             }
                         }
@@ -316,76 +306,10 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 10
 
-            Row {
-                spacing: 14
-                Text {
-                    text: qsTr("广告名称")
-                    font.pixelSize: 14
-                }
-
-                Text {
-                    text: advertName
-                    font.pixelSize: 14
-                }
-            }
-
-            Row{
-                spacing: 40
-                Text {
-                    text: qsTr("公司")
-                    font.pixelSize: 14
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                TextField {
-                    id: txtCompany
-                    font.pixelSize: 14
-                }
-            }
-
-            Row{
-                spacing: 12
-                Text {
-                    text: qsTr("到期时间")
-                    font.pixelSize: 14
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                TextField {
-                    id: txtYear
-                    font.pixelSize: 14
-                    width: 60
-                }
-
-                Text {
-                    text: "-"
-                    font.pixelSize: 14
-                }
-
-                TextField {
-                    id: txtMonth
-                    font.pixelSize: 14
-                    width: 30
-                }
-
-                Text {
-                    text: "-"
-                    font.pixelSize: 14
-                }
-
-                TextField {
-                    id: txtDay
-                    font.pixelSize: 14
-                    width: 30
-                }
-            }
-
             Text {
-                id: notetxt
-                text: "请输入公司和时间信息"
-                font.pixelSize: 11
-                color: "red"
-                visible: false
+                text: "待投放的广告信息：\n"
+                      + advertname + "," + advertcompany + "," + advertduetime
+                font.pixelSize: 12
             }
 
             Text {
@@ -426,24 +350,21 @@ Rectangle {
                 Button {
                     text: qsTr("Commit")
                     onClicked: {
-                        var txtTime = txtYear.text+txtMonth.text+txtDay.text
-
-                        if(txtCompany.text !== "" && txtYear.text !== ""
-                                && txtMonth.text !== "" && txtDay.text !== ""){
-                            notetxt.visible = false
+                        judgeDate()
+                        if(diff === "success"){
                             if(categorytxt.visible === true){
-                                client.addAdvertToCategory(advertName, txtCompany.text,
-                                                           txtTime, selectcategory, advertPath)
+                                client.addAdvertToCategory(advertname, advertcompany,
+                                                           advertduetime, selectcategory)
                             }else{
-                                client.addAdvertToVideos(advertName, txtCompany.text,
-                                                         txtTime, selectmessage,
+                                client.addAdvertToVideos(advertname, advertcompany,
+                                                         advertduetime, selectmessage,
                                                          videoTypeMenu.types,
-                                                         selecttype, advertPath)
+                                                         selecttype)
                             }
-                        }else{
-                            notetxt.visible = true
+                        }else if(diff === "error"){
+                            backmessage = "该广告到期时间不足一月，请重新选择"
+                            messageDialog.open()
                         }
-                        advertChoice.advertName = ""
                     }
                 }
 
@@ -476,11 +397,17 @@ Rectangle {
 
             Button {
                 text: "Close"
+                anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     messageDialog.close()
                 }
             }
         }
+    }
+
+    PutAdvertisingVideoDetail {
+        id: videoDetail
+        visible: false
     }
 
     function allBeChoosen(checkState) {
@@ -492,16 +419,16 @@ Rectangle {
 
     function commitCategoryAdd(category) {
         selectcategory = category
-        advertName = advertChoice.advertName
-        advertPath = advertChoice.path
+        //        advertName = advertChoice.advertName
+        //        advertPath = advertChoice.path
         commitDialog.open()
     }
 
     function commitAdd() {
         selecttype = ""
         selectmessage = ""
-        advertPath = advertChoice.path
-        advertName = advertChoice.advertName
+        //        advertPath = advertChoice.path
+        //        advertName = advertChoice.advertName
 
         for(var i = 0; i !== menudelegate.model.length; i++){
             if(menudelegate.itemAt(i).checks === true){
@@ -510,11 +437,21 @@ Rectangle {
             }
         }
 
+        var flag = 0
         for(var i = 0; i !== modelDelegate.model.length; i++){
             if(modelDelegate.itemAt(i).check === true){
                 selectmessage += modelDelegate.itemAt(i).name
                 selectmessage += "/"
+                flag++
             }
+        }
+
+        console.log(flag)
+
+        if(flag === modelDelegate.model.length && flag !== 1){
+            selectmessage = ""
+        }else if(flag === modelDelegate.model.length && flag === 1){
+            selecttype = ""
         }
 
         if(selecttype !== "" || selectmessage !== ""){
@@ -573,5 +510,35 @@ Rectangle {
         }else{
             sendcategorycheck("uncheck",category)
         }
+    }
+
+    function judgeDate(){
+        var year = date.getFullYear()
+        var month = date.getMonth()+1
+        var day = date.getDate()
+        //                        console.log(year+"--"+month+"=="+day)
+        var dueyear = advertduetime.slice(0,4)
+        var duemonth = advertduetime.slice(4,6)
+        var dueday = advertduetime.slice(6,8)
+
+        if(duemonth[0] === "0"){
+            duemonth = duemonth[1]
+        }
+        if(dueday[0] === "0"){
+            dueday = dueday[1]
+        }
+        //        console.log(dueyear+"@")
+        //        console.log(duemonth+"#")
+        //        console.log(dueday+"$")
+        //        var advertyear = Number(dueyear)
+        //        var advertmonth = Number(duemonth)
+        //        var advertday = Number(dueday)
+
+        //        var currentyear = Number(year)
+        //        var currentmonth = Number(month)
+        //        var currentday = Number(day)
+
+        diff = client.judgedate(year,month,day,dueyear,duemonth,dueday)
+        //        console.log(diff)
     }
 }

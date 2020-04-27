@@ -43,9 +43,18 @@ public:
     //公司广告排名
     std::string showCompanyClicksRank(std::string companyname);
     //删除影视广告
-    std::string deleteVideoAdverts(std::string videoname, std::string advertname);
+    std::string deleteVideoAdverts(std::string deletemessage);
     //添加广告点击量
     std::string addAdvertClicks(std::string advertname);
+    //获取所有已编辑的广告
+    std::string showAllVideoAdverts();
+    //获取所有已投放的映前广告
+    std::string showAdvertising();
+    //修改广告到期时间
+    std::string changeAdvertTime(std::string advertname, std::string newdate);
+    //
+    std::string changeAdvertLocation(std::string advertname, std::string videoname,
+                                     std::string newlocation);
 
     //搜索影视信息
     std::string seach(std::string name);

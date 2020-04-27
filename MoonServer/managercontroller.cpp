@@ -30,7 +30,7 @@ void ManagerController::initAdvertLinkVideo()
     auto links = m_advertBroker->readAdvertLinks();
 
     for(auto item = links.begin(); item != links.end(); ++item){
-        std::cout << "lalala" << std::endl;
+//        std::cout << "lalala" << std::endl;
         auto advert = m_advertBroker->findAdvert(item->first);
         auto video = m_movieAndTelevisionBroker->initAdvertLinks(item->second, advert);
         m_advertBroker->initVideoLink(item->first, video);
@@ -118,30 +118,39 @@ std::string ManagerController::addAdvert(std::string advertname, std::string com
     if(detailtype != "")
         splictString(detailtype,types,"/");
 
-    bool res1 = m_advertBroker->addAdvert(advertname, company, duetime);
+    //    bool res1 = m_advertBroker->addAdvert(advertname, company, duetime);
+
+    //    if(res1 == true){
+    //        a = m_advertBroker->createAdvertEntity(advertname,company,duetime);
+    //    }else{
+    //        a = m_advertBroker->findAdvert(advertname);
+    //    }
 
     Advert* a;
-
-    if(res1 == true){
-        a = m_advertBroker->createAdvertEntity(advertname,company,duetime);
-    }else{
-        a = m_advertBroker->findAdvert(advertname);
-    }
+    a = m_advertBroker->findAdvert(advertname);
 
     if(a != nullptr){
 
         for(auto &v:videos){
-            auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,videotype);
-            m_advertBroker->initVideoLink(advertname, mv);
-            m_advertBroker->addAdvertLinkVideo(advertname, v);
+            int flag = 0;
+            auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,videotype,flag);
+            if(flag == 0){
+                m_advertBroker->initVideoLink(advertname, mv);
+                m_advertBroker->addAdvertLinkVideo(advertname, v);
+                m_advertBroker->addCurrentLink(advertname,v);
+            }
         }
 
         for(auto &t:types){
             auto vec = m_movieAndTelevisionBroker->findTypeVideo(t,videotype);
             for(auto &v:vec){
-                auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,videotype);
-                m_advertBroker->initVideoLink(advertname, mv);
-                m_advertBroker->addAdvertLinkVideo(advertname, v);
+                int flag = 0;
+                auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,videotype,flag);
+                if(flag == 0){
+                    m_advertBroker->initVideoLink(advertname, mv);
+                    m_advertBroker->addAdvertLinkVideo(advertname, v);
+                    m_advertBroker->addCurrentLink(advertname,v);
+                }
             }
         }
 
@@ -158,23 +167,29 @@ std::string ManagerController::addAdvertToCategory(std::string advert, std::stri
 {
     json value;
 
-    bool res1 = m_advertBroker->addAdvert(advert, company, duetime);
+    //    bool res1 = m_advertBroker->addAdvert(advert, company, duetime);
+
+
+    //    if(res1 == true){
+    //        a = m_advertBroker->createAdvertEntity(advert,company,duetime);
+    //    }else{
+    //        a = m_advertBroker->findAdvert(advert);
+    //    }
 
     Advert* a;
-
-    if(res1 == true){
-        a = m_advertBroker->createAdvertEntity(advert,company,duetime);
-    }else{
-        a = m_advertBroker->findAdvert(advert);
-    }
+    a = m_advertBroker->findAdvert(advert);
 
     if(a != nullptr){
 
         auto videos = m_movieAndTelevisionBroker->findCategory(category);
         for(auto &v:videos){
-            auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,category);
-            m_advertBroker->initVideoLink(advert, mv);
-            m_advertBroker->addAdvertLinkVideo(advert, v);
+            int flag = 0;
+            auto mv = m_movieAndTelevisionBroker->addAdvert(v,a,category,flag);
+            if(flag == 0){
+                m_advertBroker->initVideoLink(advert, mv);
+                m_advertBroker->addAdvertLinkVideo(advert, v);
+                m_advertBroker->addCurrentLink(advert,v);
+            }
         }
 
         value["replay"] = "SUCCEED";
@@ -285,22 +300,23 @@ std::string ManagerController::showCompanyClicksRank(std::string companyname)
     return res;
 }
 
-std::string ManagerController::deleteVideoAdverts(std::string videoname, std::string advertname)
+std::string ManagerController::deleteVideoAdverts(std::string deletemessage)
 {
     json replay;
 
-    std::vector<std::string> adverts;
-    splictString(advertname,adverts,"/");
+    std::vector<std::string> links;
+    splictString(deletemessage,links,"#");
     bool res = true;
 
-    for(auto &a:adverts){
-        bool res1 = m_movieAndTelevisionBroker->deleteVideoAdverts(videoname,a);
-        bool res2 = m_advertBroker->deleteVideoLink(a,videoname);
-        bool res3 = m_advertBroker->deleteVideoAdvertLink(videoname,a);
+    for(auto &l:links){
+        std::vector<std::string> tmp;
+        splictString(l,tmp,"/");
 
-        m_advertBroker->judgeAdvertRemove(a);
+        bool res1 = m_movieAndTelevisionBroker->deleteVideoAdverts(tmp[1],tmp[0]);
+        bool res2 = m_advertBroker->deleteVideoLink(tmp[0],tmp[1]);
+        bool res3 = m_advertBroker->deleteVideoAdvertLink(tmp[1],tmp[0]);
 
-//        std::cout << "a:" << res1 << res2 << res3 << std::endl;
+//        m_advertBroker->judgeAdvertRemove(tmp[1]);
 
         if(res1 == false || res2 == false || res3 == false)
             res = false;
@@ -330,48 +346,152 @@ std::string ManagerController::addAdvertClicks(std::string advertname)
     std::string message = replay.dump();
     return message;
 }
+
+std::string ManagerController::showAllVideoAdverts()
+{
+    json replay;
+    json arry;
+
+    auto adverts = m_advertBroker->showAllVideoAdverts();
+
+    if(adverts.size() != 0){
+        for(auto &a:adverts){
+            json value;
+            value["name"] = a[0];
+            value["company"] = a[1];
+            value["duetime"] = a[3];
+            arry.push_back(value);
+        }
+    }else{
+        json value;
+        value["name"] = "NULL";
+        value["clicks"] = "NULL";
+        value["duetime"] = "NULL";
+        arry.push_back(value);
+    }
+
+    replay["adverts"] = arry;
+    std::string res = replay.dump();
+    return res;
+}
+
+std::string ManagerController::showAdvertising()
+{
+    json replay;
+    json arry;
+
+//    std::cout <<"oneday" << std::endl;
+    auto adverts = m_advertBroker->showAdvertising();
+//    std::cout <<"luyao" << std::endl;
+
+    if(adverts.size() != 0){
+        for(auto &a:adverts){
+            json value;
+            value["name"] = a[0];
+            value["company"] = a[1];
+            value["duetime"] = a[3];
+            value["videoname"] = a[4];
+            arry.push_back(value);
+        }
+    }else{
+        json value;
+        value["name"] = "NULL";
+        arry.push_back(value);
+    }
+
+    replay["adverts"] = arry;
+    std::cout << "@@@\n" << replay.dump() << std::endl;
+    std::string res = replay.dump();
+    return res;
+}
+
+std::string ManagerController::changeAdvertTime(std::string advertname, std::string newdate)
+{
+    json replay;
+
+    bool res1 = m_advertBroker->changeAdvertTime(advertname, newdate);
+    bool res2 = m_advertBroker->changeAdvertTimeDB(advertname, newdate);
+
+    if(res1 == true && res2 == true){
+        replay["replay"] = "SUCCEED";
+    }else{
+        replay["replay"] = "FAILED";
+    }
+
+    std::string message = replay.dump();
+    return message;
+}
+
+std::string ManagerController::changeAdvertLocation(std::string advertname, std::string videoname, std::string newlocation)
+{
+    json replay;
+    auto res = m_movieAndTelevisionBroker->searchVideos(newlocation);
+    if(res.size() == 0){
+        replay["replay"] = "NOVIDEO";
+    }else{
+        std::cout << "wojinlaile" << std::endl;
+        auto advert = m_advertBroker->findAdvert(advertname);
+        int flag = 0;
+        m_movieAndTelevisionBroker->addAdvert(newlocation, advert, "未知", flag);
+        m_movieAndTelevisionBroker->deleteVideoAdverts(videoname, advertname);
+        bool res1 = m_advertBroker->deleteVideoLink(advertname, videoname);
+        bool res2 = m_advertBroker->deleteVideoAdvertLink(videoname, advertname);
+        bool res3 = m_advertBroker->addAdvertLinkVideo(advertname, newlocation);
+        m_advertBroker->addCurrentLink(advertname, newlocation);
+
+        if(res1 == true && res2 == true && res3 == true){
+            replay["replay"] = "SUCCEED";
+        }else{
+            replay["replay"] = "FAILED";
+        }
+    }
+
+    std::string message = replay.dump();
+    return message;
+}
+
 std::string ManagerController::seach(std::string name)
 {
-//   auto m = m_movieAndTelevisionBroker->getVideoInfo(name);
-   json root;
-   std::string out;
-   root["request"] = "SEACH";
-   root["name"] = name;
-   auto f = m_movieAndTelevisionBroker->getVideoInfo(name);
-   json value;
-   json types;
-   root["videotype"] = 1;
-   if(f.size() == 0){
-       root["empty"]="EMPTY";
-   }else{
-       root["empty"] = "NULL";
-   }
+    //   auto m = m_movieAndTelevisionBroker->getVideoInfo(name);
+    json root;
+    std::string out;
+    root["request"] = "SEACH";
+    root["name"] = name;
+    auto f = m_movieAndTelevisionBroker->getVideoInfo(name);
+    json value;
+    json types;
+    root["videotype"] = 1;
+    if(f.size() == 0){
+        root["empty"]="EMPTY";
+    }else{
+        root["empty"] = "NULL";
+    }
 
-   for(int i = 0;i != f.size();i++){
-       json type;
-       if(i == 0){
-           value["esipode"] = f[0];
-       }else if(i == 1){
-           value["introduction"] = f[1];
-       }else if(i == 2){
-           value["category"] = f[2];
-       }else if(i==3){
-           value["region"] = f[3];
-       }else if(i == 4){
-           value["post"] = f[4];
-       }
-       else{
-           type["type"] = f[i];
-           types.push_back(type);
-//            types.append(type);w
-       }
-   }
-   value["name"] = name;
-   value["videotype"] = types;
-   root["resource"] = value;
-   out = root.dump();
+    for(int i = 0;i != f.size();i++){
+        json type;
+        if(i == 0){
+            value["esipode"] = f[0];
+        }else if(i == 1){
+            value["introduction"] = f[1];
+        }else if(i == 2){
+            value["category"] = f[2];
+        }else if(i==3){
+            value["region"] = f[3];
+        }else if(i == 4){
+            value["post"] = f[4];
+        }
+        else{
+            type["type"] = f[i];
+            types.push_back(type);
+            //            types.append(type);w
+        }
+    }
+    value["name"] = name;
+    value["videotype"] = types;
+    root["resource"] = value;
+    out = root.dump();
 
-   return out;
+    return out;
 }
 
 std::string ManagerController::update(std::string s)

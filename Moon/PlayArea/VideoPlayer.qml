@@ -185,15 +185,12 @@ Rectangle {
             console.log(videoPath)
             if(isPlayingAdvert)
             {
+                console.log("???")
                 clickAvert++
                 //add
-                for(var i = 0; i !== play.allAdverts.length; i++){
-                    if(i === currentEsipode){
-                        var advertname = play.allAdverts[i].name
-                        client.addAdvertClicks(advertname)
-                    }
-                }
-                console.log(clickAvert)
+                var advertname = play.allAdverts[0].name
+                console.log("@@@"+advertname)
+                client.addAdvertClicks(advertname)
             }
             else
             {

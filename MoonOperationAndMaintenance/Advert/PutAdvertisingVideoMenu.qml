@@ -1,5 +1,5 @@
 /* Author:董梦丹
-* Date:2020-02-16
+* Date:2020-04-26
 * Note:广告
 */
 import QtQuick 2.0
@@ -30,7 +30,7 @@ Rectangle {
 
             Row {
                 anchors.top: parent.top
-                anchors.topMargin: 1 / 20 * advertMiddle.height
+                anchors.topMargin: 20
                 property var checks:false
                 property var name:modelData.name
                 CheckBox {
@@ -56,13 +56,6 @@ Rectangle {
                                     anchors.margins: 4
                                     anchors.fill: parent
                                 }
-//                                Rectangle {
-//                                    visible: control.enabled === false
-//                                    Text {
-//                                        anchors.fill: parent
-//                                        text: " ✗"
-//                                    }
-//                                }
                         }
                     }
                     checked: parent.checks
@@ -112,6 +105,7 @@ Rectangle {
                             videoChoice.modelDelegate.model =
                                     JSON.parse(client.showVideos(videoTypeMenu.types,
                                                                  videoChoice.detail))
+                            videoChoice.videodetail.visible = false
                         }
                     }
                 }

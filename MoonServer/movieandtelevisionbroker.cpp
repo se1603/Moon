@@ -964,12 +964,12 @@ std::map<std::string,std::string> MovieAndTelevisionBroker::searchVideos(std::st
     return videoinfo;
 }
 
-MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Advert *a, std::string videotype)
+MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Advert *a, std::string videotype, int &flag)
 {
     if(videotype == "电影"){
         for(auto item = m_films.begin(); item != m_films.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -978,7 +978,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
     }else if(videotype == "综艺"){
         for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -987,7 +987,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
     }else if(videotype == "动漫"){
         for(auto item = m_comics.begin(); item != m_comics.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -996,7 +996,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
     }else if(videotype == "剧集"){
         for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1005,7 +1005,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
     }else if(videotype == "未知"){
         for(auto item = m_films.begin(); item != m_films.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1014,7 +1014,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
 
         for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1023,7 +1023,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
 
         for(auto item = m_comics.begin(); item != m_comics.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1032,7 +1032,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
 
         for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1110,10 +1110,10 @@ std::vector<Advert *> MovieAndTelevisionBroker::showAdverts(std::string name, st
 
 MovieAndTelevision* MovieAndTelevisionBroker::initAdvertLinks(std::string videoname, Advert *a)
 {
-
+    int flag = 0;
     for(auto item = m_films.begin(); item != m_films.end(); item++){
         if(item->first == videoname){
-            item->second.addAdvertLink(a);
+            item->second.addAdvertLink(a,flag);
             MovieAndTelevision* mv = new MovieAndTelevision();
             mv = &item->second;
             return mv;
@@ -1122,7 +1122,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::initAdvertLinks(std::string videon
 
     for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
         if(item->first == videoname){
-            item->second.addAdvertLink(a);
+            item->second.addAdvertLink(a,flag);
             MovieAndTelevision* mv = new MovieAndTelevision();
             mv = &item->second;
             return mv;
@@ -1131,7 +1131,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::initAdvertLinks(std::string videon
 
     for(auto item = m_comics.begin(); item != m_comics.end(); item++){
         if(item->first == videoname){
-            item->second.addAdvertLink(a);
+            item->second.addAdvertLink(a,flag);
             MovieAndTelevision* mv = new MovieAndTelevision();
             mv = &item->second;
             return mv;
@@ -1140,7 +1140,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::initAdvertLinks(std::string videon
 
     for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
         if(item->first == videoname){
-            item->second.addAdvertLink(a);
+            item->second.addAdvertLink(a,flag);
             MovieAndTelevision* mv = new MovieAndTelevision();
             mv = &item->second;
             return mv;
@@ -1239,6 +1239,41 @@ std::vector<std::string> MovieAndTelevisionBroker::findTypeVideo(std::string typ
 
     return vec;
 }
+
+//MovieAndTelevision *MovieAndTelevisionBroker::findVideo(std::string videoname)
+//{
+//    for(auto item = m_films.begin(); item != m_films.end(); item++){
+//        if(item->first == videoname){
+//            MovieAndTelevision* mv = new MovieAndTelevision();
+//            mv = &item->second;
+//            return mv;
+//        }
+//    }
+
+//    for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
+//        if(item->first == videoname){
+//            MovieAndTelevision* mv = new MovieAndTelevision();
+//            mv = &item->second;
+//            return mv;
+//        }
+//    }
+
+//    for(auto item = m_comics.begin(); item != m_comics.end(); item++){
+//        if(item->first == videoname){
+//            MovieAndTelevision* mv = new MovieAndTelevision();
+//            mv = &item->second;
+//            return mv;
+//        }
+//    }
+
+//    for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
+//        if(item->first == videoname){
+//            MovieAndTelevision* mv = new MovieAndTelevision();
+//            mv = &item->second;
+//            return mv;
+//        }
+//    }
+//}
 
 
 bool MovieAndTelevisionBroker::getMTVMessage()

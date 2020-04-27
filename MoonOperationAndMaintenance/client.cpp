@@ -7,7 +7,7 @@
 #include <string>
 
 boost::asio::io_service service;
-boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.0.102"),8001);
+boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.43.76"),8001);
 boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7788));
 
 Client::Client(QObject *p) :
@@ -138,8 +138,7 @@ QString Client::showVideos(QString category, QString detailtype)
 }
 
 void Client::addAdvertToVideos(QString advert, QString company, QString duetime,
-                               QString videomessage, QString videotype, QString detailtype,
-                               QString path)
+                               QString videomessage, QString videotype, QString detailtype)
 {
     //    std::vector<std::string> videos;
     //    splictString(videomessage.toStdString(),videos,"/");
@@ -160,14 +159,14 @@ void Client::addAdvertToVideos(QString advert, QString company, QString duetime,
     advertLinkvideo["detailtype"] = detailtype.toStdString();
     std::string message = advertLinkvideo.dump();
 
-    std::cout <<" path is"<< path.toStdString() << std::endl;
+    //    std::cout <<" path is"<< path.toStdString() << std::endl;
 
     socket_ptr udpsockptr;
     udpsockptr = sendMessage(message);
     NetWork sock(udpsockptr);
     boost::asio::ip::udp::endpoint sender_ep;
     std::string res = sock.receive(sender_ep);
-    sendFile(path.toStdString(),sender_ep,false);
+    //    sendFile(path.toStdString(),sender_ep,false);
 
     json replay = json::parse(res);
     if(replay["replay"] == "SUCCEED"){
@@ -177,7 +176,7 @@ void Client::addAdvertToVideos(QString advert, QString company, QString duetime,
     }
 }
 
-void Client::addAdvertToCategory(QString advert, QString company, QString duetime, QString category, QString path)
+void Client::addAdvertToCategory(QString advert, QString company, QString duetime, QString category)
 {
     json categorys;
     categorys["system"] = "MANAGE";
@@ -188,13 +187,13 @@ void Client::addAdvertToCategory(QString advert, QString company, QString duetim
     categorys["category"] = category.toStdString();
     std::string message = categorys.dump();
 
-        std::cout << path.toStdString() << std::endl;
+    //        std::cout << path.toStdString() << std::endl;
     socket_ptr udpsockptr;
     udpsockptr = sendMessage(message);
     NetWork sock(udpsockptr);
     boost::asio::ip::udp::endpoint sender_ep;
     std::string res = sock.receive(sender_ep);
-    sendFile(path.toStdString(),sender_ep,false);
+    //    sendFile(path.toStdString(),sender_ep,false);
 
     json replay = json::parse(res);
     if(replay["replay"] == "SUCCEED"){
@@ -262,13 +261,12 @@ QString Client::showCompanyClicksRank(QString companyname)
     return qmlvalue;
 }
 
-void Client::deleteVideoAdverts(QString videoname, QString advertname)
+void Client::deleteVideoAdverts(QString deletemessage)
 {
     json value;
     value["system"] = "MANAGE";
     value["request"] = "DELETEVIDEOADVERTS";
-    value["videoname"] = videoname.toStdString();
-    value["advertname"] = advertname.toStdString();
+    value["deletemessage"] = deletemessage.toStdString();
     std::string message = value.dump();
 
     socket_ptr udpsockptr;
@@ -304,6 +302,123 @@ QString Client::cliptime(QString duetime)
     return qmlvalue;
 }
 
+QString Client::showAllVideoAdverts()
+{
+    json show;
+    show["system"] = "MANAGE";
+    show["request"] = "SHOWALLVIDEOADVERTS";
+    std::string message = show.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    std::string res = sock.receive();
+
+    json replay = json::parse(res);
+    std::string result = replay["adverts"].dump();
+    QString qmlvalue = QString::fromStdString(result);
+    return qmlvalue;
+}
+
+QString Client::judgedate(QString year, QString month, QString day, QString dueyear, QString duemonth, QString dueday)
+{
+    int y2, m2, d2;
+    int y1, m1, d1;
+
+    int month_start = month.toInt();
+    int year_start = year.toInt();
+    int day_start = day.toInt();
+
+    int month_end = duemonth.toInt();
+    int year_end = dueyear.toInt();
+    int day_end = dueday.toInt();
+//    std::cout << month_start << year_start << day_start << std::endl;
+
+    m1 = (month_start + 9) % 12;
+    y1 = year_start - m1/10;
+    d1 = 365*y1 + y1/4 - y1/100 + y1/400 + (m1*306 + 5)/10 + (day_start - 1);
+
+    m2 = (month_end + 9) % 12;
+    y2 = year_end - m2/10;
+    d2 = 365*y2 + y2/4 - y2/100 + y2/400 + (m2*306 + 5)/10 + (day_end - 1);
+
+    int diff = d2-d1;
+    std::cout << diff << std::endl;
+
+    QString result;
+    if(diff >= 30){
+        result = "success";
+    }else{
+        result = "error";
+    }
+    return result;
+}
+
+QString Client::showAdvertising()
+{
+    json advertising;
+    advertising["system"] = "MANAGE";
+    advertising["request"] = "SHOWADVERTISING";
+    std::string message = advertising.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    std::string res = sock.receive();
+
+    json replay = json::parse(res);
+    std::string result = replay["adverts"].dump();
+    QString qmlvalue = QString::fromStdString(result);
+    return qmlvalue;
+}
+
+void Client::changeAdvertTime(QString advertname, QString newdate)
+{
+    json newtime;
+    newtime["system"] = "MANAGE";
+    newtime["request"] = "CHANGEADVERTTIME";
+    newtime["advertname"] = advertname.toStdString();
+    newtime["newdate"] = newdate.toStdString();
+    std::string message = newtime.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    std::string res = sock.receive();
+
+    json replay = json::parse(res);
+    if(replay["replay"] == "SUCCEED"){
+        emit changeAdvertTimeSucceed();
+    }else if(replay["replay"] == "FAILED"){
+        emit changeAdvertTimeFailed();
+    }
+}
+
+void Client::changeAdvertLocation(QString advertname, QString videoname, QString newlocation)
+{
+    json location;
+    location["system"] = "MANAGE";
+    location["request"] = "CHANGEADVERTLOCATION";
+    location["advertname"] = advertname.toStdString();
+    location["videoname"] = videoname.toStdString();
+    location["newlocation"] = newlocation.toStdString();
+    std::string message = location.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    std::string res = sock.receive();
+
+    json replay = json::parse(res);
+    if(replay["replay"] == "SUCCEED"){
+        emit changeAdvertLocationSucceed();
+    }else if(replay["replay"] == "FAILED"){
+        emit changeAdvertLocationFailed();
+    }else if(replay["replay"] == "NOVIDEO"){
+        emit changeAdvertLocationNotFound();
+    }
+}
+
 void Client::getMovieInfo(QString name,QString fileName,QString message,QString pAdress,QString sAdress)
 {
     makeFile();
@@ -319,7 +434,7 @@ void Client::getMovieInfo(QString name,QString fileName,QString message,QString 
 
 QString Client::getLocalMessages()
 {
-//    tarFiles();
+    //    tarFiles();
     json up;
     json resources;
     std::string path = "./上架/";
@@ -443,13 +558,13 @@ void Client::noticeUp()
         sendFile(path,sender_ep,true);
         std::string fileName1 = "./上架/c";
         std::cout << fileName1 << std::endl;
-//        std::ifstream in(fileName1);
+        //        std::ifstream in(fileName1);
 
 
         std::string data = "";
         data += + "\n";
 
-//        in.close();
+        //        in.close();
         std::ofstream os(fileName1);
         os << data;
         os.close();
@@ -541,14 +656,14 @@ void Client::updateVideos(QString str)
         value["region"] = messages[i+3];
         value["episode"] = messages[i+4];
 
-//        value["introduction"] = messages[i+5];
+        //        value["introduction"] = messages[i+5];
         value["recommmd"] = messages[i+5];
         std::string m = messages[i+6];
         std::string s = messages[i+7];
         std::string v;
         if(s != "k"){
             m = m.erase(0,17);
-    //            s = s.erase(0,45);
+            //            s = s.erase(0,45);
             s = s.erase(0,52);
             v = "."+s+m;
         }else{
@@ -789,80 +904,80 @@ void Client::sendFile(std::string filename, endpoint ep, bool flag)
 void Client::sendFile1(std::string filename, endpoint ep)
 {
     socket_ptr sock(new boost::asio::ip::udp::socket(service,boost::asio::ip::udp::endpoint()));
-      boost::asio::ip::udp::endpoint sender_ep;
+    boost::asio::ip::udp::endpoint sender_ep;
 
-      std::string path = "./";
-      path += filename;
-      std::cout << path << std::endl;
+    std::string path = "./";
+    path += filename;
+    std::cout << path << std::endl;
 
-//      filename = "../MoonServer/images";//file:///root/毕业设计/Moon/MoonServer
+    //      filename = "../MoonServer/images";//file:///root/毕业设计/Moon/MoonServer
 
-      auto fileName = path.data();
-      FILE *fp = fopen(fileName,"rb");
+    auto fileName = path.data();
+    FILE *fp = fopen(fileName,"rb");
 
-      boost::shared_ptr<FILE> file_ptr(fp,fclose); //退出后自动关闭文件
+    boost::shared_ptr<FILE> file_ptr(fp,fclose); //退出后自动关闭文件
 
-      //打开文件失败发送一个空的file_info到客户端
-      if(fp == NULL){
-          std::cout << "Cannot open file." << std::endl;
-          File_info file_info;
-          char buffer[16];
-          memcpy(buffer, &file_info,sizeof (file_info));
-          sock->send_to(boost::asio::buffer(buffer,sizeof(buffer)),ep);
-          return;
-      }
+    //打开文件失败发送一个空的file_info到客户端
+    if(fp == NULL){
+        std::cout << "Cannot open file." << std::endl;
+        File_info file_info;
+        char buffer[16];
+        memcpy(buffer, &file_info,sizeof (file_info));
+        sock->send_to(boost::asio::buffer(buffer,sizeof(buffer)),ep);
+        return;
+    }
 
-      clock_t costTime = clock();  //记录传送文件时长
+    clock_t costTime = clock();  //记录传送文件时长
 
-      const size_t buffer_size = 512;
-      char buffer[buffer_size];
-      memset(buffer,0,sizeof (char) * buffer_size);
-      File_info file_info;
+    const size_t buffer_size = 512;
+    char buffer[buffer_size];
+    memset(buffer,0,sizeof (char) * buffer_size);
+    File_info file_info;
 
-      int filename_size = strlen(filename.data()) + 1;     //文件名
-      size_t file_info_size = sizeof (file_info);
-      size_t total_size = file_info_size + filename_size;
-      if(total_size > buffer_size){
-          std::cerr << "File name is too long";
-          return;
-      }
+    int filename_size = strlen(filename.data()) + 1;     //文件名
+    size_t file_info_size = sizeof (file_info);
+    size_t total_size = file_info_size + filename_size;
+    if(total_size > buffer_size){
+        std::cerr << "File name is too long";
+        return;
+    }
 
-      file_info.filename_size = filename_size;
+    file_info.filename_size = filename_size;
 
-      fseek(fp,0,SEEK_END);     //设置文件指针到文件末尾
-      file_info.filesize = ftell(fp);  //得到文件的大小
-      rewind(fp);    //重新指向文件头
+    fseek(fp,0,SEEK_END);     //设置文件指针到文件末尾
+    file_info.filesize = ftell(fp);  //得到文件的大小
+    rewind(fp);    //重新指向文件头
 
-      std::cout << "filenamesize: " << filename_size << std::endl;
-      std::cout << "filesize: " << file_info.filesize << std::endl;
-      std::cout << "totalsize: " << total_size << std::endl;
+    std::cout << "filenamesize: " << filename_size << std::endl;
+    std::cout << "filesize: " << file_info.filesize << std::endl;
+    std::cout << "totalsize: " << total_size << std::endl;
 
-      memcpy(buffer, &file_info, file_info_size);
-      sock->send_to(boost::asio::buffer(buffer,file_info_size),ep);  //发送大小
+    memcpy(buffer, &file_info, file_info_size);
+    sock->send_to(boost::asio::buffer(buffer,file_info_size),ep);  //发送大小
 
-      memcpy(buffer, filename.data(), filename_size);
-      sock->send_to(boost::asio::buffer(buffer,filename_size),ep);  //发送文件名
+    memcpy(buffer, filename.data(), filename_size);
+    sock->send_to(boost::asio::buffer(buffer,filename_size),ep);  //发送文件名
 
-      std::cout << "Send file: " << buffer << "\n";
+    std::cout << "Send file: " << buffer << "\n";
 
-      //发送文件内容
-      socket_ptr udpsock(new boost::asio::ip::udp::socket(service,boost::asio::ip::udp::endpoint()));
-      NetWork filesock(udpsock);
+    //发送文件内容
+    socket_ptr udpsock(new boost::asio::ip::udp::socket(service,boost::asio::ip::udp::endpoint()));
+    NetWork filesock(udpsock);
 
-      long int total_bytes_read = 0;
-      total_bytes_read = filesock.sendFile(fp,ep);
+    long int total_bytes_read = 0;
+    total_bytes_read = filesock.sendFile(fp,ep);
 
-      //发送文件内容结束
+    //发送文件内容结束
 
-      std::cout << "send totalsize: " << total_bytes_read << std::endl;
-      costTime = clock() - costTime;
-      if(costTime == 0) costTime = 1;
+    std::cout << "send totalsize: " << total_bytes_read << std::endl;
+    costTime = clock() - costTime;
+    if(costTime == 0) costTime = 1;
 
-      double speed = total_bytes_read * (CLOCKS_PER_SEC / 1024.0 / 1024.0) / costTime;
-      std::cout << "cost time: " << costTime / (double) CLOCKS_PER_SEC  << " s "
-                << "  transferred_bytes: " << total_bytes_read << " bytes\n"
-                << "speed: " <<  speed << " MB/s\n\n";
-      return;
+    double speed = total_bytes_read * (CLOCKS_PER_SEC / 1024.0 / 1024.0) / costTime;
+    std::cout << "cost time: " << costTime / (double) CLOCKS_PER_SEC  << " s "
+              << "  transferred_bytes: " << total_bytes_read << " bytes\n"
+              << "speed: " <<  speed << " MB/s\n\n";
+    return;
 }
 
 void Client::writeFile(std::string filename, std::string message,std::string name)
@@ -888,7 +1003,7 @@ void Client::writeFile(std::string filename, std::string message,std::string nam
         std::string line, tmp;
         int i = 0;
         while (getline(in, line)) {
-//            i++;
+            //            i++;
             std::istringstream is(line);
             if(line ==""){
                 getline(in,line);
@@ -899,22 +1014,22 @@ void Client::writeFile(std::string filename, std::string message,std::string nam
                 is >> tmp;
                 is >> tmp;
             }
-//            bool inFlag = false;//检测读取的每一行的名字是否是指定行,mes是加message还是line
+            //            bool inFlag = false;//检测读取的每一行的名字是否是指定行,mes是加message还是line
 
             if (tmp == name) {
                 flag = true;
-//                inFlag = true;
+                //                inFlag = true;
                 mes += message;
                 mes += "\n";
                 //break;
             }else{
-                 mes += (line + "\n");
+                mes += (line + "\n");
             }
-//            if(inFlag == false){
-//                mes += (line + "\n");
-//            }
+            //            if(inFlag == false){
+            //                mes += (line + "\n");
+            //            }
             std::cout << line << std::endl;
-//            std::cout<<"the Star" << mes << "the end"<<std::endl;
+            //            std::cout<<"the Star" << mes << "the end"<<std::endl;
         }
         data = mes;
         std::cout << "data Is" << data << "s"<< i<<std::endl;

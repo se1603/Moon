@@ -38,12 +38,10 @@ public:
     //插播广告
     Q_INVOKABLE void addAdvertToVideos(QString advert, QString company,
                                        QString duetime, QString videomessage,
-                                       QString videotype, QString detailtype,
-                                       QString path);
+                                       QString videotype, QString detailtype);
     //插播整个目录
     Q_INVOKABLE void addAdvertToCategory(QString advert, QString company,
-                                         QString duetime, QString category,
-                                         QString path);
+                                         QString duetime, QString category);
     //搜索视频
     Q_INVOKABLE QString searchVideos(QString name);
     //读取视频广告信息
@@ -51,9 +49,21 @@ public:
     //获取公司广告排名
     Q_INVOKABLE QString showCompanyClicksRank(QString companyname);
     //删除广告
-    Q_INVOKABLE void deleteVideoAdverts(QString videoname, QString advertname);
+    Q_INVOKABLE void deleteVideoAdverts(QString deletemessage);
     //分割时间
     Q_INVOKABLE QString cliptime(QString duetime);
+    //获取所有已编辑的广告
+    Q_INVOKABLE QString showAllVideoAdverts();
+    //判断日期
+    Q_INVOKABLE QString judgedate(QString year, QString month, QString day,
+                                  QString dueyear, QString duemonth, QString dueday);
+    //获取所有已投放的映前广告
+    Q_INVOKABLE QString showAdvertising();
+    //修改广告到期时间
+    Q_INVOKABLE void changeAdvertTime(QString advertname, QString newdate);
+    //修改广告投放位置
+    Q_INVOKABLE void changeAdvertLocation(QString advertname, QString videoname,
+                                             QString newlocation);
 
 
      Q_INVOKABLE void getMovieInfo(QString name, QString fileName, QString message, QString pAdress, QString sAdress);//获取影视信息写入本地文件
@@ -100,6 +110,11 @@ signals:
     void addAdvertFailed();
     void deleteAdvertSucceed();
     void deleteAdvertFailed();
+    void changeAdvertTimeSucceed();
+    void changeAdvertTimeFailed();
+    void changeAdvertLocationSucceed();
+    void changeAdvertLocationFailed();
+    void changeAdvertLocationNotFound();
 
     void upSucceed();
     void upFailed();

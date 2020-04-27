@@ -189,13 +189,13 @@ bool AdvertBroker::initAdvertLinks()
             if(row == nullptr){
                 return false;
             }else{
-                std::cout << "----" << std::endl;
+//                std::cout << "----" << std::endl;
                 for(unsigned i = 0; i < mysql_num_fields(result); ++i){
                     links.push_back(std::string(row[i]));
                 }
-                for(auto &l:links) {
-                    std::cout << "this is: " << l << std::endl;
-                }
+//                for(auto &l:links) {
+//                    std::cout << "this is: " << l << std::endl;
+//                }
                 currentAdvertLinks.insert(std::make_pair(links[0],links[1]));
                 links.clear();
             }
@@ -209,7 +209,7 @@ bool AdvertBroker::initAdvertLinks()
 
 std::multimap<std::string, std::string> AdvertBroker::readAdvertLinks()
 {
-    std::cout << "zheshisha" << currentAdvertLinks.size() << std::endl;
+//    std::cout << "zheshisha" << currentAdvertLinks.size() << std::endl;
     return currentAdvertLinks;
 }
 
@@ -232,14 +232,15 @@ bool AdvertBroker::updateAdvertClicks(std::string advertname)
 
     std::string sql1 = "select * from Advert where name = '"+advertname+"';";
     if(mysql_query(mysql,sql1.data())){
-        std::cout << "查询失败(advert)" << std::endl;
+        std::cout << "查询失败(advertlink)" << std::endl;
     }else{
         std::vector<std::string> links;
         result = mysql_use_result(mysql);
         while(1){
+            std::cout << "wojinlaile2" << std::endl;
             row = mysql_fetch_row(result);
             if(row == nullptr){
-                return false;
+                break;
             }else{
                 for(unsigned i = 0; i < mysql_num_fields(result); ++i){
                     links.push_back(std::string(row[i]));
@@ -332,15 +333,15 @@ bool AdvertBroker::deleteVideoLink(std::string advertname, std::string videoname
     }
 }
 
-void AdvertBroker::judgeAdvertRemove(std::string advertname)
-{
-    for(auto item = currentAdverts.begin(); item != currentAdverts.end(); ++item){
-        if(item->first == advertname){
-            if(item->second->isVideoEmpty() == true)
-                deleteAdvert(advertname);
-        }
-    }
-}
+//void AdvertBroker::judgeAdvertRemove(std::string advertname)
+//{
+//    for(auto item = currentAdverts.begin(); item != currentAdverts.end(); ++item){
+//        if(item->first == advertname){
+//            if(item->second->isVideoEmpty() == true)
+//                deleteAdvert(advertname);
+//        }
+//    }
+//}
 
 void AdvertBroker::initVideoLink(std::string advertname, MovieAndTelevision *mv)
 {
@@ -348,4 +349,124 @@ void AdvertBroker::initVideoLink(std::string advertname, MovieAndTelevision *mv)
         if(a.first == advertname)
             a.second->addVideoLink(mv);
     }
+}
+
+std::vector<std::vector<std::string>> AdvertBroker::showAllVideoAdverts()
+{
+    MYSQL *mysql;
+    mysql = new MYSQL;
+
+    MYSQL_RES *result;
+    MYSQL_ROW row;
+
+    mysql_init(mysql);
+    if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
+        std::cout << "(Adverts)Connect MYSQL failed." << std::endl;
+    }else{
+        std::cout << "(Adverts)Connect MYSQL succeed." << std::endl;
+    }
+
+    std::vector<std::vector<std::string>> adverts;
+    std::string sql = "select * from Advert;";
+
+    if(mysql_query(mysql,sql.data())){
+        std::cout << "获取失败(advert)" << std::endl;
+    }
+    else
+    {
+        result = mysql_use_result(mysql);
+        while(1)
+        {
+            row = mysql_fetch_row(result);
+            if(row == nullptr){
+                return adverts;
+            }else{
+                std::vector<std::string> advertinfo;
+                for(unsigned int i=0;i<mysql_num_fields(result);++i){
+                    advertinfo.push_back(std::string(row[i]));
+                }
+                adverts.push_back(advertinfo);
+            }
+        }
+    }
+    if(mysql != nullptr)
+        mysql_close(mysql);
+}
+
+std::vector<std::vector<std::string>> AdvertBroker::showAdvertising()
+{
+    std::vector<std::vector<std::string>> advertising;
+    std::vector<std::string> tmp;
+
+    for(auto &link:currentAdvertLinks){
+        for(auto &a:currentAdverts){
+            if(a.first == link.first){
+                tmp.clear();
+                a.second->showDetails(tmp);
+//                std::cout <<"----------" << std::endl;
+                tmp.push_back(link.second);
+                advertising.push_back(tmp);
+                break;
+            }
+        }
+    }
+
+//    std::cout << advertising.size() << std::endl;
+    return advertising;
+}
+
+void AdvertBroker::addCurrentLink(std::string advertname, std::string videoname)
+{
+    int flag = 0;
+    for(auto &l:currentAdvertLinks){
+        if(l.first == advertname && l.second == videoname){
+            flag = 1;
+        }
+    }
+
+    if(flag == 0){
+        currentAdvertLinks.insert(std::make_pair(advertname,videoname));
+    }
+}
+
+bool AdvertBroker::changeAdvertTime(std::string advertname, std::string newdate)
+{
+    for(auto &a:currentAdverts){
+        if(a.first == advertname){
+            a.second->changetime(newdate);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool AdvertBroker::changeAdvertTimeDB(std::string advertname, std::string newdate)
+{
+    MYSQL* mysql;
+    mysql = new MYSQL;
+
+    MYSQL_RES *result;
+    MYSQL_ROW row;
+
+    std::string clicks;
+
+    mysql_init(mysql);
+    if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
+        std::cout << "(ChangeTime)Connect MYSQL failed" << std::endl;
+    }else{
+        std::cout << "(ChangeTime)Connect MYSQL succeed" << std::endl;
+    }
+
+    std::string sql = "update Advert set duetime ='"+newdate+"' where name = '"+advertname+"';";
+
+    if(mysql_query(mysql,sql.data())){
+        std::cout << "Change time failed" << std::endl;
+        return false;
+    }else{
+        return true;
+    }
+
+    if(mysql != nullptr)
+        mysql_close(mysql);
 }

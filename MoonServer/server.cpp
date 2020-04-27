@@ -253,14 +253,14 @@ void Server::processOMRequest(json j, endpoint ep)
     {
         replay = m_managerController->addAdvert(j["advert"],j["company"],
                 j["duetime"], j["videos"],j["videotype"],j["detailtype"]);
-        receiveFile(replay,ep);
+//        receiveFile(replay,ep);
         sendMessage(replay,ep);
     }
     if(request == "ADDADVERTTOCATEGORY")
     {
         replay = m_managerController->addAdvertToCategory(j["advert"], j["company"],
                 j["duetime"], j["category"]);
-        receiveFile(replay,ep);
+//        receiveFile(replay,ep);
         sendMessage(replay,ep);
     }
     if(request == "SEARCHVIDEO")
@@ -279,7 +279,7 @@ void Server::processOMRequest(json j, endpoint ep)
         sendMessage(replay,ep);
     }
     if(request == "DELETEVIDEOADVERTS"){
-        replay = m_managerController->deleteVideoAdverts(j["videoname"],j["advertname"]);
+        replay = m_managerController->deleteVideoAdverts(j["deletemessage"]);
         sendMessage(replay,ep);
     }else if(request == "UP"){
         std::string s = j.dump();
@@ -311,6 +311,19 @@ void Server::processOMRequest(json j, endpoint ep)
     }else if(request == "UPDATE"){
         std::string s = j["resource"].dump();
         replay = m_managerController->update(s);
+        sendMessage(replay,ep);
+    }else if(request == "SHOWALLVIDEOADVERTS"){
+        replay = m_managerController->showAllVideoAdverts();
+        sendMessage(replay,ep);
+    }else if(request == "SHOWADVERTISING"){
+        replay = m_managerController->showAdvertising();
+        sendMessage(replay,ep);
+    }else if(request == "CHANGEADVERTTIME"){
+        replay = m_managerController->changeAdvertTime(j["advertname"],j["newdate"]);
+        sendMessage(replay,ep);
+    }else if(request == "CHANGEADVERTLOCATION"){
+        replay = m_managerController->changeAdvertLocation(j["advertname"], j["videoname"],
+                                                            j["newlocation"]);
         sendMessage(replay,ep);
     }
 }

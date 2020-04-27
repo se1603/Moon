@@ -69,7 +69,7 @@ public:
     //搜索
     std::map<std::string, std::string> searchVideos(std::string name);
     //插入广告
-    MovieAndTelevision *addAdvert(std::string video, Advert *a, std::string videotype);
+    MovieAndTelevision *addAdvert(std::string video, Advert *a, std::string videotype, int &flag);
     //获取广告信息
     std::vector<Advert*> showAdverts(std::string name, std::string type);
     //插入广告链接
@@ -80,6 +80,8 @@ public:
     std::vector<std::string> findCategory(std::string category);
     //获取细类影视
     std::vector<std::string> findTypeVideo(std::string type, std::string category);
+    //获取影视指针
+    MovieAndTelevision *findVideo(std::string videoname);
 
     bool getMTVMessage();
     std::vector<std::string> getFiles(std::string path);//获取上架文件

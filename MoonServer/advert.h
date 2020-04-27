@@ -30,6 +30,8 @@ public:
     bool deleteVideoLink(std::string videoname);
     //判断影视为空
     bool isVideoEmpty();
+    //修改广告到期时间
+    void changetime(std::string newdate);
 
     //void print();
 private:
