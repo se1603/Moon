@@ -31,7 +31,11 @@ public:
     bool ManageUserInfoSize();
 
     //修改已删除平路记录的标记为processed
-    bool updateInfoemmark(std::string id);
+    bool updateInformmark(std::string id);
+    //插入举报评论
+    bool addInformInfo(std::string id, std::string informer, std::string bereported, std::string comment, std::string date, std::string count);
+    int getManageUserSize();
+    int getbereportedcount(std::string bereported);
 private:
     ManageUserBroker();
     static ManageUserBroker* m_instance;

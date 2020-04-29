@@ -14,7 +14,8 @@ class ManageUser
 public:
     ManageUser(std::string id, std::string informer, std::string bereported, std::string comment, std::string date, std::string  informcount, std::string informmark);
     void manageUserInfo(std::vector<std::string> &v);//获得举报相关内容
-    bool findbByInformmark(std::string informmark); //通过举报标识查找
+    bool findByInformmark(std::string informmark); //通过举报标识查找
+    bool findByBereported(std::string bereported);
 
 private:
     std::string m_id;

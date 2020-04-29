@@ -100,7 +100,7 @@ ScrollView{
                 id:all_reply
                 anchors.top:all_message.bottom
                 anchors.right: parent.right
-                anchors.rightMargin: 14
+                anchors.rightMargin: 64
                 width: replys.implicitWidth
                 height: replys.implicitHeight
                 color: "#424242"
@@ -120,6 +120,38 @@ ScrollView{
                         }else{
                             dd.open()
                         }
+                    }
+                }
+            }
+            Rectangle{
+                id:inform
+                anchors.top:all_message.bottom
+                anchors.right: parent.right
+                anchors.rightMargin: 14
+                width: informs.implicitWidth
+                height: informs.implicitHeight
+                color: "#424242"
+//                opacity:0.4
+                Text{
+                    id:informs
+                    font.pixelSize: 14
+                    anchors.fill: parent
+                    text: "举报"
+                    color:"#00BFFF"
+                }
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: {
+                        var year = commentData.getFullYear()
+                        var month = commentData.getMonth()+1
+                        var day = commentData.getDate()
+                        var informtime = year+"-"+month+"-"+day
+                        var bereported = modelData.audienceName
+                        var comment = modelData.comment
+                        var informer = middleArea.audienceInterface.audienceName
+                        console.log(bereported)
+                        console.log(comment)
+                       client.inform(informer,bereported,comment,informtime)
                     }
                 }
             }

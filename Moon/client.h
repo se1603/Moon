@@ -83,6 +83,9 @@ public:
 
     //搜索
     Q_INVOKABLE QString search(QString key);
+
+    //举报评论
+    Q_INVOKABLE void inform(QString informer, QString bereported, QString comment, QString date);
     //获取广告地址
     Q_INVOKABLE QString advertInfo(QString videoname);
 
@@ -107,6 +110,9 @@ signals:
     void insertSuccessed();
     void insertFailed();
     void reflashed();
+    //举报信号
+    void informSucceed();
+    void informFailed();
 
 private:
     //文件

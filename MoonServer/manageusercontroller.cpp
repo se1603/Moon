@@ -100,7 +100,24 @@ bool ManageUserController::deleteInformComment(std::string bereported, std::stri
 
 bool ManageUserController::updateInformmark(std::string id)
 {
-    if(m_manageuserbroker->updateInfoemmark(id) == true){
+    if(m_manageuserbroker->updateInformmark(id) == true){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool ManageUserController::addInformInfo(std::string informer, std::string bereported, std::string comment, std::string date)
+{
+    std::string id;
+    std::string count;
+    int tid = m_manageuserbroker->getManageUserSize();
+    int tempid = tid + 1;
+    id = std::to_string(tempid);
+    int tcount = m_manageuserbroker->getbereportedcount(bereported);
+    int tempcount = tcount + 1;
+    count = std::to_string(tempcount);
+    if(m_manageuserbroker->addInformInfo(id, informer, bereported, comment, date, count) == true){
         return true;
     } else {
         return false;

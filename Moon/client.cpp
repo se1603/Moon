@@ -4,7 +4,7 @@
 #include <dirent.h>
 
 boost::asio::io_service service;
-boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.43.76"),8001);
+boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.43.9"),8001);
 boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7789));
 
 Client::Client(QObject *p) :
@@ -779,6 +779,29 @@ QString Client::search(QString key)
     QString qmlValues = QString::fromStdString(result);
     qDebug() << qmlValues;
     return qmlValues;
+}
+
+void Client::inform(QString informer, QString bereported, QString comment, QString date)
+{
+    json root;
+    root["system"] = "CLIENT";
+    root["request"] = "INFORM";
+    root["informer"] = informer.toStdString();
+    root["bereported"] =  bereported.toStdString();
+    root["comment"] =  comment.toStdString();
+    root["date"] = date.toStdString();
+    std::string message = root.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+
+    std::string result = sock.receive();
+    if(result == "FAILED"){
+        emit informFailed();
+    }else{
+        emit informSucceed();
+    }
 }
 
 QString Client::advertInfo(QString videoname)

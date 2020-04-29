@@ -23,6 +23,8 @@ public:
     std::string getManageUserInfoByID(std::string id);//通过id获取用户管理信息
     bool deleteInformComment(std::string bereported, std::string comment); //删除被举报的评论
     bool updateInformmark(std::string id); //更改已删除的评论的记录标记为processed
+    //添加举报记录
+    bool addInformInfo(std::string informer, std::string bereported, std::string comment, std::string date);
 
 private:
     ManageUserController();

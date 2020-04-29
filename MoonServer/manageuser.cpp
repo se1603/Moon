@@ -27,7 +27,16 @@ void ManageUser::manageUserInfo(std::vector<std::string> &v)
     v.push_back(m_informmark);
 }
 
-bool ManageUser::findbByInformmark(std::string informmark)
+bool ManageUser::findByBereported(std::string bereported)
+{
+    if(m_bereported == bereported){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool ManageUser::findByInformmark(std::string informmark)
 {
    if(m_informmark == informmark){
        return true;

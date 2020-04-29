@@ -68,7 +68,7 @@ void ManageUserBroker::initManageUser(std::string id, std::string informer, std:
 void ManageUserBroker::getManageUserInfo(std::string informmark, std::vector<std::string> &v)
 {
     for(auto report = m_manageusers.begin(); report != m_manageusers.end(); report++){
-        if(report->second.findbByInformmark(informmark)){
+        if(report->second.findByInformmark(informmark)){
             report->second.manageUserInfo(v);
         }
     }
@@ -94,7 +94,50 @@ bool ManageUserBroker::ManageUserInfoSize()
     }
 }
 
-bool ManageUserBroker::updateInfoemmark(std::string id)
+bool ManageUserBroker::addInformInfo(std::string id, std::string informer, std::string bereported, std::string comment, std::string date, std::string count)
+{
+    MYSQL* mysql;
+    mysql = new MYSQL;
+
+    mysql_init(mysql);
+    if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
+        std::cout << "Comment connect failed" << std::endl;
+    }else{
+        std::cout << "Comment connect Successed" << std::endl;
+    }
+
+    std::cout << "add inform"  << std::endl;
+    std::string sql = "insert into ManageUser(inform_id,informer,bereported,comment,date,inform_count,inform_mark) values('"+id+"','"+informer+"','"+bereported+"','"+comment+"', '"+date+"', '"+count+"', 'untreated');";
+    if(mysql_query(mysql,sql.data())){
+        std::cout <<"insert failed"<< std::endl;
+        return false;
+    }else{
+        return true;
+    }
+}
+
+int ManageUserBroker::getManageUserSize()
+{
+    int i = 0;
+    for(auto report = m_manageusers.begin(); report != m_manageusers.end(); report++){
+        i++;
+    }
+    return i;
+}
+
+int ManageUserBroker::getbereportedcount(std::string bereported)
+{
+    std::vector<std::string> v;
+    for(auto report = m_manageusers.begin(); report != m_manageusers.end(); report++){
+        if(report->second.findByBereported(bereported)){
+            report->second.manageUserInfo(v);
+        }
+    }
+    int temp = v.size() / 7;
+    return temp;
+}
+
+bool ManageUserBroker::updateInformmark(std::string id)
 {
     MYSQL* mysql;
     mysql = new MYSQL;
