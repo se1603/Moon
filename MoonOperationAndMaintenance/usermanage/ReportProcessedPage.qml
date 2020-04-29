@@ -13,6 +13,8 @@ Rectangle {
     anchors.fill: parent
 
     property var manageuserinfo:JSON.parse(client.getManageUserInfoByMark("processed"))
+    property var processedid
+    property var processedinformation
 
     //页面顶部栏
     Rectangle{
@@ -135,8 +137,12 @@ Rectangle {
                             font.pixelSize: 22
                             flat: true
                             onClicked: {
+                                processedid = modelData.id
+                                console.log(processedid)
+                                processedinformation = JSON.parse(client.getManageUserInfoByID(processedid))
+                                console.log(processedinformation)
+                                manageuserPage.processedinfobyid = processedinformation
                                 reportStack.push(processedInformationPage)
-                                console.log("显示成功")
                             }
                         }
                     }

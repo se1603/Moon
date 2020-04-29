@@ -6,6 +6,13 @@ Item {
     property bool userLoggedIn: false
     property var managerIdentity
 
+    property alias manageuserPage:manageuser
+
+    ManageUserPage{
+        id:manageuser
+        visible: false
+    }
+
     Connections{
         target: client
         onLoginSucceed: {
@@ -35,6 +42,7 @@ Item {
         {
             console.log("aaa")
             loader.source = "ManageUserPage.qml"
+            manageuser.visible = true
         }
         else if(managerIdentity === "2")
             loader.source = "ManageMTVPage.qml"

@@ -17,6 +17,9 @@ Item {
     property alias reportProcessedPage: reportprocessedpage
     property alias processedInformationPage: processedinformationpage
 
+    property var untreatedinfobyid: ""
+    property var processedinfobyid: ""
+
     //加载页面
     Rectangle{
         id:managePage

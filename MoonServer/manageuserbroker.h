@@ -34,8 +34,8 @@ public:
     bool updateInformmark(std::string id);
     //插入举报评论
     bool addInformInfo(std::string id, std::string informer, std::string bereported, std::string comment, std::string date, std::string count);
-    int getManageUserSize();
-    int getbereportedcount(std::string bereported);
+    //获取用户被举报次数
+    int getbereportedcount(std::string bereported, std::vector<std::string> &v);
 private:
     ManageUserBroker();
     static ManageUserBroker* m_instance;

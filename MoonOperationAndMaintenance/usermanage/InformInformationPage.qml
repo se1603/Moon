@@ -12,7 +12,7 @@ Rectangle{
     width: parent.width
     height: parent.height
 
-    property var info:""
+    property var info:manageuserPage.untreatedinfobyid
 
 
     Rectangle{

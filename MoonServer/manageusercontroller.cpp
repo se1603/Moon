@@ -111,10 +111,12 @@ bool ManageUserController::addInformInfo(std::string informer, std::string berep
 {
     std::string id;
     std::string count;
-    int tid = m_manageuserbroker->getManageUserSize();
+    std::vector<std::string> v;
+    m_manageuserbroker->getInfoFromDataBase(v);
+    int tid = v.size() / 7;
     int tempid = tid + 1;
     id = std::to_string(tempid);
-    int tcount = m_manageuserbroker->getbereportedcount(bereported);
+    int tcount = m_manageuserbroker->getbereportedcount(bereported, v);
     int tempcount = tcount + 1;
     count = std::to_string(tempcount);
     if(m_manageuserbroker->addInformInfo(id, informer, bereported, comment, date, count) == true){

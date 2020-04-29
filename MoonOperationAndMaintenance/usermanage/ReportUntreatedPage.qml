@@ -13,8 +13,8 @@ Rectangle {
     anchors.fill: parent
 
     property var manageuserinfo:JSON.parse(client.getManageUserInfoByMark("untreated"))
-    property var untreatedinformation:JSON.parse(client.getManageUserInfoByID(informid))
-    property var informid
+    property var untreatedinformation:JSON.parse(client.getManageUserInfoByID(untreatedid))
+    property var untreatedid
 
     //页面顶部栏
     Rectangle{
@@ -137,12 +137,12 @@ Rectangle {
                             font.pixelSize: 22
                             flat: true
                             onClicked: {
-                                informid = modelData.id
-                                console.log(informid)
-                                untreatedinformation = JSON.parse(client.getManageUserInfoByID(informid))
+                                untreatedid = modelData.id
+                                console.log(untreatedid)
+                                untreatedinformation = JSON.parse(client.getManageUserInfoByID(untreatedid))
                                 console.log(untreatedinformation)
-                                informInformationPage.info = untreatedinformation
-                                reportStack.push(informinformationpage, untreatedinformation)
+                                manageuserPage.untreatedinfobyid = untreatedinformation
+                                reportStack.push(informinformationpage)
                                 console.log("显示成功")
                             }
                         }

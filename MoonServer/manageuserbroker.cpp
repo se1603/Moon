@@ -101,12 +101,18 @@ bool ManageUserBroker::addInformInfo(std::string id, std::string informer, std::
 
     mysql_init(mysql);
     if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
-        std::cout << "Comment connect failed" << std::endl;
+        std::cout << "ManageUser connect failed" << std::endl;
     }else{
-        std::cout << "Comment connect Successed" << std::endl;
+        std::cout << "ManageUser connect Successed" << std::endl;
     }
 
     std::cout << "add inform"  << std::endl;
+    std::cout << id << std::endl;
+    std::cout << informer << std::endl;
+    std::cout << bereported << std::endl;
+    std::cout << comment << std::endl;
+    std::cout << date << std::endl;
+    std::cout << count << std::endl;
     std::string sql = "insert into ManageUser(inform_id,informer,bereported,comment,date,inform_count,inform_mark) values('"+id+"','"+informer+"','"+bereported+"','"+comment+"', '"+date+"', '"+count+"', 'untreated');";
     if(mysql_query(mysql,sql.data())){
         std::cout <<"insert failed"<< std::endl;
@@ -114,26 +120,18 @@ bool ManageUserBroker::addInformInfo(std::string id, std::string informer, std::
     }else{
         return true;
     }
+    if(mysql != nullptr)
+        mysql_close(mysql);
 }
 
-int ManageUserBroker::getManageUserSize()
+int ManageUserBroker::getbereportedcount(std::string bereported, std::vector<std::string> &v)
 {
-    int i = 0;
-    for(auto report = m_manageusers.begin(); report != m_manageusers.end(); report++){
-        i++;
-    }
-    return i;
-}
-
-int ManageUserBroker::getbereportedcount(std::string bereported)
-{
-    std::vector<std::string> v;
-    for(auto report = m_manageusers.begin(); report != m_manageusers.end(); report++){
-        if(report->second.findByBereported(bereported)){
-            report->second.manageUserInfo(v);
+    int temp = 0;
+    for(int i = 2; i < v.size(); i += 7){
+        if(v[i] == bereported){
+            temp++;
         }
     }
-    int temp = v.size() / 7;
     return temp;
 }
 
@@ -157,6 +155,8 @@ bool ManageUserBroker::updateInformmark(std::string id)
     }else{
         return true;
     }
+    if(mysql != nullptr)
+        mysql_close(mysql);
 }
 
 
