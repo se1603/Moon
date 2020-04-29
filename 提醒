@@ -1,0 +1,5 @@
+按照广告维护用况重新编写
+
+编译提醒：请删除Advert数据库和AdvertLinkVideo数据库，按照新的sql文件重新更新里面的内容
+
+调试提醒：请将准备调试的视频文件放到build-rtsp那个文件夹的advert文件夹下，名称比如advert1.ts
