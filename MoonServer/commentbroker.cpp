@@ -108,6 +108,28 @@ void CommentBroker::goodCommentInfo(std::string name, std::vector<std::string> &
     }
 }
 
+bool CommentBroker::deleteComment(std::string bereported, std::string comment)
+{
+    MYSQL* mysql;
+    mysql = new MYSQL;
+
+    mysql_init(mysql);
+    if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
+        std::cout << "Comment connect failed" << std::endl;
+    }else{
+        std::cout << "Comment connect Successed" << std::endl;
+    }
+
+    std::cout << "delete comment"  << std::endl;
+    std::string sql = "delete from Comment where audiencename = '"+bereported+"' and comment = '"+comment+"';";
+    if(mysql_query(mysql,sql.data())){
+        std::cout <<"insert failed"<< std::endl;
+        return false;
+    }else{
+        return true;
+    }
+}
+
 CommentBroker::CommentBroker()
 {
 

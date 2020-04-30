@@ -43,5 +43,10 @@
         <file>Advert/PutAdvertisingVideoMenu.qml</file>
         <file>Advert/PutAdvertisingVideoList.qml</file>
         <file>Advert/PutAdvertisingVideoDetail.qml</file>
+        <file>usermanage/InformInformationPage.qml</file>
+        <file>usermanage/ProcessedInformationPage.qml</file>
+        <file>usermanage/ReportProcessedPage.qml</file>
+        <file>usermanage/ReportUntreatedPage.qml</file>
+        <file>usermanage/TipDelete.qml</file>
     </qresource>
 </RCC>

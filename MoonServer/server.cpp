@@ -12,6 +12,7 @@ Server::Server()
     m_commentController = m_controllerFactory->createCommentController();
     m_managerController = m_controllerFactory->createManagerController();
     m_searchController = m_controllerFactory->createSearchController();
+    m_manageuserController = m_controllerFactory->createManageUserController();
 }
 
 void Server::acceptMreeage()
@@ -221,6 +222,11 @@ void Server::processClientRequest(json j,endpoint ep)
         replay = m_managerController->addAdvertClicks(j["advertname"]);
         sendMessage(replay,ep);
     }
+    else if(request == "INFORM")
+    {
+        replay = m_manageuserController->addInformInfo(j["informer"], j["bereported"], j["comment"], j["date"]);
+        sendMessage(replay,ep);
+    }
 }
 
 void Server::processOMRequest(json j, endpoint ep)
@@ -325,6 +331,26 @@ void Server::processOMRequest(json j, endpoint ep)
         replay = m_managerController->changeAdvertLocation(j["advertname"], j["videoname"],
                                                             j["newlocation"]);
         sendMessage(replay,ep);
+    }
+    //获取传来的用户管理信息
+    if(request == "GETMANAGEUSERINFO"){
+        replay = m_manageuserController->getManageUserInfo(j["informmark"]);
+        sendMessage(replay, ep);
+    }
+    //通过ID获取用户管理信息
+    if(request == "GETMANAGEUSERINFOBYID"){
+        replay = m_manageuserController->getManageUserInfoByID(j["id"]);
+        sendMessage(replay, ep);
+    }
+    //删除被举报的信息
+    if(request == "DELETEINFORMEDCOMMENT"){
+        replay = m_manageuserController->deleteInformComment(j["bereported"], j["comment"]);
+        sendMessage(replay, ep);
+    }
+    //修改已删除平路记录的标记为processed
+    if(request == "UPDATEINFORMMARK"){
+        replay = m_manageuserController->updateInformmark(j["id"]);
+        sendMessage(replay, ep);
     }
 }
 

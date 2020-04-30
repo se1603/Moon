@@ -48,6 +48,7 @@ private:
     CommentController *m_commentController;
     ManagerController *m_managerController;
     SearchController *m_searchController;
+    ManageUserController *m_manageuserController; //用户管理
 };
 
 #endif // SERVER_H

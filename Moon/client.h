@@ -89,6 +89,9 @@ public:
     Q_INVOKABLE void reflash();//刷新
     //添加点击量
     Q_INVOKABLE void addAdvertClicks(QString advertname);
+
+    //举报评论
+    Q_INVOKABLE void inform(QString informer, QString bereported, QString comment, QString date);
 signals:
     //用户信号
     void loginsucceed(QString name,QString avatar);
@@ -107,6 +110,9 @@ signals:
     void insertSuccessed();
     void insertFailed();
     void reflashed();
+    //举报信号
+    void informSucceed();
+    void informFailed();
 
 private:
     //文件

@@ -18,6 +18,9 @@ SOURCES += \
         film.cpp \
     manager.cpp \
     managerbroker.cpp \
+    manageuser.cpp \
+    manageuserbroker.cpp \
+    manageusercontroller.cpp \
         movieandtelevision.cpp \
         movieandtelevisionbroker.cpp \
         browseandwatchcontroller.cpp \
@@ -53,6 +56,9 @@ HEADERS += \
     manager.h \
     managerbroker.h \
     managercontroller.h \
+    manageuser.h \
+    manageuserbroker.h \
+    manageusercontroller.h \
     movieandtelevision.h \
     movieandtelevisionbroker.h \
     browseandwatchcontroller.h \

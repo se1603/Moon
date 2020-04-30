@@ -1,4 +1,4 @@
-create table ManageUser(inform_id varchar(10) NOT NULL PRIMARY KEY, imformer varchar(50) NOT NULL, bereported varchar(50) NOT NULL, comment varchar(300) NOT NULL, date date, inform_count varchar(10) NOT NULL, inform_mark varchar(20) NOT NULL);
+create table ManageUser(inform_id varchar(10) NOT NULL PRIMARY KEY, imformer varchar(50) NOT NULL, bereported varchar(50) NOT NULL, comment varchar(300) NOT NULL, date varchar(50), inform_count varchar(10) NOT NULL, inform_mark varchar(20) NOT NULL);
 insert into ManageUser(inform_id,imformer,bereported,comment,date,inform_count,inform_mark) values("1","str","aaa","哈哈哈哈哈哈哈哈","2019-02-01","4","untreated"); 
 insert into ManageUser(inform_id,imformer,bereported,comment,date,inform_count,inform_mark) values("2","str","aaa","知否知否应是绿肥红瘦","2019-02-01","4","untreated"); 
 insert into ManageUser(inform_id,imformer,bereported,comment,date,inform_count,inform_mark) values("3","str","aaa","这是治疗手段","2019-02-01","4","processed"); 

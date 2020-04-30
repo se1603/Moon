@@ -82,6 +82,14 @@ public:
     //搜索视频
     Q_INVOKABLE QString search(QString name);
 
+    //通过标签从服务器上获取管理用户相关信息
+    Q_INVOKABLE QString getManageUserInfoByMark(QString informmark);
+    //通过ID获取对应记录
+    Q_INVOKABLE QString getManageUserInfoByID(QString id);
+    //删除被举报的评论
+    Q_INVOKABLE void deleteInformedComment(QString bereported, QString comment);
+    Q_INVOKABLE void updateInformmark(QString id); //更新记录标记为已处理
+
    void writeFile(std::string filename, std::string message, std::string name);//影视编辑编辑影视信息，写入本地文件
     std::vector<std::string> getFiles(std::string path);//获取上架文件
     void readFile(std::vector<std::string> files);//读取上架文件的信息
@@ -125,6 +133,12 @@ signals:
     void updateSucceed();
     void updateFalied();
     void seachEmpty();
+
+    //用户管理信号
+    void deleteInformeCommentSucceed();
+    void deleteInformeCommentFailed();
+    void updateInformmarkSucceed();
+    void updateInformmarkFailed();
 private:
     //文件
     FILE *fp;

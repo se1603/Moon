@@ -7,7 +7,7 @@
 #include <string>
 
 boost::asio::io_service service;
-boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.43.76"),8001);
+boost::asio::ip::udp::endpoint serverep(boost::asio::ip::address::from_string("192.168.43.9"),8001);
 boost::asio::ip::udp::socket udpsock(service,boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),7788));
 
 Client::Client(QObject *p) :
@@ -715,6 +715,85 @@ QString Client::search(QString name)
     std::string result = replay.dump();
     QString qmlvalue = QString::fromStdString(result);
     return qmlvalue;
+}
+
+QString Client::getManageUserInfoByMark(QString informmark)
+{
+    json manageuserinfos;
+    manageuserinfos["system"] = "MANAGE";
+    manageuserinfos["request"] = "GETMANAGEUSERINFO";
+    manageuserinfos["informmark"] = informmark.toStdString();
+    std::string message = manageuserinfos.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    std::string res = sock.receive();
+
+    json replay = json::parse(res);
+    std::string result = replay["manageuserinfo"].dump();
+    QString qmlvalues = QString::fromStdString(result);
+    return qmlvalues;
+}
+
+QString Client::getManageUserInfoByID(QString id)
+{
+    json manageuserinfos;
+    manageuserinfos["system"] = "MANAGE";
+    manageuserinfos["request"] = "GETMANAGEUSERINFOBYID";
+    manageuserinfos["id"] = id.toStdString();
+    std::string message = manageuserinfos.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    std::string res = sock.receive();
+
+    json replay = json::parse(res);
+    std::string result = replay["manageuserinfobyid"].dump();
+    QString qmlvalues = QString::fromStdString(result);
+    std::cout << qmlvalues.toStdString() << std::endl;
+    return qmlvalues;
+}
+
+void Client::deleteInformedComment(QString bereported, QString comment)
+{
+    json manageuserinfos;
+    manageuserinfos["system"] = "MANAGE";
+    manageuserinfos["request"] = "DELETEINFORMEDCOMMENT";
+    manageuserinfos["bereported"] = bereported.toStdString();
+    manageuserinfos["comment"] = comment.toStdString();
+    std::string message = manageuserinfos.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    std::string res = sock.receive();
+    if(res == "FAILED"){
+        emit deleteInformeCommentFailed();
+    } else {
+        emit deleteInformeCommentSucceed();
+    }
+
+}
+
+void Client::updateInformmark(QString id)
+{
+    json manageuserinfos;
+    manageuserinfos["system"] = "MANAGE";
+    manageuserinfos["request"] = "UPDATEINFORMMARK";
+    manageuserinfos["id"] = id.toStdString();
+    std::string message = manageuserinfos.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+    std::string res = sock.receive();
+    if(res == "FAILED"){
+        emit updateInformmarkFailed();
+    } else {
+        emit updateInformmarkSucceed();
+    }
 }
 
 void Client::getFile()

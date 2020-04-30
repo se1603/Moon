@@ -100,7 +100,7 @@ ScrollView{
                 id:all_reply
                 anchors.top:all_message.bottom
                 anchors.right: parent.right
-                anchors.rightMargin: 14
+                anchors.rightMargin: 64
                 width: replys.implicitWidth
                 height: replys.implicitHeight
                 color: "#424242"
@@ -121,6 +121,69 @@ ScrollView{
                             dd.open()
                         }
                     }
+                }
+            }
+            Rectangle{
+                id:tip
+                width: parent.width-10
+                height: 20
+                anchors.centerIn: parent
+                visible: false
+                Text{
+                    id:informtip
+                    anchors.centerIn: parent
+                    font.pixelSize: 12
+                    color:"#00BFFF"
+                    text: "举报成功，请等待审核！"
+                }
+                MouseArea{
+                    anchors.fill: parent
+                    onCanceled: {
+                        tiptimer.stop()
+                        tip.visible = false
+                    }
+                }
+            }
+            Rectangle{
+                id:inform
+                anchors.top:all_message.bottom
+                anchors.right: parent.right
+                anchors.rightMargin: 14
+                width: informs.implicitWidth
+                height: informs.implicitHeight
+                color: "#424242"
+//                opacity:0.4
+                Text{
+                    id:informs
+                    font.pixelSize: 14
+                    anchors.fill: parent
+                    text: "举报"
+                    color:"#00BFFF"
+                }
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: {
+                        var year = commentData.getFullYear()
+                        var month = commentData.getMonth()+1
+                        var day = commentData.getDate()
+                        var informtime = year+"-"+month+"-"+day
+                        var bereported = modelData.audienceName
+                        var comment = modelData.comment
+                        var informer = middleArea.audienceInterface.audienceName
+                        console.log(bereported)
+                        console.log(comment)
+                       client.inform(informer,bereported,comment,informtime)
+                        tiptimer.start()
+                    }
+                }
+            }
+
+            Timer{
+                id:tiptimer
+                interval: 1500
+                repeat: true
+                onTriggered: {
+                    tip.visible = true
                 }
             }
 
