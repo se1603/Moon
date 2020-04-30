@@ -16,6 +16,7 @@ Item {
     property alias informInformationPage: informinformationpage
     property alias reportProcessedPage: reportprocessedpage
     property alias processedInformationPage: processedinformationpage
+    property alias tipDelete: deletetip
 
     property var untreatedinfobyid: ""
     property var processedinfobyid: ""
@@ -62,6 +63,12 @@ Item {
         Component{
             id:reportprocessedpage
             ReportProcessedPage{
+
+            }
+        }
+        Component{
+            id:deletetip
+            TipDelete{
 
             }
         }

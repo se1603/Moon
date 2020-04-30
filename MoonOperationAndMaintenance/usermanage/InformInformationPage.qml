@@ -38,7 +38,7 @@ Rectangle{
                 anchors.rightMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
                 opacity: closemousearea.containsMouse ? 1.0 : 0.8
-                source: "qrc:/image/manage/close.png"
+                source: "qrc:/image/close.png"
                 MouseArea{
                     id:closemousearea
                     anchors.fill: parent
@@ -115,6 +115,7 @@ Rectangle{
                                 console.log(modelData.bereported)
                                 client.deleteInformedComment(modelData.bereported, modelData.comment)
                                 client.updateInformmark(modelData.id)
+                                reportStack.push(tipDelete)
                             }
                         }
                         Button{

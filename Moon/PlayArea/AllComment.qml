@@ -97,6 +97,28 @@ ScrollView{
                 color: "#A9A9A9"
             }
             Rectangle{
+                id:tip
+                width: parent.width-10
+                height: 20
+                anchors.centerIn: parent
+                visible: false
+                Text{
+                    id:informtip
+                    anchors.centerIn: parent
+                    font.pixelSize: 12
+                    color:"#00BFFF"
+                    text: "举报成功，请等待审核！"
+                }
+                MouseArea{
+                    anchors.fill: parent
+                    onCanceled: {
+                        tiptimer.stop()
+                        tip.visible = false
+                    }
+                }
+            }
+
+            Rectangle{
                 id:all_reply
                 anchors.top:all_message.bottom
                 anchors.right: parent.right
@@ -152,7 +174,17 @@ ScrollView{
                         console.log(bereported)
                         console.log(comment)
                        client.inform(informer,bereported,comment,informtime)
+                        tiptimer.start()
                     }
+                }
+            }
+
+            Timer{
+                id:tiptimer
+                interval: 1500
+                repeat: true
+                onTriggered: {
+                    tip.visible = true
                 }
             }
 
