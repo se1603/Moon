@@ -1,0 +1,4 @@
+1. 修改流媒体服务器中main函数里的ip
+   广告视频放在rtspserver的build中的adverts文件夹中，影视视频放在vides中
+2.修改MoonServer中browseAndWatchController.cpp里构造函数中的流媒体服务器ip
+3.修改MoonServer中client.cpp里的ip
