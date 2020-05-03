@@ -25,8 +25,8 @@ public:
     void showname(std::vector<std::string> &a);
     void addCollection(Collection c);
     void addRecord(Record r);
-    void showCollection(std::map<std::string,MovieAndTelevision*> &collectionmap);
-    void showRecord(std::map<std::string,MovieAndTelevision*> &recordmap);
+    void showCollection(std::multimap<std::string, MovieAndTelevision *> &collectionmap);
+    void showRecord(std::multimap<std::string, MovieAndTelevision *> &recordmap);
     bool judgeRecord(std::string recordname);
     void changeRecord(std::string recordname, std::string startPlayTime,
                       std::string duration);

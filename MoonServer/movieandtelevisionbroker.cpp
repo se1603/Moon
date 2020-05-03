@@ -1,6 +1,10 @@
 #include "movieandtelevisionbroker.h"
-#include <iostream>
 #include "json.hpp"
+#include <fstream>
+#include <sys/io.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 using json = nlohmann::json;
 using std::cout;    using std::string;
@@ -960,12 +964,12 @@ std::map<std::string,std::string> MovieAndTelevisionBroker::searchVideos(std::st
     return videoinfo;
 }
 
-MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Advert *a, std::string videotype)
+MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Advert *a, std::string videotype, int &flag)
 {
     if(videotype == "电影"){
         for(auto item = m_films.begin(); item != m_films.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -974,7 +978,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
     }else if(videotype == "综艺"){
         for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -983,7 +987,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
     }else if(videotype == "动漫"){
         for(auto item = m_comics.begin(); item != m_comics.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -992,7 +996,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
     }else if(videotype == "剧集"){
         for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1001,7 +1005,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
     }else if(videotype == "未知"){
         for(auto item = m_films.begin(); item != m_films.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1010,7 +1014,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
 
         for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1019,7 +1023,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
 
         for(auto item = m_comics.begin(); item != m_comics.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1028,7 +1032,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::addAdvert(std::string video, Adver
 
         for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
             if(item->first == video){
-                item->second.addAdvertLink(a);
+                item->second.addAdvertLink(a,flag);
                 MovieAndTelevision* mv = new MovieAndTelevision();
                 mv = &item->second;
                 return mv;
@@ -1106,10 +1110,10 @@ std::vector<Advert *> MovieAndTelevisionBroker::showAdverts(std::string name, st
 
 MovieAndTelevision* MovieAndTelevisionBroker::initAdvertLinks(std::string videoname, Advert *a)
 {
-
+    int flag = 0;
     for(auto item = m_films.begin(); item != m_films.end(); item++){
         if(item->first == videoname){
-            item->second.addAdvertLink(a);
+            item->second.addAdvertLink(a,flag);
             MovieAndTelevision* mv = new MovieAndTelevision();
             mv = &item->second;
             return mv;
@@ -1118,7 +1122,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::initAdvertLinks(std::string videon
 
     for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
         if(item->first == videoname){
-            item->second.addAdvertLink(a);
+            item->second.addAdvertLink(a,flag);
             MovieAndTelevision* mv = new MovieAndTelevision();
             mv = &item->second;
             return mv;
@@ -1127,7 +1131,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::initAdvertLinks(std::string videon
 
     for(auto item = m_comics.begin(); item != m_comics.end(); item++){
         if(item->first == videoname){
-            item->second.addAdvertLink(a);
+            item->second.addAdvertLink(a,flag);
             MovieAndTelevision* mv = new MovieAndTelevision();
             mv = &item->second;
             return mv;
@@ -1136,7 +1140,7 @@ MovieAndTelevision* MovieAndTelevisionBroker::initAdvertLinks(std::string videon
 
     for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
         if(item->first == videoname){
-            item->second.addAdvertLink(a);
+            item->second.addAdvertLink(a,flag);
             MovieAndTelevision* mv = new MovieAndTelevision();
             mv = &item->second;
             return mv;
@@ -1236,9 +1240,157 @@ std::vector<std::string> MovieAndTelevisionBroker::findTypeVideo(std::string typ
     return vec;
 }
 
+//MovieAndTelevision *MovieAndTelevisionBroker::findVideo(std::string videoname)
+//{
+//    for(auto item = m_films.begin(); item != m_films.end(); item++){
+//        if(item->first == videoname){
+//            MovieAndTelevision* mv = new MovieAndTelevision();
+//            mv = &item->second;
+//            return mv;
+//        }
+//    }
+
+//    for(auto item = m_varieties.begin(); item != m_varieties.end(); item++){
+//        if(item->first == videoname){
+//            MovieAndTelevision* mv = new MovieAndTelevision();
+//            mv = &item->second;
+//            return mv;
+//        }
+//    }
+
+//    for(auto item = m_comics.begin(); item != m_comics.end(); item++){
+//        if(item->first == videoname){
+//            MovieAndTelevision* mv = new MovieAndTelevision();
+//            mv = &item->second;
+//            return mv;
+//        }
+//    }
+
+//    for(auto item = m_dramas.begin(); item != m_dramas.end(); item++){
+//        if(item->first == videoname){
+//            MovieAndTelevision* mv = new MovieAndTelevision();
+//            mv = &item->second;
+//            return mv;
+//        }
+//    }
+//}
+
+
+bool MovieAndTelevisionBroker::getMTVMessage()
+{
+//    std::string commend = "tar xzvf ./images.tar.gz";
+//    system(commend.c_str());
+
+        std::string path = "./images/上架";
+        if(opendir(path.data()) == NULL){
+            return false;
+//            emit filmEmpty();
+        }else{
+            std::vector<std::string> files;
+            files = getFiles(path);
+            if(files.empty()){
+                return false;
+//                emit filmEmpty();
+            }else{
+                readFile(files);
+            }
+        }
+}
+
+std::vector<std::string> MovieAndTelevisionBroker::getFiles(std::string path)
+{
+    std::vector<std::string> files;
+
+    //检查path是否是有效的目录
+    struct stat s;
+    lstat(path.data() , &s );
+    if( ! S_ISDIR( s.st_mode ) )
+    {
+        std::cout <<"dir_name is not a valid directory !"<< std::endl;
+        //        return;
+    }
+
+    struct dirent * filename;    // return value for readdir()
+    DIR * dir;                   // return value for opendir()
+    dir = opendir(path.data());
+    if( NULL == dir )
+    {
+        std::cout<<"Can not open dir "<< path << std::endl;
+        //        return;
+    }else{
+        std::cout <<"Successfully opened the dir !" << std::endl;
+    }
+
+    /* read all the files in the dir ~ */ //读取该目录下所有的文件名
+    while( ( filename = readdir(dir) ) != NULL )
+    {
+        if( strcmp( filename->d_name , "." ) == 0 ||
+                strcmp( filename->d_name , "..") == 0    ) //跳过. 和..文件夹
+            continue;
+        std::string name(filename ->d_name);
+        std::cout << name << std::endl;
+        files.push_back(name); //存入所有文件名
+    }
+    return files;
+}
+
+bool MovieAndTelevisionBroker::readFile(std::vector<std::string> files)
+{
+    json up;
+    json resources;
+     std::string path = "./images/上架";
+     for(int i = 0; i != files.size();i++)
+     {
+
+         //读消息
+         std::cout << "读消息： " << std::endl;
+         std::string fileName = path + "/" + files[i];
+         std::cout << fileName << std::endl;
+         std::ifstream infile(fileName.data());
+         std::string mes;
+         std::vector<std::string> messages; //存聊天记录的消息
+         while(infile >> mes)
+         {
+             std::string tmp = mes;
+             std::cout << mes << std::endl;
+             messages.push_back(tmp);
+         }
+
+         std::cout << "the star" << std::endl;
+         for(int i = 0; i != messages.size();i+=11)
+         {
+             json value;
+             value["bigType"] = messages[i];
+             value["name"] = messages[i+1];
+             value["type"] = messages[i+2];
+             value["region"] = messages[i+3];
+             value["episode"] = messages[i+4];
+             value["director"] = messages[i+5];
+             value["actor"] = messages[i+6];
+             value["introduction"] = messages[i+7];
+             value["recommmd"] = messages[i+8];
+             std::string m = messages[i+9];
+             std::string s = messages[i+10];
+             m = m.erase(0,17);
+ //            s = s.erase(0,45);
+             s = subString(messages[i],s);
+             std::string v = "."+s+m;
+             value["image"] = v;
+             resources.push_back(value);
+             std:: cout << v << std::endl;
+
+         }
+         std::cout << "the end" << std::endl;
+     }
+    up["resource"] = resources;
+    std::string message = up.dump();
+    bool f = initMovieandTelevision(message);
+    return f;
+}
 bool MovieAndTelevisionBroker::initMovieandTelevision(std::string s)
 {
-    json j = json::parse(s);
+    json j1 = json::parse(s);
+    json j = j1["resource"];
     //    for (json::iterator it = j.begin(); it != j.end(); ++it) {
     //      std::cout << *it << '\n';
 
@@ -1253,12 +1405,20 @@ bool MovieAndTelevisionBroker::initMovieandTelevision(std::string s)
         std::cout << "Database connect Successed" << std::endl;
     }
 
+    auto k = j.size();
     for(int i = 0;i < j.size();i++){
         std::string name = j[i]["name"];
         std::string typ = j[i]["type"];
-        std::string type = dealType(typ);
-        std::string regio = j[i]["region"];
-        std::string region = dealRegion(regio);
+
+        std::vector<std::string> typeV = dealType(typ);
+        std::string type="";
+        for(auto i:typeV){
+            type += i;
+        }
+        std::string region = j[i]["region"];
+        Region re;
+        re = dealRegion(region);
+
         std::string esd = j[i]["episode"];
         std::string director = j[i]["director"];
         std::string actor = j[i]["actor"];
@@ -1271,25 +1431,199 @@ bool MovieAndTelevisionBroker::initMovieandTelevision(std::string s)
             rec ="2";
         }
         std::string sql;
+
+        //处理信息，构造影视初始化函数
+        auto post = dealPost(image);
+        auto actors = dealActor(actor);
+        auto directors = dealDirector(director);
+        auto recom = dealRecommends(rec);
         if("剧集" == j[i]["bigType"]){
-            sql = "insert into Drama(name,type,region,director,actor,post,introduction,recommend, episode) values('"+name+"','"+type+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"','"+esd+"');";
+            std::vector<DramaType> dramatype;     //剧集类型
+            for(int i = 0; i != typeV.size();i++)
+            {
+                switch (atoi(typeV[i].c_str())) {
+                case 1:
+                    dramatype.push_back(DramaType::AncientCostume);
+                    break;
+                case 2:
+                    dramatype.push_back(DramaType::Suspense);
+                    break;
+                case 3:
+                    dramatype.push_back(DramaType::MartialArts);
+                    break;
+                case 4:
+                    dramatype.push_back(DramaType::Metropolis);
+                    break;
+                case 5:
+                    dramatype.push_back(DramaType::History);
+                    break;
+                case 6:
+                    dramatype.push_back(DramaType::Idol);
+                    break;
+                case 7:
+                    dramatype.push_back(DramaType::Family);
+                    break;
+                case 8:
+                    dramatype.push_back(DramaType::ScienceFiction);
+                    break;
+                default:
+                    break;
+                }
+            }
+            Drama drama(name,introduction,re,post,actors,directors,dramatype,atoi(esd.c_str()),recom);
+            if(m_dramas.find(name)!=m_dramas.end()){
+                m_dramas.erase(name);
+                drama.save(m_dramas);
+                sql="update Drama set type = '"+type+"',region = '"+region+"',director = '"+director+"',actor = '"+actor+"',post ='"+image+"',introduction ='"+introduction+"',recommend = '"+rec+"',episode = '"+ esd+"' where name = '"+name+"';";
+            }else{
+                drama.save(m_dramas);
+                 sql = "insert into Drama(name,type,region,director,actor,post,introduction,recommend, episode) values('"+name+"','"+type+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"','"+esd+"');";
+
+            }
 
         }else if("动漫" == j[i]["bigType"]){
-            sql = "insert into Comic(name,type,region,epilide,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+region+"','"+esd+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+//            std::vector<ComicType> comictype;
+            std::vector<ComicType> comictype;     //动漫类型
+            for(int i = 0; i != typeV.size();i++)
+            {
+                switch (atoi(typeV[i].c_str())) {
+                case 1:
+                    comictype.push_back(ComicType::RobotWars);
+                    break;
+                case 2:
+                    comictype.push_back(ComicType::Youth);
+                    break;
+                case 3:
+                    comictype.push_back(ComicType::Combat);
+                    break;
+                case 4:
+                    comictype.push_back(ComicType::Love);
+                    break;
+                case 5:
+                    comictype.push_back(ComicType::Kayoing);
+                    break;
+                case 6:
+                    comictype.push_back(ComicType::WarmBlood);
+                    break;
+                case 7:
+                    comictype.push_back(ComicType::Campus);
+                    break;
+                default:
+                    break;
+                }
+            }
+            Comic comic(name,introduction,re,post,actors,directors,comictype,atoi(esd.c_str()),recom);
+            if(m_comics.find(name) != m_comics.end()){
+                m_comics.erase(name);
+                comic.save(m_comics);
+                sql="update Comic set type = '"+type+"',region = '"+region+"',director = '"+director+"',actor = '"+actor+"',post ='"+image+"',introduction ='"+introduction+"',recommend = '"+rec+"',epilide = '"+ esd+"' where name = '"+name+"';";
+            }else{
+                 comic.save(m_comics);
+                 sql = "insert into Comic(name,type,region,epilide,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+region+"','"+esd+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+            }
+
         }else if("电影" == j[i]["bigType"]){
-            sql = "insert into Film(name,type,region,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+            std::vector<FilmType> filmtype;     //电影类型
+            for(int i = 0; i != typeV.size();i++)
+            {
+                switch (atoi(typeV[i].c_str())) {
+                case 1:
+                    filmtype.push_back(FilmType::MartialArts);
+                    break;
+                case 2:
+                    filmtype.push_back(FilmType::Suspense);
+                    break;
+                case 3:
+                    filmtype.push_back(FilmType::Comedy);
+                    break;
+                case 4:
+                    filmtype.push_back(FilmType::Action);
+                    break;
+                case 5:
+                    filmtype.push_back(FilmType::Love);
+                    break;
+                case 6:
+                    filmtype.push_back(FilmType::Cartoon);
+                    break;
+                case 7:
+                    filmtype.push_back(FilmType::Terror);
+                    break;
+                case 8:
+                    filmtype.push_back(FilmType::ScienceFiction);
+                    break;
+                default:
+                    break;
+                }
+            }
+            Film film(name,introduction,re,post,actors,directors,filmtype,recom);
+            if(m_films.find(name) != m_films.end()){
+                m_films.erase(name);
+                film.save(m_films);
+                 sql="update Film set type = '"+type+"',region = '"+region+"',director = '"+director+"',actor = '"+actor+"',post ='"+image+"',introduction ='"+introduction+"',recommend = '"+rec+"' where name = '"+name+"';";
+            }else{
+                 film.save(m_films);
+                sql = "insert into Film(name,type,region,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+            }
+
         }else if("综艺" == j[i]["bigType"]){
-            sql = "insert into VarietyShow(name,type,episodes,region,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+esd+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+            //            Variety(std::string name,std::string introduction,
+            //                    Region region,std::vector<std::string> posts,
+            //                    std::vector<Actor *> actors,
+            //                    std::vector<Director *> directors,std::vector<VarietyType> types,
+            //                    std::vector<int> recommends,int episodes);
+            std::vector<VarietyType> varietytype;
+            for(int i=0;i!=typeV.size();i++)
+            {
+                switch (atoi(typeV[i].c_str())) {
+                case 1:
+                    varietytype.push_back(VarietyType::RealityShow);
+                    break;
+                case 2:
+                    varietytype.push_back(VarietyType::TalentShow);
+                    break;
+                case 3:
+                    varietytype.push_back(VarietyType::Food);
+                    break;
+                case 4:
+                    varietytype.push_back(VarietyType::Travel);
+                    break;
+                case 5:
+                    varietytype.push_back(VarietyType::ActualRecord);
+                    break;
+                case 6:
+                    varietytype.push_back(VarietyType::Funny);
+                    break;
+                case 7:
+                    varietytype.push_back(VarietyType::Interview);
+                    break;
+                default:
+                    break;
+                }
+            }
+            Variety var(name,introduction,re,post,actors,directors,varietytype,recom,atoi(esd.c_str()));
+//            var.save(m_varieties);
+            if(m_varieties.find(name) != m_varieties.end()){
+                m_varieties.erase(name);
+                var.save(m_varieties);
+                 sql="update VarietyShow set type = '"+type+"',region = '"+region+"',director = '"+director+"',actor = '"+actor+"',post ='"+image+"',introduction ='"+introduction+"',recommend = '"+rec+"',episodes = '"+ esd+"' where name = '"+name+"';";
+            }else{
+                var.save(m_varieties);
+                sql = "insert into VarietyShow(name,type,episodes,region,director,actor,post,introduction,recommend) values('"+name+"','"+type+"','"+esd+"','"+region+"','"+director+"','"+actor+"','"+image+"','"+introduction+"','"+rec+"');";
+            }
+
         }
 
         if(mysql_query(mysql,sql.data())){
             std::cout <<"insert failed"<< std::endl;
             return false;
         }else{
-            return true;
+            std::cout <<"insert successed"<< std::endl;
+
         }
     }
+    return true;
 }
+
 bool MovieAndTelevisionBroker::delect(std::string name, std::string type)
 {
     std::vector<std::string> videos;
@@ -1313,6 +1647,12 @@ bool MovieAndTelevisionBroker::delect(std::string name, std::string type)
                 m_films.erase(it);
             }
             sql = "DELETE FROM Film WHERE name = '"+videos[i]+"';" ;
+            if(mysql_query(mysql,sql.data())){
+                std::cout <<"insert failed"<< std::endl;
+                return false;
+            }else{
+                cout <<"delect sucessed!"<< endl;
+            }
         }
 
     }else if("动漫"== type){
@@ -1323,6 +1663,12 @@ bool MovieAndTelevisionBroker::delect(std::string name, std::string type)
                 m_comics.erase(it);
             }
             sql = "DELETE FROM Comic WHERE name = '"+videos[i]+"';" ;
+            if(mysql_query(mysql,sql.data())){
+                std::cout <<"insert failed"<< std::endl;
+                return false;
+            }else{
+                cout <<"delect sucessed!"<< endl;
+            }
         }
 //        sql = "DELETE FROM Comic WHERE name = '"+name +"';";
     }else if("剧集"== type){
@@ -1332,6 +1678,12 @@ bool MovieAndTelevisionBroker::delect(std::string name, std::string type)
                 m_dramas.erase(it);
             }
             sql = "DELETE FROM Drama WHERE name = '"+videos[i]+"';" ;
+            if(mysql_query(mysql,sql.data())){
+                std::cout <<"insert failed"<< std::endl;
+                return false;
+            }else{
+                cout <<"delect sucessed!"<< endl;
+            }
         }
 //        sql = "DELETE FROM Drama WHERE name = '"+name +"';";
     }else if("综艺"== type){
@@ -1341,58 +1693,379 @@ bool MovieAndTelevisionBroker::delect(std::string name, std::string type)
                 m_varieties.erase(it);
             }
             sql = "DELETE FROM VarietyShow WHERE name = '"+videos[i]+"';" ;
+            if(mysql_query(mysql,sql.data())){
+                std::cout <<"insert failed"<< std::endl;
+                return false;
+            }else{
+                cout <<"delect sucessed!"<< endl;
+            }
         }
 //        sql = "DELETE FROM VarietyShow WHERE name = '"+name +"';";
     }
 
-    if(mysql_query(mysql,sql.data())){
-        std::cout <<"insert failed"<< std::endl;
-        return false;
-    }else{
-        return true;
-    }
+
+    return true;
 //    sql = "DELETE FROM " + table + " WHERE"
 }
 
-std::string MovieAndTelevisionBroker::dealType(std::string type)
+
+std::vector<std::string> MovieAndTelevisionBroker::dealType(std::string type)
 {
-    if(type == "机战"||type =="古装"||type =="武侠"||type =="真人秀"){
-        return "1";
-    }else if(type == "青春"||type =="悬疑"||type =="悬疑"||type =="选秀"){
-        return "2";
-    }else if(type == "格斗"||type =="武侠"||type =="喜剧"||type =="美食"){
-        return "3";
-    }else if(type == "恋爱"||type =="都市"||type =="动作"||type =="旅游"){
-        return "4";
-    }else if(type == "美少女"||type =="历史"||type =="爱情"||type =="纪实"){
-        return "5";
-    }else if(type == "热血"||type =="偶像"||type =="动画"||type =="搞笑"){
-        return "6";
-    }else if(type == "校园"||type =="家庭"||type =="惊悚"||type =="访谈"){
-        return "7";
-    }else if (type == "科幻"||type =="科幻") {
-        return "8";
+    std::vector<std::string> s;
+    std::vector<std::string> videos;
+    splictString(type,videos,"，");
+    for(int i = 0;i < videos.size();i++){
+        if(videos[i] == "机战"||videos[i] =="古装"||videos[i] =="武侠"||videos[i] =="真人秀"){
+            s.push_back("1");
+        }else if(videos[i] == "青春"||videos[i] =="悬疑"||videos[i] =="悬疑"||videos[i] =="选秀"){
+            s.push_back("2");
+        }else if(videos[i] == "格斗"||videos[i] =="武侠"||videos[i] =="喜剧"||videos[i] =="美食"){
+            s.push_back("3");
+        }else if(videos[i] == "恋爱"||videos[i] =="都市"||videos[i] =="动作"||videos[i] =="旅游"){
+            s.push_back("4");
+        }else if(videos[i] == "美少女"||videos[i] =="历史"||videos[i] =="爱情"||videos[i] =="纪实"){
+            s.push_back("5");
+        }else if(videos[i] == "热血"||videos[i] =="偶像"||videos[i] =="动画"||videos[i] =="搞笑"){
+            s.push_back("6");
+        }else if(videos[i] == "校园"||videos[i] =="家庭"||videos[i] =="惊悚"||videos[i] =="访谈"){
+            s.push_back("7");
+        }else if (videos[i] == "科幻"||videos[i] =="科幻") {
+            s.push_back("8");
+        }
     }
-    //    return "0";
+
+    return s;
 }
 
-std::string MovieAndTelevisionBroker::dealRegion(std::string region)
+Region MovieAndTelevisionBroker::dealRegion(std::string &region)
 {
-    if(region == "中国"){
-        return "1";
-    }else if(region == "美国"){
-        return "2";
-    }else if(region == "韩国"){
-        return "3";
-    }else if(region == "恋爱"){
-        return "4";
-    }else if(region == "泰国"){
-        return "5";
-    }else if(region == "英国"){
-        return "6";
-    }else if(region == "日本"){
-        return "7";
+    Region r = Region::China;
+        if(region == "中国"){
+            r = Region::China;
+            region = "1";
+            return r;
+        }else if(region == "美国"){
+            r = Region::American;
+            region = "2";
+            return r;
+        }else if(region == "韩国"){
+            r = Region::Korea;
+            region = "3";
+            return r;
+        }else if(region == "印度"){
+            r = Region::India;
+            region = "4";
+            return r;
+        }else if(region == "泰国"){
+            r = Region::THailand;
+            region = "5";
+            return r;
+        }else if(region == "英国"){
+            r = Region::Britain;
+            region = "6";
+            return r;
+        }else if(region == "日本"){
+            r = Region::Japan;
+            region = "7";
+            return r;
+        }
+        return r;
+}
+
+std::vector<Actor *> MovieAndTelevisionBroker::dealActor(std::string actor)
+{
+    std::vector<std::string> actorVector;
+    splictString(actor,actorVector,"，");
+    std::vector<Actor *> actors;
+    actors = m_actorBroker->findActor(actorVector);
+    return actors;
+}
+
+std::vector<Director *> MovieAndTelevisionBroker::dealDirector(std::string director)
+{
+    std::vector<std::string> directorVector;
+    splictString(director,directorVector,"，");
+    std::vector<Director *> directors;
+    directors = m_directorBroker->findDirector(directorVector);
+    return directors;
+}
+
+std::vector<std::string> MovieAndTelevisionBroker::dealPost(std::string image)
+{
+    std::vector<std::string> postVector;
+    splictString(image,postVector,"，");
+    return postVector;
+}
+
+std::vector<int> MovieAndTelevisionBroker::dealRecommends(std::string recommend)
+{
+    std::vector<std::string> recommendVector;
+    splictString(recommend,recommendVector,"，");
+    std::vector<int> rec;
+    for(auto s:recommendVector){
+        rec.push_back( atoi(s.c_str()));
     }
+    return rec;
+}
+
+std::string MovieAndTelevisionBroker::subString(std::string type, std::string s)
+{
+    std::string str;
+    if(type == "电影"){
+         str = s.substr(s.length()-6,s.length());
+    }else if(type == "动漫"){
+         str = s.substr(s.length()-7,s.length());
+    }else if(type == "剧集"){
+         str = s.substr(s.length()-6,s.length());
+    }else if(type == "综艺"){
+         str = s.substr(s.length()-12,s.length());
+    }
+    return str;
+}
+
+bool MovieAndTelevisionBroker::updateVideos(std::string s)
+{
+    json j = json::parse(s);
+//    json j = j1["resource"];
+
+    MYSQL* mysql;
+    mysql = new MYSQL;
+
+    mysql_init(mysql);
+    if(!mysql_real_connect(mysql,"localhost","root","root","Moon",0,NULL,0)){
+        std::cout << "Database connect failed" << std::endl;
+    }else{
+        std::cout << "Database connect Successed" << std::endl;
+    }
+
+    auto k = j.size();
+    for(int i = 0;i < j.size();i++){
+        std::string name = j[i]["name"];
+        std::string typ = j[i]["type"];
+
+        std::vector<std::string> typeV = dealType(typ);
+        std::string type="";
+        for(auto i:typeV){
+            type += i;
+        }
+        std::string region = j[i]["region"];
+        Region re;
+        re = dealRegion(region);
+
+        std::string esd = j[i]["episode"];
+//        std::string director = j[i]["director"];
+//        std::string actor = j[i]["actor"];
+//        std::string introduction = j[i]["introduction"];
+        std::string image = j[i]["image"];
+        std::string rec;
+        if("否" == j[i]["recommmd"]){
+            rec ="99";
+        }else{
+            rec ="2";
+        }
+        std::string sql;
+
+        //处理信息，构造影视初始化函数
+        auto post = dealPost(image);
+//        auto actors = dealActor(actor);
+//        auto directors = dealDirector(director);
+        auto recom = dealRecommends(rec);
+        if("剧集" == j[i]["bigType"]){
+            std::vector<DramaType> dramatype;     //剧集类型
+            for(int i = 0; i != typeV.size();i++)
+            {
+                switch (atoi(typeV[i].c_str())) {
+                case 1:
+                    dramatype.push_back(DramaType::AncientCostume);
+                    break;
+                case 2:
+                    dramatype.push_back(DramaType::Suspense);
+                    break;
+                case 3:
+                    dramatype.push_back(DramaType::MartialArts);
+                    break;
+                case 4:
+                    dramatype.push_back(DramaType::Metropolis);
+                    break;
+                case 5:
+                    dramatype.push_back(DramaType::History);
+                    break;
+                case 6:
+                    dramatype.push_back(DramaType::Idol);
+                    break;
+                case 7:
+                    dramatype.push_back(DramaType::Family);
+                    break;
+                case 8:
+                    dramatype.push_back(DramaType::ScienceFiction);
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            auto item = m_dramas.find(name);
+            if(item!=m_dramas.end()){
+//                auto item = m_dramas.begin();
+                auto directors = item->second.showDirector();
+                auto actors = item->second.showActor();
+                std::string introduction;
+                item->second.showIntrodution(introduction);
+              Drama drama(name,introduction,re,post,actors,directors,dramatype,atoi(esd.c_str()),recom);
+                m_dramas.erase(name);
+                drama.save(m_dramas);
+                sql="update Drama set type = '"+type+"',region = '"+region+"',post ='"+image+"',recommend = '"+rec+"',episode = '"+ esd+"' where name = '"+name+"';";
+            }
+
+        }else if("动漫" == j[i]["bigType"]){
+//            std::vector<ComicType> comictype;
+            std::vector<ComicType> comictype;     //动漫类型
+            for(int i = 0; i != typeV.size();i++)
+            {
+                switch (atoi(typeV[i].c_str())) {
+                case 1:
+                    comictype.push_back(ComicType::RobotWars);
+                    break;
+                case 2:
+                    comictype.push_back(ComicType::Youth);
+                    break;
+                case 3:
+                    comictype.push_back(ComicType::Combat);
+                    break;
+                case 4:
+                    comictype.push_back(ComicType::Love);
+                    break;
+                case 5:
+                    comictype.push_back(ComicType::Kayoing);
+                    break;
+                case 6:
+                    comictype.push_back(ComicType::WarmBlood);
+                    break;
+                case 7:
+                    comictype.push_back(ComicType::Campus);
+                    break;
+                default:
+                    break;
+                }
+            }
+            auto item = m_comics.find(name);
+            if(item != m_comics.end()){
+//                auto item = m_comics.begin();
+                auto directors = item->second.showDirector();
+                auto actors = item->second.showActor();
+                std::string introduction;
+                item->second.showIntrodution(introduction);
+               Comic comic(name,introduction,re,post,actors,directors,comictype,atoi(esd.c_str()),recom);
+                m_comics.erase(name);
+                comic.save(m_comics);
+                sql="update Comic set type = '"+type+"',region = '"+region+"',post ='"+image+"',recommend = '"+rec+"',epilide = '"+ esd+"' where name = '"+name+"';";
+            }
+
+        }else if("电影" == j[i]["bigType"]){
+
+            std::vector<FilmType> filmtype;     //电影类型
+            for(int i = 0; i != typeV.size();i++)
+            {
+                switch (atoi(typeV[i].c_str())) {
+                case 1:
+                    filmtype.push_back(FilmType::MartialArts);
+                    break;
+                case 2:
+                    filmtype.push_back(FilmType::Suspense);
+                    break;
+                case 3:
+                    filmtype.push_back(FilmType::Comedy);
+                    break;
+                case 4:
+                    filmtype.push_back(FilmType::Action);
+                    break;
+                case 5:
+                    filmtype.push_back(FilmType::Love);
+                    break;
+                case 6:
+                    filmtype.push_back(FilmType::Cartoon);
+                    break;
+                case 7:
+                    filmtype.push_back(FilmType::Terror);
+                    break;
+                case 8:
+                    filmtype.push_back(FilmType::ScienceFiction);
+                    break;
+                default:
+                    break;
+                }
+            }
+            auto item = m_films.find(name);
+            if( item != m_films.end()){
+
+
+                auto directors = item->second.showDirector();
+                auto actors = item->second.showActor();
+                std::string introduction;
+                item->second.showIntrodution(introduction);
+                Film film(name,introduction,re,post,actors,directors,filmtype,recom);
+                m_films.erase(name);
+                film.save(m_films);
+                 sql="update Film set type = '"+type+"',region = '"+region+"',post ='"+image+"',recommend = '"+rec+"' where name = '"+name+"';";
+            }
+
+        }else if("综艺" == j[i]["bigType"]){
+
+            std::vector<VarietyType> varietytype;
+            for(int i=0;i!=typeV.size();i++)
+            {
+                switch (atoi(typeV[i].c_str())) {
+                case 1:
+                    varietytype.push_back(VarietyType::RealityShow);
+                    break;
+                case 2:
+                    varietytype.push_back(VarietyType::TalentShow);
+                    break;
+                case 3:
+                    varietytype.push_back(VarietyType::Food);
+                    break;
+                case 4:
+                    varietytype.push_back(VarietyType::Travel);
+                    break;
+                case 5:
+                    varietytype.push_back(VarietyType::ActualRecord);
+                    break;
+                case 6:
+                    varietytype.push_back(VarietyType::Funny);
+                    break;
+                case 7:
+                    varietytype.push_back(VarietyType::Interview);
+                    break;
+                default:
+                    break;
+                }
+            }
+
+//            var.save(m_varieties);
+            auto item = m_varieties.find(name);
+            if(item != m_varieties.end()){
+
+                auto directors = item->second.showDirector();
+                auto actors = item->second.showActor();
+                std::string introduction;
+                item->second.showIntrodution(introduction);
+                Variety var(name,introduction,re,post,actors,directors,varietytype,recom,atoi(esd.c_str()));
+                m_varieties.erase(name);
+                var.save(m_varieties);
+                 sql="update VarietyShow set type = '"+type+"',region = '"+region+"',post ='"+image+"',recommend = '"+rec+"',episodes = '"+ esd+"' where name = '"+name+"';";
+            }
+
+        }
+
+        if(mysql_query(mysql,sql.data())){
+            std::cout <<"insert failed"<< std::endl;
+            return false;
+        }else{
+            std::cout <<"insert successed"<< std::endl;
+
+        }
+    }
+    return true;
 }
 
 std::vector<Film *> MovieAndTelevisionBroker::searchFilm(std::string name)

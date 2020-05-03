@@ -18,7 +18,7 @@ Rectangle {
         height: parent.height
 
         anchors.right: parent.right
-        color: "yellow"
+//        color: "yellow"
 
         Loader{
             id: browseLoader

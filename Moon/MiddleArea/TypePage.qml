@@ -10,6 +10,8 @@ Rectangle {
     property var showResource: browsePage.showTypeResource
     property alias typeModel: typeMenuRepeater.model
 
+    property var date: new Date()
+
     ScrollView{
         anchors.fill: parent
         clip: true
@@ -38,8 +40,8 @@ Rectangle {
                 anchors.top: topMenu.bottom
                 anchors.topMargin: 15
                 anchors.left: parent.left
-                columns: 5
-                columnSpacing: 15
+                columns: 4
+                columnSpacing: 25
                 rowSpacing: 15
                 Repeater {
                     model: showResource
@@ -73,10 +75,44 @@ Rectangle {
                         MouseArea{
                             anchors.fill: parent
                             onClicked: {
+                                //开始记录
+                                var d = new Date()
+                                var year = d.getFullYear()
+                                var month = d.getMonth()+1
+                                var day = d.getDate()
+                                var hours = d.getHours()
+                                var minutes = d.getMinutes()
+                                var starttime =
+                                        year+"-"+month+"-"+day+"-"
+                                        +hours+":"+minutes
+                                if(middleArea.startTime === ""){
+                                    middleArea.startTime = starttime
+                                }else{
+                                    middleArea.lastStartTime =
+                                            middleArea.startTime
+                                    middleArea.startTime = starttime
+                                }
+
+
+                                middleArea.nextName = postName.text
+                                middleArea.stopPlay(playName,nextName)
+
                                 playName = postName.text
                                 playPost = postImage.source
-                                middleArea.middleLoader.sourceComponent =
-                                        playComponent
+                                playUrl = modelData.rtspURL
+
+                                middleArea.middleLoader.visible = false
+                                middleArea.playLoader.visible = true
+                                adverts = JSON.parse(client.advertInfo(playName))
+                                if(adverts !== null)
+                                {
+                                    middleArea.loadAdvert()
+                                }
+                                else
+                                {
+                                    console.log(playUrl)
+                                    middleArea.startPlay()
+                                }
                             }
                         }
                     }
@@ -96,7 +132,7 @@ Rectangle {
                 id:category
                 text: modelData.category
                 opacity: 0.5
-                font.pixelSize: 15
+                font.pixelSize: 17
                 color: 	"#808080"
                 anchors.horizontalCenter: parent.horizontalCenter
                 MouseArea {

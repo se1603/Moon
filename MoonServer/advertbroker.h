@@ -1,6 +1,6 @@
 /* Author:董梦丹
 * Date:2020-02-01
-* 最后修改:03-05
+* 最后修改:04-27
 * Note:广告
 */
 #ifndef ADVERTBROKER_H
@@ -35,7 +35,7 @@ public:
     //读取广告链接
     std::multimap<std::string, std::string> readAdvertLinks();
     //更新点击量
-    bool updateAdvertClicks(std::string advertname, std::string newclicks);
+    bool updateAdvertClicks(std::string advertname);
     //公司广告排名
     std::vector<Advert*> rankCompanyAdvert(std::string companyname);
     //删除广告链接
@@ -43,9 +43,19 @@ public:
     //删除视频链接
     bool deleteVideoLink(std::string advertname, std::string videoname);
     //判断是否删除数据库的广告
-    void judgeAdvertRemove(std::string advertname);
+//    void judgeAdvertRemove(std::string advertname);
     //生成视频链接
     void initVideoLink(std::string advertname, MovieAndTelevision* mv);
+    //获取所有已编辑的广告
+    std::vector<std::vector<std::string> > showAllVideoAdverts();
+    //获取所有已投放的映前广告
+    std::vector<std::vector<std::string> > showAdvertising();
+    //添加广告链接
+    void addCurrentLink(std::string advertname, std::string videoname);
+    //修改广告到期时间
+    bool changeAdvertTime(std::string advertname, std::string newdate);
+    //修改数据库广告到期时间
+    bool changeAdvertTimeDB(std::string advertname, std::string newdate);
 private:
     AdvertBroker();
     static AdvertBroker* m_instance;

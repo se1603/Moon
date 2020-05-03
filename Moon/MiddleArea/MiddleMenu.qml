@@ -32,7 +32,6 @@ Rectangle {
             Rectangle{
                 width: middleMenu.width - 10
                 height : 67
-                //            color: "red"
                 anchors.left: parent.left
                 Text {
                     id: menuText
@@ -66,15 +65,15 @@ Rectangle {
         height: parent.height * 1 / 2
         anchors.top: topMenu.bottom
 
-        ListModel{
-            id: functionCategory
-            ListElement{
-                name:"上传"
-            }
-            ListElement{
-                name:"下载"
-            }
-        }
+//        ListModel{
+//            id: functionCategory
+//            ListElement{
+//                name:"上传"
+//            }
+//            ListElement{
+//                name:"下载"
+//            }
+//        }
 
         ListView{
             id: functionCategoryView
@@ -120,7 +119,6 @@ Rectangle {
 
     function loadPage(page)
     {
-        mytype = pageString
         typeString = JSON.parse(client.showCategory(page))
         pageString = page
         if(page === "精选")

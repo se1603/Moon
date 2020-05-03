@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-02-25
+* Note:下架界面
+*/
 import QtQuick 2.0
 
 Item {

@@ -35,6 +35,8 @@ public:
     void receiveFile(std::string message,endpoint clientep);
     void receiveFilename(boost::system::error_code &e,boost::asio::ip::udp::endpoint sender_ep,socket_ptr udpsock);
     void receive_file_content();
+
+     void  tarFiles();//压缩文件
 private:
     FILE *fp;
     File_info file_info;
@@ -46,6 +48,7 @@ private:
     CommentController *m_commentController;
     ManagerController *m_managerController;
     SearchController *m_searchController;
+    ManageUserController *m_manageuserController; //用户管理
 };
 
 #endif // SERVER_H

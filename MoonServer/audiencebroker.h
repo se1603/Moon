@@ -36,9 +36,9 @@ public:
     void createAudienceRecord(std::string aname, std::string startPlayTime, std::string duration,
                               MovieAndTelevision *m);
     //读取用户记录
-    void readAudienceRecord(std::string name, std::map<std::string,MovieAndTelevision*> &recordmap);
+    void readAudienceRecord(std::string name, std::multimap<std::string, MovieAndTelevision *> &recordmap);
     //读取用户收藏
-    void readAudienceCollection(std::string name, std::map<std::string,MovieAndTelevision*> &collectionmap);
+    void readAudienceCollection(std::string name, std::multimap<std::string, MovieAndTelevision *> &collectionmap);
     //添加用户收藏
     bool addAudienceCollection(std::string aName, std::string cName, std::string cTime, std::string cType);
 

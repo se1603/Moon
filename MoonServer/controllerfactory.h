@@ -6,6 +6,7 @@
 #include "commentcontroller.h"
 #include "managercontroller.h"
 #include "searchcontroller.h"
+#include "manageusercontroller.h"
 
 class ControllerFactory
 {
@@ -21,6 +22,7 @@ public:
     CommentController *createCommentController();
     ManagerController *createManagerController();
     SearchController *createSearchController();
+    ManageUserController *createManageUserController();//管理用户
 private:
     ControllerFactory();
     static ControllerFactory* m_instance;

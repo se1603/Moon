@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-02-20
+* Note:添加新的影视信息对话框
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
@@ -48,9 +52,9 @@ Popup {
         onClicked: {
             console.log(txField.text)
             listModel.append({"name":txField.text,episode: " ",
-                                 typ:"type",
-                                 region:"region1",
-                                 bigType:"bigType",
+                                 typ:"悬疑",
+                                 region:"中国",
+                                 bigType:"电影",
                                  introduction:"简介",
                                  actor:"演员",
                                  dictor:"导演",

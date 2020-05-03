@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-02-12
+* Note:编辑影视信息界面
+*/
 import QtQuick 2.0
 import QtLocation 5.13
 import QtQuick.Controls 1.4
@@ -7,26 +11,35 @@ Rectangle {
 
     id:groundPage
     property int index1:0
+    property var messagesName:""
     width: parent.width
     height: parent.height
-    //    color: "red"
+    //    color: "#737373"
     Rectangle{
         id:upRtn
         width: parent.width/5
-        height: 100
+        height: 80
+        z:3
         anchors.left: parent.Left
-        color: "green"
+        //        border.color: "#303030"
         Text {
             id: name
             anchors.centerIn: parent
-            font.pixelSize: 24
-            font.family: "宋体"
-            text: qsTr("上传")
+            font.pixelSize: 18
+            //            font.family: "宋体"
+            text: qsTr("「  上传   」")
         }
         MouseArea{
             anchors.fill: parent
             onClicked: {
                 client.upServer()
+                up.open()
+            }
+            onEntered: {
+                name.font.pixelSize = 20
+            }
+            onExited: {
+                name.font.pixelSize = 18
             }
         }
     }
@@ -35,69 +48,53 @@ Rectangle {
         onFilmEmpty:{
             empt.open()
         }
-
-//        onAddAdvertSucceed: {
-//            commitDialog.close()
-//            backmessage = "Succeed!"
-//            messageDialog.open()
-//        }
-//        onAddAdvertFailed: {
-//            commitDialog.close()
-//            backmessage = "Failed!"
-//            messageDialog.open()
-//        }
     }
     EmptyDialog{
         id:empt
 
     }
+    UpDialog{
+        id:up
+    }
 
-//    value["bigType"] = messages[i];
-//    value["name"] = messages[i+1];
-//    value["type"] = messages[i+2];
-//    value["region"] = messages[i+3];
-//    value["episode"] = messages[i+4];
-//    value["director"] = messages[i+5];
-//    value["actor"] = messages[i+6];
-//    value["introduction"] = messages[i+7];
-//    value["recommmd"] = messages[i+8];
-////            std::string m = messages[i+9];
-////            std::string s = messages[i+10];
-////            m = m.erase(0,17);
-////            s = s.erase(0,45);
-////            std::string v = "."+s+m;
-//    value["image"] = messages[i+9];
     Component.onCompleted: {
-        var v = JSON.parse(client.getLocalMessages())
-        var json = v["resources"]
-        for(var i in json){
-            console.log(json[i]["bigType"]+"  hh"+i)
-            listModel.append({"typ": json[i]["type"], "region":json[i]["region"],"bigType":json[i]["bigType"],"introduction":json[i]["introduction"],
-                                 "actor":json[i]["actor"],"dictor":json[i]["director"],"name":json[i]["name"],"episode":json[i]["episode"],"imgSource":json[i]["image"],"about":"相关影视"
-                             })
-        }
+        messages()
+    }
 
-//        if(v.length() === 0){
-//            console.log("the local is empty")
-//        }else{
-//            console.log(v.size+"  hh")
-//        }
+    function messages(){
+        var v = JSON.parse(client.getLocalMessages())
+        var s = v["empty"]
+        if(s === "EMPTY"){
+            console.log(s)
+        }else{
+            listModel.clear()
+            var json = v["resources"]
+            for(var i in json){
+                //            listModel.clear()
+                console.log(json[i]["bigType"]+"  hh"+i)
+                listModel.append({"typ": json[i]["type"], "region":json[i]["region"],"bigType":json[i]["bigType"],"introduction":json[i]["introduction"],
+                                     "actor":json[i]["actor"],"dictor":json[i]["director"],"name":json[i]["name"],"episode":json[i]["episode"],"imgSource":json[i]["image"],"imagePath":json[i]["imagePath"],"recommend":json[i]["recommmd"],"about":"相关影视"
+                                 })
+            }
+        }
     }
 
     ListModel {
         id:listModel
-//        ListElement {
-//            name: "西游记"
-//            episode: " "
-//            typ:"type"
-//            region:"region1"
-//            bigType:"bigType"
-//            introduction:"简介"
-//            actor:"演员"
-//            dictor:"导演"
-//            about:"相关影视"
-//            imgSource:" "
-//        }
+        ListElement {
+            name: "XXX"
+            episode: " "
+            typ:"悬疑"
+            region:"中国"
+            bigType:"电影"
+            introduction:"简介"
+            actor:"演员"
+            dictor:"导演"
+            about:"相关影视"
+            imgSource:" "
+            imagePath:" "
+            recommend:"否"
+        }
 
     }
     Rectangle{
@@ -105,9 +102,8 @@ Rectangle {
         anchors.left: parent.left
         anchors.top: upRtn.bottom
         width: parent.width/5
-        height: parent.height
-        color: "red"
-
+        height: 500//parent.height*4/5
+//                color: "#E3E3E3"
 
         ListView {
             id:recommendNameView
@@ -124,7 +120,7 @@ Rectangle {
                 id: nameSlide
                 height: 40
                 width: recommendNameView.width
-                color:ListView.isCurrentItem ? "lightblue" : "white"
+                color:ListView.isCurrentItem ? "#00FFFF" : "white"
                 onColorChanged: {
                     name1.text = name
                     type1.text = typ
@@ -133,16 +129,19 @@ Rectangle {
                     infoma.text = introduction
                     actorEdit.text = actor
                     dictorEdit.text = dictor
-                    aboutEdit.text = about
-                    img.source = imgSource
+                    //                    aboutEdit.text = about
+                    imgPup.updateFileSource = imgSource
+                    imgPup.adress = imagePath
                     esd.text = episode
+                    recc.text = recommend
                     //                    post_Image.source = "file:" + modelData.post
                 }
                 Text {
                     id: movisAndeTelevisionName
                     text: name
                     anchors.centerIn: parent
-//                    color: "black"
+                    font.pixelSize: 16
+                    //                    color: "black"
                 }
 
                 MouseArea {
@@ -158,12 +157,14 @@ Rectangle {
                     }
 
                     onEntered: {
+                        movisAndeTelevisionName.font.pixelSize = 18
                         //鼠标覆盖，显示对应的图片
                         if(nameSlide.ListView.view.currentIndex !== index){
                             nameSlide.ListView.view.currentIndex = index;
                         }
                     }
                     onExited: {
+                        movisAndeTelevisionName.font.pixelSize = 16
                         index1 = index
                         console.log(index1)
                     }
@@ -174,20 +175,24 @@ Rectangle {
     Rectangle{
         id:btnF
         anchors.right: parent.right
-        width: parent.width*4/5
+        anchors.left: listBtn.right
+        anchors.leftMargin: 10
+        width: parent.width*4/5-15
         height: parent.height
-        color: "yellow"
+        //        color: "#E3E3E3"
+        //        border.color: "black"
         Rectangle{
             id:add
             anchors.left: parent.left
-            width: 200
-            height: 300
-            color: "lightblue"
+            width: 220
+            height: 320
+            border.color: "lightblue"
+            //            color: "lightblue"
             Text{
                 text: "添加图片"
                 anchors.centerIn: parent
                 font.family: "Helvetica"
-                font.pointSize: 20
+                font.pointSize: 18
                 color: "blue"
             }
             Image {
@@ -199,6 +204,7 @@ Rectangle {
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
+                    console.log(img.source+"iiii")
                     imgPup.open()
                 }
             }
@@ -208,37 +214,62 @@ Rectangle {
             id: nameLabel
             text: qsTr("名字：")
             anchors.left: add.right
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
+            anchors.leftMargin: 20
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
         }
-        TextEdit{
+        TextField{
             id:name1
             anchors.left: nameLabel.right
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
 
+        }
+        Text {
+            id:typeMo1
+            text: "类别："
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            focus: true
+            anchors.top: name1.bottom
+            anchors.topMargin: 20
+            anchors.left: add.right
+            anchors.leftMargin: 20
+        }
+        TextField {
+            id:typeMo
+            width: 240
+            text: "<b>bigType</b>"
+            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
+            focus: true
+            anchors.top: name1.bottom
+            anchors.topMargin: 20
+            anchors.left: typeMo1.right
         }
         Text{
             id:type
             text: "类型:"
-            anchors.top: name1.bottom
+            anchors.top: typeMo1.bottom
             anchors.topMargin: 20
             anchors.left: add.right
-            font.family: "Helvetica"
-            color: "blue"
-            font.pointSize: 20
+            anchors.leftMargin: 20
+            //            font.family: "Helvetica"
+            //            color: "blue"
+            font.pointSize: 16
         }
-        TextEdit {
+        TextField {
             id:type1
             width: 240
             text: "<b>type</b>"
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
             focus: true
-            anchors.top: name1.bottom
+            anchors.top: typeMo.bottom
             anchors.topMargin: 20
             anchors.left: type.right
             anchors.leftMargin: 20
@@ -249,79 +280,60 @@ Rectangle {
             anchors.top: type.bottom
             anchors.topMargin: 20
             anchors.left: add.right
+            anchors.leftMargin: 20
             //            text: "<b>region</b>"
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
         }
 
-        TextEdit {
+        TextField {
             id:region1
             width: 240
             text: "<b>region</b>"
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
             focus: true
             anchors.top: type1.bottom
             anchors.topMargin: 20
             anchors.left: region.right
         }
 
-        Text {
-            id:typeMo1
-            //            width: 240
-            text: "类别："
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
-            focus: true
-            anchors.top: region.bottom
-            anchors.topMargin: 20
-            anchors.left: add.right
-        }
-        TextEdit {
-            id:typeMo
-            width: 240
-            text: "<b>bigType</b>"
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
-            focus: true
-            anchors.top: region1.bottom
-            anchors.topMargin: 20
-            anchors.left: typeMo1.right
-        }
+
         Text{
             id:ed
             text: "集数："
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
             focus: true
-            anchors.top: typeMo1.bottom
-            anchors.topMargin: 20
+            anchors.top: region.bottom
+            anchors.topMargin: 30
             anchors.left: add.right
+            anchors.leftMargin: 20
         }
         TextField{
             id:esd
-            font.family: "Helvetica"
-            font.pointSize: 20
-            Layout.preferredWidth: 50
+            width:100
+            height: 35
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            Layout.preferredWidth: 150
             //            color: "blue"
             focus: true
-            anchors.top: typeMo.bottom
+            anchors.top: region1.bottom
             anchors.topMargin: 20
             anchors.left: ed.right
         }
         Text {
             id: e
             text: qsTr("集")
-            font.family: "Helvetica"
-            font.pointSize: 20
+            //            font.family: "Helvetica"
+            font.pointSize: 16
             //            color: "blue"
             focus: true
-            anchors.top: typeMo.bottom
+            anchors.top: region1.bottom
             anchors.topMargin: 20
             anchors.left: esd.right
         }
@@ -329,19 +341,20 @@ Rectangle {
         Text {
             id: rec
             text: qsTr("是否推荐：")
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
             focus: true
             anchors.top: ed.bottom
-            anchors.topMargin: 20
+            anchors.topMargin: 30
             anchors.left: add.right
+            anchors.leftMargin: 20
         }
-        TextEdit{
+        TextField{
             id:recc
-            font.family: "Helvetica"
-            font.pointSize: 20
-            color: "blue"
+            //            font.family: "Helvetica"
+            font.pointSize: 16
+            //            color: "blue"
             focus: true
             anchors.top: esd.bottom
             anchors.topMargin: 20
@@ -349,46 +362,20 @@ Rectangle {
             text: "fff"
         }
 
-        Rectangle{
-            id:info
-            width: parent.width
-            height: 100
-            anchors.top: add.bottom
-            anchors.topMargin: 10
-            Text {
-                id: infoma1
-                text: qsTr("简介：")
-                anchors.top: info.top
-                anchors.left: info.left
-                font.family: "Helvetica"
-                font.pointSize: 20
-                color: "blue"
-            }
-            TextEdit{
-                id:infoma
-                width: parent.width
-                wrapMode: TextEdit.Wrap
-                anchors.top: info.top
-                anchors.left: infoma1.right
-                font.family: "Helvetica"
-                font.pointSize: 20
-                color: "blue"
-                focus: true
-                text: "  "
-            }
-        }
+
         Rectangle{
             id:actor1
             width: parent.width
             height: 40
-            anchors.top: info.bottom
+            anchors.top: add.bottom
             anchors.topMargin: 10
+            border.color: "lightblue"
             Text {
                 id: actorEdit1
                 text: qsTr("演员:")
-                font.family: "Helvetica"
-                font.pointSize: 20
-                color: "blue"
+                //                font.family: "Helvetica"
+                font.pointSize: 16
+                //                color: "blue"
                 anchors.top: actor1.top
                 anchors.left: actor1.left
             }
@@ -396,9 +383,10 @@ Rectangle {
                 id:actorEdit
                 anchors.top: actor1.top
                 anchors.left: actorEdit1.right
-                font.family: "Helvetica"
-                font.pointSize: 20
-                color: "blue"
+                anchors.leftMargin: 15
+                //                font.family: "Helvetica"
+                font.pointSize: 16
+                //                color: "blue"
                 focus: true
                 text: "演员"
             }
@@ -407,14 +395,15 @@ Rectangle {
         Rectangle{
             id:derector
             width: parent.width
-            height: 40
+            height: 50
             anchors.top: actor1.bottom
             anchors.topMargin: 10
+            border.color: "lightblue"
             Text{
                 id:dictorEdit1
-                font.family: "Helvetica"
-                font.pointSize: 20
-                color: "blue"
+                //                font.family: "Helvetica"
+                font.pointSize: 16
+                //                color: "blue"
                 focus: true
                 text: "导演:"
                 anchors.top: derector.top
@@ -422,66 +411,138 @@ Rectangle {
             }
             TextEdit{
                 id:dictorEdit
-                font.family: "Helvetica"
-                font.pointSize: 20
+                //                font.family: "Helvetica"
+                font.pointSize: 16
                 anchors.top: derector.top
                 anchors.left: dictorEdit1.right
-                color: "blue"
+                anchors.leftMargin: 15
+                //                color: "blue"
                 focus: true
                 text: "导演"
             }
         }
+
         Rectangle{
-            id:about1
-            width: parent.width
-            height: 40
+            id:info
+            width: parent.width-10
+            height: 150
+            clip: true
             anchors.top: derector.bottom
             anchors.topMargin: 10
+            border.color: "lightblue"
             Text {
-                id: aboutEdit1
-                text: qsTr("相关影视：")
-                anchors.top: about1.top
-                anchors.left: about1.left
-                font.family: "Helvetica"
-                font.pointSize: 20
-                color: "blue"
+                id: infoma1
+                text: qsTr("简介：")
+                anchors.top: info.top
+                anchors.left: info.left
+                font.pointSize: 16
+
             }
             TextEdit{
-                id:aboutEdit
-                font.family: "Helvetica"
-                font.pointSize: 20
-                color: "blue"
+                id:infoma
+                width: parent.width-100
+                height: parent.height
+                wrapMode: TextEdit.Wrap
+                anchors.top: info.top
+                anchors.left: infoma1.right
+                anchors.leftMargin: 10
+                //                font.family: "Helvetica"
+                font.pointSize: 16
+                //                color: "blue"
                 focus: true
-                text: "相关影视"
-                anchors.top: about1.top
-                anchors.left: aboutEdit1.right
+                text: "  "
+//                height: contentHeight
+//                width: info.width - vbar.width-100
+//                y: -vbar.position * infoma.height
+//                //                                   wrapMode: TextEdit.Wrap
+////                selectByKeyboard: true
+//                selectByMouse: true
+
+//                MouseArea{
+//                    anchors.fill: parent
+//                    onWheel: {
+//                        if (wheel.angleDelta.y > 0) {
+//                            vbar.decrease();
+//                        }
+//                        else {
+//                            vbar.increase();
+//                        }
+//                    }
+//                    onClicked: {
+//                        infoma.forceActiveFocus();
+//                    }
+//                }
             }
+
+//            ScrollBar {
+//                id: vbar
+//                hoverEnabled: true
+//                active: hovered || pressed
+//                orientation: Qt.Vertical
+//                size: info.height / infoma.height
+//                width: 10
+//                anchors.top: parent.top
+//                anchors.right: parent.right
+//                anchors.bottom: parent.bottom
+//            }
         }
+        //        Rectangle{
+        //            id:about1
+        //            width: parent.width
+        //            height: 40
+        //            anchors.top: derector.bottom
+        //            anchors.topMargin: 10
+        //            Text {
+        //                id: aboutEdit1
+        //                text: qsTr("相关影视：")
+        //                anchors.top: about1.top
+        //                anchors.left: about1.left
+        ////                font.family: "Helvetica"
+        //                font.pointSize: 16
+        ////                color: "blue"
+        //            }
+        //            TextEdit{
+        //                id:aboutEdit
+        ////                font.family: "Helvetica"
+        //                font.pointSize: 16
+        ////                color: "blue"
+        //                focus: true
+        //                text: "相关影视"
+        //                anchors.top: about1.top
+        //                anchors.left: aboutEdit1.right
+        //            }
+        //        }
 
         Button{
             id:save
-            anchors.top: about1.bottom
+            //            anchors.top: about1.bottom
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
             anchors.left: parent.left
             anchors.leftMargin: 200
-            text: "save"
+            text: "保存"
             onClicked: {
                 listModel.set(index1,{"typ": type1.text, "region":region1.text,"bigType":typeMo.text,"introduction":infoma.text,
-                                  "actor":actorEdit.text,"dictor":dictorEdit.text,"about":aboutEdit.text,"episode":esd.text
+                                  "actor":actorEdit.text,"dictor":dictorEdit.text,"episode":esd.text
                               })
-//                console.log(type1.text)
-                var message = typeMo.text+" "+name1.text+" "+type1.text+" "+" "+region1.text+" "+esd.text+" "+dictorEdit.text+" "+actorEdit.text+" "+infoma.text+" "+recc.text+" "+img.source+" "+imgPup.adress
+                //                console.log(type1.text)
+                var message = typeMo.text+" "+name1.text+" "+type1.text+" "+" "+region1.text+" "+esd.text+" "+dictorEdit.text+" "+actorEdit.text+" "+infoma.text+" "+recc.text+" "+imgPup.updateFileSource+" "+imgPup.adress
 
                 var adress = "../MoonOperationAndMaintenance/image/avatar/"+imgPup.imagename
-                client.getMovieInfo(name1.text,message,adress,imgPup.adress)
+                client.getMovieInfo(name1.text,"c",message,adress,imgPup.adress)
 
+                messages()
             }
         }
         Button{
             text: "添加"
             anchors.left: save.right
-            anchors.top: about1.bottom
-            anchors.leftMargin: 20
+            //            anchors.top: about1.bottom
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            anchors.leftMargin: 50
             onClicked:{
+                imgPup.flag = true
                 addDig.open()
 
             }

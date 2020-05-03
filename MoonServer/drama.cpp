@@ -93,6 +93,7 @@ void Drama::recodeInfo(std::string name, std::vector<std::string> &v)
         }
         default:break;
         }
+        v.push_back(m_post[0]);
         for(auto t: m_type){
             switch(t){
             case DramaType::Family:{
@@ -156,6 +157,20 @@ void Drama::save(std::map<std::string, Drama> &Dramas)
 void Drama::showPost(std::string &post)
 {
     post = m_post[0];
+}
+
+void Drama::showIntrodution(std::string &in)
+{
+    in = m_introduction;
+}
+std::vector<Director *> Drama::showDirector()
+{
+    return m_director;
+}
+
+std::vector<Actor *> Drama::showActor()
+{
+    return m_actors;
 }
 
 bool Drama::findByTypeName(std::string type)

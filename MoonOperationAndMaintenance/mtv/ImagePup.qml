@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-02-14
+* Note:选择海报的文件框
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 import Qt.labs.folderlistmodel 2.2
@@ -14,8 +18,9 @@ Popup {
 
     property string changePathName
     property string updateFileSource
-    property alias adress: fds.fileUrl
+    property string adress: "k"
     property string imagename
+    property bool flag: false //判断海报是否是修改（第一次修改）
     Rectangle {
         id: folderRec
         width: parent.width
@@ -112,12 +117,9 @@ Popup {
                         if(updateFileSource === ""){
                             choose_title.text = "没有选择图片！"
                         }else{
-                            listModel.set(index1,{"source":imgPup.updateFileSource
-                                           })
-                            console.log(index1+"insert"+imgPup.updateFileSource)
+
                              imgPup.close()
                             fds.open()
-//                            client.updateAvatar(updateFileSource,audienceInterface.audienceName)
                         }
                     }
                 }
@@ -149,9 +151,14 @@ Popup {
         selectFolder: true//false
         selectMultiple: false
         nameFilters: ["Image files (*.jpg*.png*.svg)", "All files (*)" ]
-//        fileMode: FileDialog.SaveFile
         onAccepted: {
+            adress = fds.fileUrl;
             labels.text = fds.fileUrl;
+//            if(flag === false){
+//                var message = typeMo.text+" "+name1.text+" "+type1.text+" "+" "+region1.text+" "+esd.text+" "+dictorEdit.text+" "+actorEdit.text+" "+infoma.text+" "+recc.text+" "+imgPup.updateFileSource+" "+imgPup.adress
+
+//                client.modifiedImage(message,name1.text)
+//            }
             console.log("You chose: " + fds.fileUrl);
         }
 

@@ -90,6 +90,7 @@ void Film::recodeInfo(std::string name, std::vector<std::string> &v)
         }
         default:break;
         }
+        v.push_back(m_post[0]);
         for(auto t: m_type){
             switch(t){
             case FilmType::Action:{
@@ -164,6 +165,19 @@ void Film::save(std::map<std::string, Film> &films)
 void Film::showPost(std::string &post)
 {
     post = m_post[0];
+}
+void Film::showIntrodution(std::string &in)
+{
+    in = m_introduction;
+}
+std::vector<Director *> Film::showDirector()
+{
+    return m_director;
+}
+
+std::vector<Actor *> Film::showActor()
+{
+    return m_actors;
 }
 
 bool Film::findByTypeName(std::string type)

@@ -6,6 +6,8 @@ RtspServer::RtspServer()
 {
     std::string advertsPath = "mkdir ./adverts";
     system(advertsPath.c_str());
+    std::string videosPath = "mkdir ./videos";
+    system(videosPath.c_str());
 }
 
 RtspServer::~RtspServer()

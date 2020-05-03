@@ -71,6 +71,11 @@
         <file>PlayArea/Program.qml</file>
         <file>PlayArea/Record.qml</file>
         <file>PlayArea/VideoPlayer.qml</file>
-        <file>MiddleArea/SearchResult.qml</file>
+        <file>MiddleArea/SearchFilm.qml</file>
+        <file>image/videoController/star2.png</file>
+        <file>MiddleArea/SearchCharacter.qml</file>
+        <file>MiddleArea/SearchDrama.qml</file>
+        <file>MiddleArea/SearchNone.qml</file>
+        <file>image/TopArea/MoonIcon.png</file>
     </qresource>
 </RCC>

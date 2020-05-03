@@ -11,6 +11,8 @@ Client::Client(QObject *p) :
     QObject(p)
 {
     connectServer();
+    _audience = new Audience();
+    initBrowseRecord();
 }
 
 void Client::connectServer()
@@ -800,4 +802,73 @@ QString Client::advertInfo(QString videoname)
     result = qmlValue.dump();
     QString qmlValues = QString::fromStdString(result);
     return qmlValues;
+}
+void Client::reflash()
+{
+//    std::string pathStart = "./";
+
+    std::vector<std::string> pathNames{"recommend","films","comics","drama","varietyshow","actors","directors"};
+
+    std::string pathEnd = ".tar.gz";
+
+    for(int i = 0; i != pathNames.size();i++)
+    {
+//        std::string path = pathStart + pathNames[i];
+//        DIR * dir;
+//        dir = opendir(path.data());
+//        if(dir == nullptr )
+//        {
+            json root;
+            root["system"] = "CLIENT";
+            root["request"] = "FILETRANSFER";
+            root["fileName"] =
+                    pathNames[i] + pathEnd;
+
+            std::string message = root.dump();
+
+            receiveFile(message);
+
+            std::string commend = "tar xzvf " + pathNames[i] + pathEnd;
+            system(commend.c_str());
+            emit reflashed();
+//        }
+    }
+}
+
+void Client::addAdvertClicks(QString advertname)
+{
+    json request;
+    request["system"] = "CLIENT";
+    request["request"] = "ADVERTCLICKS";
+    request["advertname"] = advertname.toStdString();
+
+    std::string message = request.dump();
+
+    socket_ptr udpsock;
+    udpsock = sendMessage(message);
+    NetWork sock(udpsock);
+    std::string res = sock.receive();
+}
+
+void Client::inform(QString informer, QString bereported, QString comment, QString date)
+{
+    json root;
+    root["system"] = "CLIENT";
+    root["request"] = "INFORM";
+    root["informer"] = informer.toStdString();
+    root["bereported"] =  bereported.toStdString();
+    root["comment"] =  comment.toStdString();
+    root["date"] = date.toStdString();
+    std::string message = root.dump();
+
+    socket_ptr udpsockptr;
+    udpsockptr = sendMessage(message);
+    NetWork sock(udpsockptr);
+
+    std::string result = sock.receive();
+    if(result == "FAILED"){
+        emit informFailed();
+    }else{
+        emit informSucceed();
+    }
 }

@@ -58,7 +58,7 @@ Dialog {
             anchors.leftMargin: 25
             Image {
                 id: stIcon
-                source: "qrc:/image/TopArea/StarIcon.png"
+                source: "qrc:/image/TopArea/MoonIcon.png"
                 width: parent.width
                 height: parent.height
                 anchors.verticalCenter: parent.verticalCenter
@@ -73,7 +73,7 @@ Dialog {
                 anchors.leftMargin: 10
                 color: "black"
                 font.pixelSize: 20
-                text: "StarPlayer V1.0 基于QT开发环境"
+                text: "Moon V1.0 基于QT开发环境"
             }
     }
 

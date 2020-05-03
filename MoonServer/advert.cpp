@@ -50,7 +50,7 @@ int Advert::showClicks()
 void Advert::addVideoLink(MovieAndTelevision* mv)
 {
     m_videos.push_back(mv);
-    std::cout << "Now: " << m_name << " " << m_videos.size() << std::endl;
+//    std::cout << "Now: " << m_name << " " << m_videos.size() << std::endl;
 }
 
 bool Advert::deleteVideoLink(std::string videoname)
@@ -70,6 +70,11 @@ bool Advert::isVideoEmpty()
         return true;
     else
         return false;
+}
+
+void Advert::changetime(std::string newdate)
+{
+    m_duetime = newdate;
 }
 
 //void Advert::print()

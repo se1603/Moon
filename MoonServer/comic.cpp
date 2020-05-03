@@ -83,6 +83,7 @@ void Comic::recodeInfo(std::string name, std::vector<std::string> &v)
         }
         default:break;
         }
+        v.push_back(m_post[0]);
         for(auto t: m_type){
             if(t == ComicType::Campus){
                 v.push_back("校园");
@@ -108,34 +109,6 @@ void Comic::recodeInfo(std::string name, std::vector<std::string> &v)
             if(t == ComicType::WarmBlood){
                 v.push_back("热血");
             }
-//            switch(t){
-//            case ComicType::Campus:{
-//                v.push_back("校园");
-//                break;
-//            }
-//            case ComicType::WarmBlood:{
-//                v.push_back("动画");
-//                break;
-//            }
-//            case ComicType::RobotWars:{
-//                v.push_back("机战");
-//                break;
-//            }
-//            case ComicType::Kayoing:{
-//                v.push_back("美少女");
-//                break;
-//            }
-//            case ComicType::Combat:{
-//                v.push_back("格斗");
-//                break;
-//            }
-//            case ComicType::Love:{
-//                v.push_back("恋爱");
-//                break;
-//            }
-//            default:v.push_back("热血");
-//                break;
-//            }
         }
     }else{
         return;
@@ -175,6 +148,19 @@ void Comic::save(std::map<std::string, Comic> &comics)
 void Comic::showPost(std::string &post)
 {
     post = m_post[0];
+}
+void Comic::showIntrodution(std::string &in)
+{
+    in = m_introduction;
+}
+std::vector<Director *> Comic::showDirector()
+{
+    return m_director;
+}
+
+std::vector<Actor *> Comic::showActor()
+{
+    return m_actors;
 }
 
 bool Comic::findByTypeName(std::string type)

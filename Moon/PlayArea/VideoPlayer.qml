@@ -24,6 +24,44 @@ Rectangle {
 
     property var clickAvert: 0
 
+    property var lastPost:middleArea.playPost
+
+    property var date:new Date()
+    property var collections: (audienceInterface.audienceName === "") ? ""
+                                                                      :        JSON.parse(client.audienceCollection(audienceInterface.audienceName))
+
+    property var allEsipode
+    property var currentEsipode: 1
+
+    Connections {
+        target: middleArea
+        onStopPlay: {
+            if(middleArea.lastStartTime !== "" &&
+                    playname !== newname){
+                cplayer.stop()
+
+                category = play.datas.resource.category
+                console.log("---"+category)
+                //终止记录
+                var stop = new Date()
+                var hours = stop.getHours()
+                var minutes = stop.getMinutes()
+                var seconds = stop.getSeconds()
+                var time = hours+":"+minutes+":"+seconds
+
+                if(audienceInterface.audienceName === ""){
+//                    client.addBrowseRecord(playname, middleArea.lastStartTime, time, lastPost)
+                }
+                else{
+                    client.addRecord(audienceInterface.audienceName,
+                                     playname, middleArea.lastStartTime, time, category)
+//                    client.addBrowseRecord(playname, middleArea.lastStartTime, time, lastPost)
+                }
+            }
+        }
+    }
+
+
     CVideoPlayer{
         id: cplayer
         anchors.fill: parent
@@ -142,10 +180,17 @@ Rectangle {
     MouseArea{
         anchors.fill: parent
         onClicked: {
+            console.log("esipode:" + allEsipode)
+            console.log("currEs:" + currentEsipode)
+            console.log(videoPath)
             if(isPlayingAdvert)
             {
+                console.log("???")
                 clickAvert++
-                console.log(clickAvert)
+                //add
+                var advertname = play.allAdverts[0].name
+                console.log("@@@"+advertname)
+                client.addAdvertClicks(advertname)
             }
             else
             {
@@ -447,10 +492,30 @@ Rectangle {
                 anchors.right: fullScreen.left
                 anchors.rightMargin: 20
                 Image {
+                    id: starImg
                     width: parent.height
                     height: parent.height
                     anchors.fill: parent
-                    source: "../image/videoController/star.png"
+                    source: (collections.length !== 0 && search(play.name) === true)
+                            ? "../image/videoController/star2.png"
+                            : "../image/videoController/star.png"
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            var year = date.getFullYear()
+                            var month = date.getMonth()+1
+                            var day = date.getDate()
+                            var hours = date.getHours()
+                            var minutes = date.getMinutes()
+                            var collecttime = year+"-"+month+"-"+day+"-"+hours+":"+minutes
+                            if(audienceInterface.audienceName === ""){
+                                audienceItem.open()
+                            }else{
+                                addCollection(play.name,collecttime)
+                                collections = JSON.parse(client.audienceCollection(audienceInterface.audienceName))
+                            }
+                        }
+                    }
                 }
             }
 
@@ -595,4 +660,30 @@ Rectangle {
 
     }
 
+    function search(cName){
+        var flag = 0
+        for(var i=0;i<collections.length;i++){
+            if(cName === collections[i].name){
+                flag = 1
+            }
+        }
+        if(flag === 0)
+            return false
+        else
+            return true
+    }
+
+    function addCollection(cName,collecttime){
+
+        var flag = 0
+        for(var i=0;i<collections.length;i++){
+            if(cName === collections[i].name){
+                flag = 1
+            }
+        }
+        if(flag === 0) {
+            client.addCollection(audienceInterface.audienceName,
+                                 collecttime,play.name,play.datas.resource.category)
+        }
+    }
 }

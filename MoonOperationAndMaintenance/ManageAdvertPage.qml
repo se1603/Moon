@@ -3,46 +3,13 @@ import QtQuick.Controls 2.12
 import "Advert"
 
 Item {
-    anchors.fill: parent
+    width: parent.width
+    height: parent.height
 
-    property alias advertAdd:advertAdd
-    property alias advertCalculation:advertCalculation
-    property alias advertStack:advertStack
-    property alias advertMiddle:advertMiddle
-
-
-    AdvertMenu {
-        id: advertMenu
-    }
-
-    Rectangle {
-        id: advertMiddle
-        width: parent.width - advertMenu.width
-        height: parent.height
-        anchors.left: advertMenu.right
-        anchors.top: parent.top
-
-        StackView {
-            id: advertStack
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-                fill: parent
-            }
-
-            initialItem: advertAdd
-        }
-    }
-
-    Component {
-        id: advertAdd
-        AdvertAdd {
-        }
-    }
-
-    Component {
-        id: advertCalculation
-        AdvertCalculation {
-        }
+    Loader {
+        id: advertLoader
+        source: "../Advert/AdvertisingMaintenance.qml"
+        property var pagewidth: mainWindow.width
+        property var pageheight: mainWindow.height
     }
 }

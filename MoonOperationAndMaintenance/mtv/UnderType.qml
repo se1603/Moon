@@ -1,3 +1,7 @@
+/* Author:徐丹
+* Date:2020-02-25
+* Note:下架界面
+*/
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
@@ -44,8 +48,7 @@ Rectangle {
                             height: gridView.cellHeight - 40
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.verticalCenter: parent.verticalCenter
-//                            property bool tvChecked: false
-//                            property var name:modelData.name
+
                             Rectangle{
                                 id: postImage
                                 color: "yellow"
@@ -78,9 +81,9 @@ Rectangle {
                                     flage = true
                                     f.tvChecked = !f.tvChecked
 
-//                                    if(check.checked === true){
-//                                        tvName = postName.text
-//                                    }
+                                    //                                    if(check.checked === true){
+                                    //                                        tvName = postName.text
+                                    //                                    }
                                 }
                             }
                         }
@@ -104,57 +107,72 @@ Rectangle {
         }
     }
 
-        Rectangle{
-            id:deleteRec
-            width: parent.width
-            height: 40//parent.height * 1 / 2
-//            anchors.top: scroll.bottom
-            anchors.top: parent.top
-            anchors.topMargin: 20
-            visible:flage ? true:false
-            Button{
-                id:delectBut
-                text: "删除"
-                anchors.centerIn: parent
-                onClicked: {
-                    dd.open()
-//                    console.log(tvName)
-                    commit()
+    Rectangle{
+        id:deleteRec
+        width: parent.width
+        height: 40//parent.height * 1 / 2
+        //            anchors.top: scroll.bottom
+        anchors.top: parent.top
+        anchors.topMargin: 20
+        visible:flage ? true:false
+        Button{
+            id:delectBut
+            text: "删除"
+            anchors.centerIn: parent
+            onClicked: {
+//                dd.open()
+                //                    console.log(tvName)
+                commit()
 
-                    console.log(message)
-                    client.deleteMovie(message,type)
-                    typeResource(type)
-                }
+                console.log(message)
+                client.deleteMovie(message,type)
+                typeResource(type)
+                recommendPage.flage = false
+            }
+        }
+    }
+
+    function commit() {
+        message = ""
+
+        for(var i = 0;i !== gridView.model.length;i++){
+            console.log(i+" "+gridView.itemAtIndex(i).name+" "+gridView.itemAtIndex(i).tvChecked)
+            if(gridView.itemAtIndex(i).tvChecked === true){
+                console.log(gridView.itemAtIndex(i).name)
+                message += gridView.itemAtIndex(i).name
+                message += "/"
+                console.log(message)
+                //                    break
+            }else{
             }
         }
 
-        function commit() {
-            message = ""
-
-            for(var i = 0;i !== gridView.model.length;i++){
-                if(gridView.itemAtIndex(i).tvChecked === true){
-                    message += gridView.itemAtIndex(i).name
-                    message += "/"
-                }
-            }
-
+    }
+    function typeResource(type){
+        if("电影"===type){
+            recommendResource = JSON.parse(client.showRecommend("电影"))
+        }else if("剧集"===type){
+            recommendResource = JSON.parse(client.showRecommend("剧集"))
+        }else if("动漫"===type){
+            recommendResource = JSON.parse(client.showRecommend("动漫"))
+        }else if("综艺"===type){
+            recommendResource = JSON.parse(client.showRecommend("综艺"))
         }
-        function typeResource(type){
-            if("电影"===type){
-                recommendResource = JSON.parse(client.showRecommend("电影"))
-            }else if("剧集"===type){
-                  recommendResource = JSON.parse(client.showRecommend("剧集"))
-            }else if("动漫"===type){
-                  recommendResource = JSON.parse(client.showRecommend("动漫"))
-            }else if("综艺"===type){
-                  recommendResource = JSON.parse(client.showRecommend("综艺"))
-            }
+    }
+    Connections{
+        target: client
+        onDelectSucceed:{
+            dele.open()
         }
+    }
 
-        PopupDialog
-        {
-            id:dd
-        }
+    PopupDialog
+    {
+        id:dd
+    }
+    DeleteDialog{
+        id:dele
+    }
 
 }
 

@@ -16,6 +16,7 @@ public:
     ~BrowseAndWatchController();
 
     std::string InterfaceCategory(std::string interface); //每个界面下的目录
+    std::string InterfaceCategory1(std::string interface); //每个界面下的目录
     std::string recommendInterface(std::string interface); //每个分类下的推荐页面
 
     std::string showTypeInterface(std::string interface, std::string type);
@@ -29,7 +30,7 @@ public:
     std::string getActorInfomation(std::string name);//获取演员的基本信息
     std::string getAdvertInformation(std::string name);//获取广告
 
-    std::string initMovies(std::string bigType);//插入影视信息
+     std::string initMovies();//插入影视信息
     std::string deleteTv(std::string name,std::string type);//删除影视
     std::string delayTV(std::string interface);//到期影视
 

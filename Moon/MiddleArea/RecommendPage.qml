@@ -40,7 +40,7 @@ Rectangle {
                     id:recommendPost
                     height: recommendPage.width / 3.5
                     width: recommendPage.width
-                    color: "red"
+//                    color: "red"
                     Image {
                         id: post_Image
                         anchors.fill: parent
@@ -49,6 +49,7 @@ Rectangle {
                         anchors.fill: parent
                         onClicked: {
                             console.log(post_Image)
+
                         }
                     }
 
@@ -62,6 +63,7 @@ Rectangle {
                             anchors.fill: parent
                             onClicked: {
                                 console.log(recommendName.width)
+
                             }
                         }
 
@@ -92,13 +94,13 @@ Rectangle {
                     Rectangle{
                         width: recommendPage.width
                         height: 400
-                        color: "yellow"
+//                        color: "yellow"
 
                         Rectangle{
                             id: title
                             width: parent.width
                             height: 40
-                            color: "blue"
+//                            color: "blue"
                             Text{
                                 id: recommendTile
                                 text: modelData.title
@@ -117,18 +119,18 @@ Rectangle {
                                 Rectangle {
                                     width: gridView.cellWidth
                                     height: gridView.cellHeight
-                                    color: "red"
+//                                    color: "red"
 
                                     Rectangle{
                                         id: postRectangle
-                                        border.color: "green"
+//                                        border.color: "green"
                                         width: gridView.cellWidth - 10
                                         height: gridView.cellHeight - 40
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         anchors.verticalCenter: parent.verticalCenter
                                         Rectangle{
                                             id: postImage
-                                            color: "yellow"
+//                                            color: "yellow"
                                             width: parent.width
                                             height: parent.height - 30
                                             anchors.top: parent.top
@@ -151,10 +153,32 @@ Rectangle {
                                         MouseArea{
                                             anchors.fill: parent
                                             onClicked: {
-                                                middleArea.stopPlay()
+                                                //开始记录
+                                                var d = new Date()
+                                                var year = d.getFullYear()
+                                                var month = d.getMonth()+1
+                                                var day = d.getDate()
+                                                var hours = d.getHours()
+                                                var minutes = d.getMinutes()
+                                                var starttime =
+                                                        year+"-"+month+"-"+day+"-"
+                                                        +hours+":"+minutes
+                                                if(middleArea.startTime === ""){
+                                                    middleArea.startTime = starttime
+                                                }else{
+                                                    middleArea.lastStartTime =
+                                                            middleArea.startTime
+                                                    middleArea.startTime = starttime
+                                                }
+
+
+                                                middleArea.nextName = postName.text
+                                                middleArea.stopPlay(playName,nextName)
+
                                                 playName = postName.text
                                                 playPost = postimage.source
                                                 playUrl = modelData.rtspURL
+
                                                 middleArea.middleLoader.visible = false
                                                 middleArea.playLoader.visible = true
                                                 adverts = JSON.parse(client.advertInfo(playName))
@@ -167,8 +191,6 @@ Rectangle {
                                                     console.log(playUrl)
                                                     middleArea.startPlay()
                                                 }
-
-                                                console.log(mytype)
                                             }
                                         }
                                     }

@@ -37,3 +37,9 @@ SearchController *ControllerFactory::createSearchController()
 {
     return SearchController::getInstace();
 }
+
+//创建管理用户控制器   author：guchangrong  date:2020-03-14
+ManageUserController *ControllerFactory::createManageUserController()
+{
+    return ManageUserController::getInstance();
+}

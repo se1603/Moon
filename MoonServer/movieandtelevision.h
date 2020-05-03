@@ -21,7 +21,7 @@ public:
     void showInfo(std::vector<std::string> &a_collections);
     //广告
     //添加广告
-    void addAdvertLink(Advert* a);
+    void addAdvertLink(Advert* a,int &f);
     //获取广告链接
     std::vector<Advert*> showAdvertLink();
     //删除广告链接

@@ -4,7 +4,7 @@ Rectangle {
     id: topInterface
     width: parent.width
     height: 38 //1 / 18 * parent.height
-//    color: "blue"
+    color: "#F5F5F5"
 
     property alias rightButton:rightButton
 
@@ -18,7 +18,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         Image {
             id: stIcon
-            source: "qrc:/image/TopArea/StarIcon.png"
+            source: "qrc:/image/TopArea/MoonIcon.png"
             width: parent.width
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
@@ -52,6 +52,7 @@ Rectangle {
                 middleArea.middleLoader.visible = true
                 middleArea.playLoader.visible = false
                middleArea.middleLoader.sourceComponent = middleArea.browsePage
+                middleArea.audienceInterface.visible = false
             }
         }
     }
@@ -82,6 +83,7 @@ Rectangle {
             onClicked: {
                 middleArea.middleLoader.visible = false
                 middleArea.playLoader.visible = true
+                middleArea.audienceInterface.visible = false
             }
         }
     }

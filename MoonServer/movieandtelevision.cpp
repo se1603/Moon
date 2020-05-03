@@ -28,16 +28,17 @@ void MovieAndTelevision::showInfo(std::vector<std::string> &a_collections)
     a_collections.push_back(m_post[0]);
 }
 
-void MovieAndTelevision::addAdvertLink(Advert *a)
+void MovieAndTelevision::addAdvertLink(Advert *a, int &f)
 {
-    int flag = 0;
+    int res = 0;
     for(auto &item:m_adverts){
         if(item->theSame(a) == true){
-            flag = 1;
+            res = 1;
+            f = 1;
             break;
         }
     }
-    if(flag == 0){
+    if(res == 0){
         m_adverts.push_back(a);
     }
 

@@ -12,6 +12,7 @@ Server::Server()
     m_commentController = m_controllerFactory->createCommentController();
     m_managerController = m_controllerFactory->createManagerController();
     m_searchController = m_controllerFactory->createSearchController();
+    m_manageuserController = m_controllerFactory->createManageUserController();
 }
 
 void Server::acceptMreeage()
@@ -216,6 +217,16 @@ void Server::processClientRequest(json j,endpoint ep)
         replay = m_searchController->searchKeywords(j["name"]);
         sendMessage(replay,ep);
     }
+    else if(request == "ADVERTCLICKS")
+    {
+        replay = m_managerController->addAdvertClicks(j["advertname"]);
+        sendMessage(replay,ep);
+    }
+    else if(request == "INFORM")
+    {
+        replay = m_manageuserController->addInformInfo(j["informer"], j["bereported"], j["comment"], j["date"]);
+        sendMessage(replay,ep);
+    }
 }
 
 void Server::processOMRequest(json j, endpoint ep)
@@ -248,14 +259,14 @@ void Server::processOMRequest(json j, endpoint ep)
     {
         replay = m_managerController->addAdvert(j["advert"],j["company"],
                 j["duetime"], j["videos"],j["videotype"],j["detailtype"]);
-        receiveFile(replay,ep);
+//        receiveFile(replay,ep);
         sendMessage(replay,ep);
     }
     if(request == "ADDADVERTTOCATEGORY")
     {
         replay = m_managerController->addAdvertToCategory(j["advert"], j["company"],
                 j["duetime"], j["category"]);
-        receiveFile(replay,ep);
+//        receiveFile(replay,ep);
         sendMessage(replay,ep);
     }
     if(request == "SEARCHVIDEO")
@@ -274,18 +285,23 @@ void Server::processOMRequest(json j, endpoint ep)
         sendMessage(replay,ep);
     }
     if(request == "DELETEVIDEOADVERTS"){
-        replay = m_managerController->deleteVideoAdverts(j["videoname"],j["advertname"]);
+        replay = m_managerController->deleteVideoAdverts(j["deletemessage"]);
         sendMessage(replay,ep);
     }else if(request == "UP"){
-        json re = j["resource"];
-        std::string s = re.dump();
-        replay = m_BrowseAndWatchController->initMovies(s);
-        receiveFile(replay,ep);
-
-        std::string commend ="cp -r ./image.tar.gz ../MoonServer/images";
+        std::string s = j.dump();
+//        replay = m_BrowseAndWatchController->initMovies(s);
+        receiveFile(s,ep);
+        std::string commend = "tar xzvf ./images.tar.gz";
         system(commend.c_str());
-    }else if(request == "CATEGORY"){
-        replay = m_BrowseAndWatchController->InterfaceCategory(j["interface"]);
+        tarFiles();
+    }else if(request =="NOTICEUP"){
+
+        replay = m_BrowseAndWatchController->initMovies();
+        receiveFile(replay,ep);
+//        sendMessage(replay,ep);
+    }
+    else if(request == "CATEGORY"){
+        replay = m_BrowseAndWatchController->InterfaceCategory1(j["interface"]);
         sendMessage(replay,ep);
 
     }else if(request =="RECOMMENDINTERFACE"){
@@ -295,6 +311,46 @@ void Server::processOMRequest(json j, endpoint ep)
     {
         replay = m_BrowseAndWatchController->deleteTv(j["name"],j["type"]);
         sendMessage(replay,ep);
+    }else if(request == "SEACH"){
+        replay = m_managerController->seach(j["name"]);
+        sendMessage(replay,ep);
+    }else if(request == "UPDATE"){
+        std::string s = j["resource"].dump();
+        replay = m_managerController->update(s);
+        sendMessage(replay,ep);
+    }else if(request == "SHOWALLVIDEOADVERTS"){
+        replay = m_managerController->showAllVideoAdverts();
+        sendMessage(replay,ep);
+    }else if(request == "SHOWADVERTISING"){
+        replay = m_managerController->showAdvertising();
+        sendMessage(replay,ep);
+    }else if(request == "CHANGEADVERTTIME"){
+        replay = m_managerController->changeAdvertTime(j["advertname"],j["newdate"]);
+        sendMessage(replay,ep);
+    }else if(request == "CHANGEADVERTLOCATION"){
+        replay = m_managerController->changeAdvertLocation(j["advertname"], j["videoname"],
+                                                            j["newlocation"]);
+        sendMessage(replay,ep);
+    }
+    //获取传来的用户管理信息
+    if(request == "GETMANAGEUSERINFO"){
+        replay = m_manageuserController->getManageUserInfo(j["informmark"]);
+        sendMessage(replay, ep);
+    }
+    //通过ID获取用户管理信息
+    if(request == "GETMANAGEUSERINFOBYID"){
+        replay = m_manageuserController->getManageUserInfoByID(j["id"]);
+        sendMessage(replay, ep);
+    }
+    //删除被举报的信息
+    if(request == "DELETEINFORMEDCOMMENT"){
+        replay = m_manageuserController->deleteInformComment(j["bereported"], j["comment"]);
+        sendMessage(replay, ep);
+    }
+    //修改已删除平路记录的标记为processed
+    if(request == "UPDATEINFORMMARK"){
+        replay = m_manageuserController->updateInformmark(j["id"]);
+        sendMessage(replay, ep);
     }
 }
 
@@ -437,4 +493,22 @@ void Server::receiveFilename(boost::system::error_code &e, boost::asio::ip::udp:
     NetWork sock(udpsock);
 
     sock.receiveFile(fp);
+}
+void Server::tarFiles()
+{
+    std::vector<std::string> files{"films","comics","drama","varietyshow"};
+//    for(auto i:files){
+//        std::cout << i << std::endl;
+//        std::string commend2 ="tar xzvf ../MoonServer/images/"+i+".tar.gz";
+//        system(commend2.c_str());
+//    }
+    for(auto i:files){
+//        std::string commend3 ="cp -rf ./images/"+i+" ./";
+//        system(commend3.c_str());
+//        std::string commend = "tar zcvf "+i+".tar.gz "+i;
+//        std::cout << commend << std::endl;
+//        system(commend.c_str());
+        std::string commend1 ="cp -r ./images/"+i+".tar.gz ../MoonServer/images";
+        system(commend1.c_str());
+    }
 }

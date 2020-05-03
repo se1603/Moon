@@ -31,6 +31,8 @@ public:
 
     void getCommentInfo(std::string name, std::vector<std::string> &v);//获取所有评论
     void goodCommentInfo(std::string name,std::vector<std::string> &v);//获取精华评论
+
+    bool deleteComment(std::string bereported, std::string comment); //删除被举报的评论 author：古长蓉
 private:
     CommentBroker();
     static CommentBroker* m_instance;

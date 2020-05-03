@@ -25,12 +25,17 @@ Rectangle {
 
     property var datas: JSON.parse(client.showInfomation(play.name))
     property string name: middleArea.playName
+    property string lastName: ""
     property string type: ""
     property string infoma:""
     property string image: middleArea.playPost
     property bool xRflag: false
     property bool xLflag: true
-    property string url: middleArea.playUrl
+    property string videoUrl: middleArea.playUrl
+    property string url
+
+    property var esipode: Number(datas.resource.esipode)
+    property string chooseEsipoed: "1"
 
     property var allAdverts: middleArea.adverts
     Component.onCompleted: {
@@ -62,7 +67,6 @@ Rectangle {
             easing.type: Easing.OutQuad
         }
     }
-
     ParallelAnimation{
         id: rightStopAnim
         NumberAnimation{
@@ -113,7 +117,6 @@ Rectangle {
         }
 
     }
-
     Rectangle {
         id: rightRectangle
         x: xRflag?play.width:4/5*play.width
@@ -137,7 +140,7 @@ Rectangle {
                 }
             }
             Text{
-//                text: adverts[0].rtsp
+                text: adverts[0].rtsp
                 font.pixelSize: 6
             }
         }
@@ -192,7 +195,7 @@ Rectangle {
 
     Rectangle {
         id: leftRectangle
-        x: xLflag ? 0:-1/5*play.width
+        x: xLflag?0:-1/5*play.width
         y: 0
         width: 1/5*play.width
         height: play.height
@@ -299,8 +302,9 @@ Rectangle {
         VideoPlayer{
             id: myplayer
             anchors.fill: parent
-            videoPath: url
+            videoPath: esipode === 1 ? (url = videoUrl + ".ts") : (url = videoUrl + "/" + chooseEsipoed + ".ts")
             advertsPlaying: allAdverts
+            allEsipode: esipode
         }
 
         Rectangle{

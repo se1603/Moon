@@ -8,7 +8,8 @@ Item {
     anchors.leftMargin: 1/7 * parent.width
     anchors.verticalCenter: parent.verticalCenter
 
-    property var searchResult
+    property var searchResult: JSON.parse(client.search(searchEdit.text))
+    property var temp
 
     Rectangle{
         id:topSearch
@@ -38,7 +39,28 @@ Item {
                 }
             }
             onAccepted: {
-
+//                searchResult = JSON.parse(client.search(searchEdit.text))
+                temp = searchResult.resource[0].type
+                console.log(temp)
+                if(temp === "Film"){
+                    middleArea.searchResource = searchResult
+                    middleArea.middleLoader.sourceComponent = middleArea.searchFilmPage
+                } else if(temp === "Drama"){
+                    middleArea.searchResource = searchResult
+                    middleArea.middleLoader.sourceComponent = middleArea.searchDramaPage
+                } else if(temp === "Comic"){
+                    middleArea.searchResource = searchResult
+                    middleArea.middleLoader.sourceComponent = middleArea.searchDramaPage
+                } else if(temp === "Actor"){
+                    middleArea.searchResource = searchResult
+                    middleArea.middleLoader.sourceComponent = middleArea.searchCharacterPage
+                } else if(temp === "Director"){
+                    middleArea.searchResource = searchResult
+                    middleArea.middleLoader.sourceComponent = middleArea.searchCharacterPage
+                } else if(temp === "None"){
+                    middleArea.searchResource = searchResult
+                    middleArea.middleLoader.sourceComponent = middleArea.searchNonePage
+                }
             }
         }
 
@@ -57,10 +79,28 @@ Item {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 hoverEnabled: true
                 onClicked: {
-                    searchResult = JSON.parse(client.search(searchEdit.text))
-                    console.log(searchResult)
-                    middleArea.searchResource = searchResult
-                    middleArea.middleLoader.sourceComponent = middleArea.searchPage
+//                    searchResult = JSON.parse(client.search(searchEdit.text))
+                    temp = searchResult.resource[0].type
+                    console.log(temp)
+                    if(temp === "Film"){
+                        middleArea.searchResource = searchResult
+                        middleArea.middleLoader.sourceComponent = middleArea.searchFilmPage
+                    } else if(temp === "Drama"){
+                        middleArea.searchResource = searchResult
+                        middleArea.middleLoader.sourceComponent = middleArea.searchDramaPage
+                    } else if(temp === "Comic"){
+                        middleArea.searchResource = searchResult
+                        middleArea.middleLoader.sourceComponent = middleArea.searchDramaPage
+                    } else if(temp === "Actor"){
+                        middleArea.searchResource = searchResult
+                        middleArea.middleLoader.sourceComponent = middleArea.searchCharacterPage
+                    } else if(temp === "Director"){
+                        middleArea.searchResource = searchResult
+                        middleArea.middleLoader.sourceComponent = middleArea.searchCharacterPage
+                    } else if(temp === "None"){
+                        middleArea.searchResource = searchResult
+                        middleArea.middleLoader.sourceComponent = middleArea.searchNonePage
+                    }
                 }
             }
         }
@@ -87,17 +127,17 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 onClicked: {
-//                    if(middleArea.audienceInterface.audienceName !== ""){
-//                        middleArea.middleface.browse_records = JSON.parse(
-//                                    client.audienceRecord(middleArea.audienceInterface.audienceName))
-//                    }else{
-//                        middleArea.middleface.browse_records = JSON.parse(
-//                                    client.browseRecord())
-//                    }
-//                    middleArea.middleface.middleStack.push(middleArea.middleface.recordPage)
-//                    middleArea.playInterface.visible = false
-//                    middleArea.audienceInterface.visible = false
-//                    middleArea.middleface.visible = true
+                    //                    if(middleArea.audienceInterface.audienceName !== ""){
+                    //                        middleArea.middleface.browse_records = JSON.parse(
+                    //                                    client.audienceRecord(middleArea.audienceInterface.audienceName))
+                    //                    }else{
+                    //                        middleArea.middleface.browse_records = JSON.parse(
+                    //                                    client.browseRecord())
+                    //                    }
+                    //                    middleArea.middleface.middleStack.push(middleArea.middleface.recordPage)
+                    //                    middleArea.playInterface.visible = false
+                    //                    middleArea.audienceInterface.visible = false
+                    //                    middleArea.middleface.visible = true
                 }
             }
         }

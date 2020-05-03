@@ -110,6 +110,7 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 onClicked: {
+                    client.reflash()
 //                    middleArea.middleface.showPage.visible = false
 //                    middleArea.refersh.visible = true
 //                    middleArea.startTimer.start()
@@ -145,8 +146,7 @@ Item {
                         audienceItem.open()
                     }else if(loginstatus === true){
                         audienceItem.close()
-                        middleArea.audienceInterface.visible =
-                                !middleArea.audienceInterface.visible
+                        middleArea.audienceInterface.visible = true
                     }
                 }
             }

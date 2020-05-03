@@ -97,26 +97,41 @@ Rectangle{
                 MouseArea{
                     anchors.fill: parent
                     onClicked: {
-                        middleArea.duration = playInterface.playCommponent.player.showCurrentTime()
-
-//                        middleArea.middle = false
-
-                        if(playInterface.playCommponent.playing)
-                        {
-                            playInterface.playCommponent.stopPlay()
-                            console.log("true")
+                        chooseEsipoed = epText.text
+                        //开始记录
+                        var d = new Date()
+                        var year = d.getFullYear()
+                        var month = d.getMonth()+1
+                        var day = d.getDate()
+                        var hours = d.getHours()
+                        var minutes = d.getMinutes()
+                        var starttime =
+                                year+"-"+month+"-"+day+"-"
+                                +hours+":"+minutes
+                        if(middleArea.startTime === ""){
+                            middleArea.startTime = starttime
+                        }else{
+                            middleArea.lastStartTime =
+                                    middleArea.startTime
+                            middleArea.startTime = starttime
                         }
 
-                        play.esipode = Number(epText.text)
-                        play.rtspUrl = middleArea.playRtspUrl + "/" + epText.text + ".mkv"
 
-                        console.log("aaaaaa")
-                        console.log(play.esipode)
+                        middleArea.nextName = modelData.name
+                        middleArea.stopPlay(playName,nextName)
 
-                        if(modelData.name !== middleArea.playingName
-                                && middleArea.playingName!==""){
-                            client.addRecord(audienceInterface.audienceName,middleArea.playingName,middleArea.startTime,middleArea.duration,middleArea.videoType)
-                            middleArea.playingName = ""
+//                        playUrl = playUrl + "/" + epText.text + ".ts"
+
+                        middleArea.playLoader.visible = true
+                        adverts = JSON.parse(client.advertInfo(playName))
+                        if(adverts !== null)
+                        {
+                            middleArea.loadAdvert()
+                        }
+                        else
+                        {
+                            console.log(playUrl)
+                            middleArea.startPlay()
                         }
                     }
                 }
